@@ -1,0 +1,594 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 6.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     24112,        584]
+NotebookOptionsPosition[     22931,        540]
+NotebookOutlinePosition[     23551,        564]
+CellTagsIndexPosition[     23508,        561]
+WindowFrame->Normal
+ContainsDynamic->True *)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Inertia versus Gravity in 3D", "Section",
+ CellFrameColor->RGBColor[
+  0.6449835965514611, 0.758632791638056, 0.2516823071641108],
+ FontColor->RGBColor[
+  0.6449835965514611, 0.758632791638056, 0.2516823071641108]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inertiaversusgravity3D", "=", 
+   RowBox[{"Compile", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"m1", ",", "_Real", ",", "2"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"m2", ",", "_Real", ",", "2"}], "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "m2"}], "+", 
+        RowBox[{"2", "m1"}], "+", " ", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Plus", "@@", "#"}], "&"}], "/@", 
+          RowBox[{"Map", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"With", "[", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{"tt", "=", 
+                 RowBox[{"(", 
+                  RowBox[{
+                   RowBox[{
+                    RowBox[{"#", "[", 
+                    RowBox[{"[", "1", "]"}], "]"}], "^", "2"}], "+", 
+                   RowBox[{
+                    RowBox[{"#", "[", 
+                    RowBox[{"[", "2", "]"}], "]"}], "^", "2"}], "+", 
+                   RowBox[{
+                    RowBox[{"#", "[", 
+                    RowBox[{"[", "3", "]"}], "]"}], "^", "2"}]}], ")"}]}], 
+                "}"}], ",", 
+               RowBox[{"If", "[", 
+                RowBox[{
+                 RowBox[{"tt", ">", "0."}], ",", 
+                 RowBox[{"#", "/", "tt"}], ",", 
+                 RowBox[{"{", 
+                  RowBox[{"0.", ",", "0.", ",", "0."}], "}"}]}], "]"}]}], 
+              "]"}], "&"}], ",", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{"1", "-", 
+               RowBox[{"IdentityMatrix", "[", 
+                RowBox[{"Length", "[", "m1", "]"}], "]"}]}], ")"}], 
+             RowBox[{"Outer", "[", 
+              RowBox[{"Plus", ",", 
+               RowBox[{"-", "m1"}], ",", "m1", ",", "1"}], "]"}]}], ",", 
+            RowBox[{"{", "2", "}"}]}], "]"}]}], ")"}]}], " ", ",", "m1"}], 
+      "}"}]}], "]"}]}], ";"}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{
+  3.35696210375764*^9, {3.381869464760544*^9, 3.381869471419137*^9}},
+ CellID->633831047],
+
+Cell[BoxData[
+ RowBox[{"Manipulate", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"SeedRandom", "[", "sr", "]"}], ";", 
+    RowBox[{"With", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"m", "=", 
+        RowBox[{"If", "[", 
+         RowBox[{"circle", ",", 
+          RowBox[{"N", "[", 
+           RowBox[{"pts", "  ", 
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"#", "/", 
+                RowBox[{"Norm", "[", "#", "]"}]}], "&"}], "/@", 
+              RowBox[{"RandomReal", "[", 
+               RowBox[{
+                RowBox[{"{", 
+                 RowBox[{
+                  RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", 
+                RowBox[{"{", 
+                 RowBox[{"pts", ",", "3"}], "}"}]}], "]"}]}], ")"}]}], "]"}], 
+          ",", " ", 
+          RowBox[{"pts", " ", 
+           RowBox[{"RandomReal", "[", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"pts", ",", "3"}], "}"}]}], "]"}]}]}], "]"}]}], "}"}], 
+      ",", 
+      RowBox[{"DynamicModule", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"m1", "=", " ", "m"}], ",", 
+          RowBox[{"m2", "=", " ", "m"}], ",", "hist", ",", 
+          RowBox[{"i", "=", "0"}]}], "}"}], ",", 
+        RowBox[{"Dynamic", "[", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"If", "[", 
+            RowBox[{"r", ",", 
+             RowBox[{
+              RowBox[{"i", "=", 
+               RowBox[{"i", "+", "1"}]}], ";", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{"m1", ",", "m2"}], "}"}], "=", 
+               RowBox[{"inertiaversusgravity3D", "[", 
+                RowBox[{"m1", ",", "m2"}], "]"}]}]}]}], "]"}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Graphics3D", "[", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"Point", "[", "m1", "]"}], ",", 
+               RowBox[{"Line", "[", 
+                RowBox[{"Transpose", "[", 
+                 RowBox[{"{", 
+                  RowBox[{"m1", ",", "m2"}], "}"}], "]"}], "]"}]}], "}"}], 
+             ",", 
+             RowBox[{"ImageSize", "\[Rule]", 
+              RowBox[{"{", 
+               RowBox[{"350", ",", "350"}], "}"}]}], ",", 
+             RowBox[{"Boxed", "\[Rule]", "boxed"}], ",", 
+             RowBox[{"PlotRange", "\[Rule]", "pra"}], ",", 
+             RowBox[{"AspectRatio", "\[Rule]", "1"}], ",", 
+             RowBox[{"PlotLabel", "\[Rule]", "i"}]}], "]"}]}], ")"}], "]"}]}],
+        "]"}]}], "]"}]}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"pts", ",", "100", ",", "\"\<number of points\>\""}], "}"}], 
+     ",", "3", ",", "200", ",", "1", ",", 
+     RowBox[{"Appearance", "\[Rule]", "\"\<Labeled\>\""}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"r", ",", "False", ",", "\"\<evolve\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"False", ",", "True"}], "}"}], ",", 
+     RowBox[{"ControlPlacement", "\[Rule]", "Left"}]}], "}"}], ",", 
+   "Delimiter", ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"circle", ",", "False", ",", "\"\<init\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"False", "\[Rule]", "\"\<cube\>\""}], ",", 
+       RowBox[{"True", "\[Rule]", "\"\<sphere\>\""}]}], "}"}], ",", 
+     RowBox[{"ControlPlacement", "\[Rule]", "Left"}]}], "}"}], ",", 
+   "Delimiter", ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"pra", ",", "Automatic", ",", "\"\<plot\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"Automatic", "\[Rule]", "\"\<most\>\""}], ",", 
+       RowBox[{"All", "\[Rule]", "\"\<all\>\""}]}], "}"}], ",", 
+     RowBox[{"ControlPlacement", "\[Rule]", "Left"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"boxed", ",", "False"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"False", ",", "True"}], "}"}], ",", 
+     RowBox[{"ControlPlacement", "\[Rule]", "Left"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"sr", ",", "0", ",", "\"\<random seed\>\""}], "}"}], ",", "0", 
+     ",", 
+     RowBox[{
+      RowBox[{"-", "1"}], "+", 
+      RowBox[{"2", "^", "24"}]}], ",", "1", ",", 
+     RowBox[{"ControlPlacement", "\[Rule]", "Bottom"}]}], "}"}], ",", 
+   RowBox[{"SaveDefinitions", "\[Rule]", "True"}], ",", 
+   RowBox[{"AutorunSequencing", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "3"}], "}"}]}]}], "]"}]], "Input",
+ CellChangeTimes->{
+  3.35696210375764*^9, {3.36826498395182*^9, 3.36826500228802*^9}, 
+   3.36826651062385*^9, {3.36826656995623*^9, 3.36826677439161*^9}, {
+   3.36826680987121*^9, 3.3682668786262*^9}, {3.36826695703095*^9, 
+   3.36826727862763*^9}, {3.36826731307998*^9, 3.36826732864651*^9}, {
+   3.36826746708665*^9, 3.36826750072303*^9}, {3.36826763089214*^9, 
+   3.36826772579783*^9}, {3.36826777498516*^9, 3.36826783730076*^9}, {
+   3.36826791943084*^9, 3.36826792429515*^9}, {3.36826795893017*^9, 
+   3.36826800657422*^9}, 3.36826807071934*^9, {3.36826813090866*^9, 
+   3.36826813175236*^9}, {3.36826829598486*^9, 3.36826832612712*^9}, {
+   3.36826835970613*^9, 3.36826837634424*^9}, {3.36826850539724*^9, 
+   3.36826852474931*^9}, {3.36826859055544*^9, 3.36826861598455*^9}, {
+   3.36826866228429*^9, 3.36826867049727*^9}, 3.36826894351482*^9, {
+   3.36826974169199*^9, 3.36826975279814*^9}, {3.3815300236040497`*^9, 
+   3.381530057352532*^9}, 3.381573669434805*^9, {3.381579190813806*^9, 
+   3.381579218071144*^9}, 3.381580359448122*^9, {3.381580443660462*^9, 
+   3.381580524136129*^9}, {3.381582085858369*^9, 3.381582099906193*^9}, {
+   3.381582134250594*^9, 3.381582140243155*^9}, 3.381582193505231*^9, 
+   3.381582276551639*^9, 3.381586944820126*^9, {3.3816045428313704`*^9, 
+   3.3816045630188313`*^9}, 3.381661124579611*^9, 3.3816611620617037`*^9, 
+   3.38175018265411*^9, {3.3817503163310623`*^9, 3.3817503324908133`*^9}, 
+   3.381754026207939*^9, {3.381754249390984*^9, 3.3817542605481577`*^9}, 
+   3.381754315128784*^9, {3.3817544266249104`*^9, 3.3817544637781267`*^9}, {
+   3.381754548190099*^9, 3.381754578814747*^9}, {3.381754682273156*^9, 
+   3.381754683685265*^9}, 3.381754813893499*^9, 3.381754852223193*^9, {
+   3.381754925784627*^9, 3.381754968414393*^9}, {3.3817550150359917`*^9, 
+   3.3817550394396477`*^9}, {3.3817551360079613`*^9, 3.381755163197775*^9}, {
+   3.381755252037936*^9, 3.381755272712749*^9}, {3.3817553619209833`*^9, 
+   3.38175538858462*^9}, {3.381755442753481*^9, 3.381755456286634*^9}, {
+   3.381755555074849*^9, 3.38175560442244*^9}, 3.3817557506776533`*^9, {
+   3.381755882756721*^9, 3.381755891304606*^9}, {3.381756032008466*^9, 
+   3.381756136031867*^9}, {3.381756180787958*^9, 3.381756240314539*^9}, {
+   3.381756285683716*^9, 3.381756290973434*^9}, {3.381756357199646*^9, 
+   3.3817563643736467`*^9}, {3.381756628660007*^9, 3.381756643261632*^9}, {
+   3.381756717508823*^9, 3.3817567519514513`*^9}, {3.381758073422371*^9, 
+   3.381758074447665*^9}, {3.38175815056171*^9, 3.381758174022059*^9}, {
+   3.381758361665661*^9, 3.381758381843884*^9}, {3.381758419515149*^9, 
+   3.38175843205389*^9}, {3.381869451264019*^9, 3.38186946018272*^9}, {
+   3.3818695042219067`*^9, 3.381869528391837*^9}, {3.3818704279501877`*^9, 
+   3.3818704284194403`*^9}, {3.3846128001090703`*^9, 
+   3.3846128096227503`*^9}, {3.385237271657381*^9, 3.385237279051648*^9}, {
+   3.385285730259441*^9, 3.3852857852507563`*^9}, {3.3852858626982937`*^9, 
+   3.3852859324863586`*^9}, {3.385286010795885*^9, 3.385286015816641*^9}, {
+   3.385287150570423*^9, 3.385287153215746*^9}, {3.385287224374537*^9, 
+   3.3852872281560593`*^9}, {3.3858175635390606`*^9, 3.385817563869536*^9}, {
+   3.3858176182677565`*^9, 3.3858176184780593`*^9}},
+ CellID->275904283]
+}, Open  ]],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`boxed$$ = False, $CellContext`circle$$ = 
+    False, $CellContext`pra$$ = Automatic, $CellContext`pts$$ = 
+    100, $CellContext`r$$ = False, $CellContext`sr$$ = 0, Typeset`show$$ = 
+    True, Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`pts$$], 100, "number of points"}, 3, 200, 1}, {{
+       Hold[$CellContext`r$$], False, "evolve"}, {False, True}}, {{
+       Hold[$CellContext`circle$$], False, "init"}, {
+      False -> "cube", True -> "sphere"}}, {{
+       Hold[$CellContext`pra$$], Automatic, "plot"}, {
+      Automatic -> "most", All -> "all"}}, {{
+       Hold[$CellContext`boxed$$], False}, {False, True}}, {{
+       Hold[$CellContext`sr$$], 0, "random seed"}, 0, 16777215, 1}}, 
+    Typeset`size$$ = {350., {173., 177.}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    False, $CellContext`pts$14255$$ = 0, $CellContext`r$14256$$ = 
+    False, $CellContext`circle$14257$$ = False, $CellContext`pra$14258$$ = 
+    False, $CellContext`boxed$14259$$ = False, $CellContext`sr$14260$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`boxed$$ = False, $CellContext`circle$$ = 
+        False, $CellContext`pra$$ = Automatic, $CellContext`pts$$ = 
+        100, $CellContext`r$$ = False, $CellContext`sr$$ = 0}, 
+      "ControllerVariables" :> {
+        Hold[$CellContext`pts$$, $CellContext`pts$14255$$, 0], 
+        Hold[$CellContext`r$$, $CellContext`r$14256$$, False], 
+        Hold[$CellContext`circle$$, $CellContext`circle$14257$$, False], 
+        Hold[$CellContext`pra$$, $CellContext`pra$14258$$, False], 
+        Hold[$CellContext`boxed$$, $CellContext`boxed$14259$$, False], 
+        Hold[$CellContext`sr$$, $CellContext`sr$14260$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, 
+      "Body" :> (SeedRandom[$CellContext`sr$$]; 
+       With[{$CellContext`m$ = If[$CellContext`circle$$, 
+            N[$CellContext`pts$$ Map[#/Norm[#]& , 
+               
+               RandomReal[{-1, 
+                1}, {$CellContext`pts$$, 3}]]], $CellContext`pts$$ 
+            RandomReal[{-1, 1}, {$CellContext`pts$$, 3}]]}, 
+         DynamicModule[{$CellContext`m1 = $CellContext`m$, $CellContext`m2 = \
+$CellContext`m$, $CellContext`hist, $CellContext`i = 0}, 
+          Dynamic[
+          If[$CellContext`r$$, $CellContext`i = $CellContext`i + 
+               1; {$CellContext`m1, $CellContext`m2} = \
+$CellContext`inertiaversusgravity3D[$CellContext`m1, $CellContext`m2]]; 
+           Graphics3D[{
+              Point[$CellContext`m1], 
+              Line[
+               Transpose[{$CellContext`m1, $CellContext`m2}]]}, 
+             ImageSize -> {350, 350}, Boxed -> $CellContext`boxed$$, 
+             PlotRange -> $CellContext`pra$$, AspectRatio -> 1, 
+             PlotLabel -> $CellContext`i]]]]), 
+      "Specifications" :> {{{$CellContext`pts$$, 100, "number of points"}, 3, 
+         200, 1, Appearance -> 
+         "Labeled"}, {{$CellContext`r$$, False, "evolve"}, {False, True}, 
+         ControlPlacement -> Left}, 
+        Delimiter, {{$CellContext`circle$$, False, "init"}, {
+         False -> "cube", True -> "sphere"}, ControlPlacement -> Left}, 
+        Delimiter, {{$CellContext`pra$$, Automatic, "plot"}, {
+         Automatic -> "most", All -> "all"}, ControlPlacement -> 
+         Left}, {{$CellContext`boxed$$, False}, {False, True}, 
+         ControlPlacement -> Left}, {{$CellContext`sr$$, 0, "random seed"}, 0,
+          16777215, 1, ControlPlacement -> Bottom}}, 
+      "Options" :> {AutorunSequencing -> {1, 3}}, 
+      "DefaultOptions" :> {ControllerLinking -> True}],
+     ImageSizeCache->{502., {231., 236.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    Initialization:>(({$CellContext`inertiaversusgravity3D = 
+        CompiledFunction[{{
+            Blank[Real], 2}, {
+            Blank[Real], 2}}, {{3, 2, 0}, {3, 2, 1}, {3, 3, 3}}, {1, 13, 4, 0,
+           12}, {{1, 5}, {93, 41, 3, 2, 1, 3, 2, 2}, {7, 2, 0}, {94, 273, 2, 
+           0, 0, 3, 2, 0, 3, 2, 3}, {7, 1, 0}, {44, 0, 1}, {
+           55, IdentityMatrix, 2, 0, 1, 2, 2, 4}, {93, 41, 2, 2, 4, 2, 2, 
+           6}, {94, 257, 2, 0, 0, 2, 2, 6, 2, 2, 4}, {93, 41, 3, 2, 0, 3, 2, 
+           6}, {7, 1, 0}, {89, 6, 0, 1, 1, 3, 7}, {94, 273, 2, 2, 4, 3, 3, 7, 
+           3, 3, 6}, {44, 6, 3}, {7, 1, 8}, {70, 6, 0, 8, 2, 4}, {44, 4, 8}, {
+           7, -1, 11}, {64, 3, 8, 11, 3, 7}, {7, 0, 12}, {11, 12, 9}, {4, 
+           33}, {7, 0, 12}, {11, 12, 10}, {4, 29}, {70, 6, 0, 9, 0, 10, 1, 
+           4}, {7, 1, 12}, {70, 4, 0, 12, 0, 1}, {7, 2, 12}, {94, 264, 3, 0, 
+           1, 2, 0, 12, 3, 0, 2}, {70, 6, 0, 9, 0, 10, 1, 4}, {7, 2, 12}, {70,
+            4, 0, 12, 0, 1}, {7, 2, 12}, {94, 264, 3, 0, 1, 2, 0, 12, 3, 0, 
+           3}, {70, 6, 0, 9, 0, 10, 1, 4}, {7, 3, 12}, {70, 4, 0, 12, 0, 1}, {
+           7, 2, 12}, {94, 264, 3, 0, 1, 2, 0, 12, 3, 0, 0}, {18, 2, 3, 0, 
+           2}, {8, 0., 3}, {37, 3, 2, 0}, {3, 0, 7}, {70, 6, 0, 9, 0, 10, 1, 
+           4}, {7, 1, 12}, {94, 260, 2, 0, 12, 3, 0, 2, 3, 0, 3}, {94, 273, 3,
+            0, 3, 3, 1, 4, 3, 1, 9}, {46, 9, 10}, {4, 3}, {
+           45, {0., 0., 0.}, 3, 3, 4}, {46, 4, 10}, {66, 11, 10, 7}, {5, 10, 
+           8, -28}, {5, 9, 3, -32}, {44, 7, 0}, {7, -1, 6}, {64, 0, 6, 3, 
+           5}, {7, 0, 2}, {11, 2, 1}, {4, 21}, {70, 7, 0, 1, 2, 9}, {7, 1, 
+           7}, {70, 9, 0, 7, 1, 10}, {44, 10, 7}, {7, 0, 11}, {64, 7, 3, 
+           10}, {7, 0, 3}, {11, 3, 5}, {4, 3}, {8, 0., 3}, {65, 11, 3, 10}, {
+           5, 5, 7, -2}, {44, 9, 11}, {7, 0, 5}, {4, 4}, {70, 9, 0, 5, 1, 
+           4}, {51, 10, 4, 11}, {46, 11, 10}, {5, 5, 11, -3}, {66, 6, 10, 
+           5}, {5, 1, 0, -20}, {51, 2, 3, 5, 2}, {68, 2, 0, 3}, {2}}, 
+          
+          Function[{$CellContext`m1, $CellContext`m2}, {-$CellContext`m2 + 
+            2 $CellContext`m1 + Map[Apply[Plus, #]& , 
+              Map[
+              With[{$CellContext`tt = 
+                 Part[#, 1]^2 + Part[#, 2]^2 + Part[#, 3]^2}, 
+                
+                If[$CellContext`tt > 0., #/$CellContext`tt, {0., 0., 
+                 0.}]]& , (1 - IdentityMatrix[
+                 Length[$CellContext`m1]]) 
+               Outer[Plus, -$CellContext`m1, $CellContext`m1, 1], {
+               2}]], $CellContext`m1}], Evaluate], 
+        Attributes[PlotRange] = {ReadProtected}}; Typeset`initDone$$ = True); 
+     ReleaseHold[
+       HoldComplete[{$CellContext`inertiaversusgravity3D = 
+          Compile[{{$CellContext`m1, 
+              Blank[Real], 2}, {$CellContext`m2, 
+              Blank[Real], 2}}, {-$CellContext`m2 + 2 $CellContext`m1 + 
+             Map[Apply[Plus, #]& , 
+               Map[
+               With[{$CellContext`tt = 
+                  Part[#, 1]^2 + Part[#, 2]^2 + Part[#, 3]^2}, 
+                 
+                 If[$CellContext`tt > 0., #/$CellContext`tt, {0., 0., 
+                  0.}]]& , (1 - IdentityMatrix[
+                  Length[$CellContext`m1]]) 
+                Outer[Plus, -$CellContext`m1, $CellContext`m1, 1], {
+                2}]], $CellContext`m1}]; Null}]]; Typeset`initDone$$ = True),
+    SynchronousInitialization->True,
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellID->394142185],
+
+Cell[CellGroupData[{
+
+Cell["THIS NOTEBOOK IS THE SOURCE CODE FROM", "Text",
+ CellFrame->{{0, 0}, {0, 1}},
+ CellMargins->{{48, 10}, {4, 28}},
+ CellGroupingRules->{"SectionGrouping", 25},
+ CellFrameMargins->{{48, 48}, {6, 5}},
+ CellFrameColor->RGBColor[0.691905, 0.790311, 0.300252],
+ FontFamily->"Helvetica",
+ FontSize->10,
+ FontWeight->"Bold",
+ FontColor->RGBColor[0.691905, 0.790311, 0.300252]],
+
+Cell[TextData[{
+ "\"",
+ ButtonBox["Inertia versus Gravity in 3D",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/InertiaVersusGravityIn3D/"], None},
+  
+  ButtonNote->"http://demonstrations.wolfram.com/InertiaVersusGravityIn3D/"],
+ "\"",
+ " from ",
+ ButtonBox["The Wolfram Demonstrations Project",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/"], None},
+  ButtonNote->"http://demonstrations.wolfram.com/"],
+ "\[ParagraphSeparator]\[NonBreakingSpace]",
+ ButtonBox["http://demonstrations.wolfram.com/InertiaVersusGravityIn3D/",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/InertiaVersusGravityIn3D/"], None},
+  
+  ButtonNote->"http://demonstrations.wolfram.com/InertiaVersusGravityIn3D/"]
+}], "Text",
+ CellMargins->{{48, Inherited}, {0, Inherited}},
+ FontFamily->"Verdana",
+ FontSize->10,
+ FontColor->GrayLevel[0.5]],
+
+Cell[" ", "Text",
+ CellFrame->{{0, 0}, {0, 1}},
+ CellMargins->{{48, 10}, {4, 28}},
+ CellGroupingRules->{"SectionGrouping", 25},
+ CellFrameMargins->{{48, 48}, {6, 5}},
+ CellFrameColor->RGBColor[0.691905, 0.790311, 0.300252],
+ FontFamily->"Helvetica",
+ FontSize->10,
+ FontWeight->"Bold",
+ FontColor->RGBColor[0.691905, 0.790311, 0.300252]],
+
+Cell[TextData[{
+ "Contributed by: ",
+ ButtonBox["Michael Schreiber",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/author.html?author=Michael+\
+Schreiber"], None},
+  ButtonNote->
+   "http://demonstrations.wolfram.com/author.html?author=Michael+Schreiber"]
+}], "Text",
+ CellDingbat->"\[FilledSmallSquare]",
+ CellMargins->{{66, 48}, {2, 4}},
+ FontFamily->"Verdana",
+ FontSize->10,
+ FontColor->GrayLevel[0.6],
+ CellID->1403090782],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "A full-function Wolfram ",
+ StyleBox["Mathematica",
+  FontSlant->"Italic"],
+ " 6 system is required to edit this notebook.\n",
+ StyleBox[ButtonBox["GET WOLFRAM MATHEMATICA 6 \[RightGuillemet]",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://www.wolfram.com/products/mathematica/"], None},
+  ButtonNote->"http://www.wolfram.com/products/mathematica/"],
+  FontFamily->"Helvetica",
+  FontWeight->"Bold",
+  FontSlant->"Italic",
+  FontColor->RGBColor[1, 0.42, 0]]
+}], "Text",
+ CellFrame->True,
+ CellMargins->{{48, 68}, {8, 28}},
+ CellFrameMargins->12,
+ CellFrameColor->RGBColor[0.865507, 0.90634, 0.680751],
+ CellChangeTimes->{3.3750111182355957`*^9},
+ ParagraphSpacing->{1., 1.},
+ FontFamily->"Verdana",
+ FontSize->10,
+ FontColor->GrayLevel[0.411765],
+ Background->RGBColor[0.986023, 0.991363, 0.969818]],
+
+Cell[TextData[{
+ "\[Copyright] ",
+ StyleBox[ButtonBox["The Wolfram Demonstrations Project & Contributors",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/"], None},
+  ButtonNote->"http://demonstrations.wolfram.com/"],
+  FontColor->GrayLevel[0.6]],
+ "\[ThickSpace]\[ThickSpace]\[ThickSpace]|\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+ StyleBox[ButtonBox["Terms of Use",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/termsofuse.html"], None},
+  ButtonNote->"http://demonstrations.wolfram.com/termsofuse.html"],
+  FontColor->GrayLevel[0.6]],
+ "\[ThickSpace]\[ThickSpace]\[ThickSpace]|\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+ StyleBox[ButtonBox["Make a new version of this Demonstration \
+\[RightGuillemet]",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/participate/upload.jsp?id=\
+InertiaVersusGravityIn3D"], None},
+  ButtonNote->None],
+  FontColor->GrayLevel[0.6]]
+}], "Text",
+ CellFrame->{{0, 0}, {0, 0.5}},
+ CellMargins->{{48, 10}, {20, 50}},
+ CellFrameMargins->{{6, 0}, {6, 6}},
+ CellFrameColor->GrayLevel[0.6],
+ FontFamily->"Verdana",
+ FontSize->9,
+ FontColor->GrayLevel[0.6]]
+}, Open  ]]
+}, Open  ]]
+},
+Editable->True,
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{710, 650},
+WindowMargins->{{Inherited, Inherited}, {Inherited, 0}},
+WindowElements->{
+ "StatusArea", "MemoryMonitor", "MagnificationPopUp", "VerticalScrollBar", 
+  "MenuBar"},
+WindowTitle->"Inertia versus Gravity in 3D - Source",
+DockedCells->{},
+CellContext->Notebook,
+FrontEndVersion->"6.0 for Microsoft Windows (32-bit) (February 7, 2008)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[590, 23, 220, 4, 70, "Section"],
+Cell[813, 29, 2146, 59, 70, "Input",
+ InitializationCell->True,
+ CellID->633831047],
+Cell[2962, 90, 7926, 173, 70, "Input",
+ CellID->275904283]
+}, Open  ]],
+Cell[10903, 266, 7802, 138, 70, "Output",
+ CellID->394142185],
+Cell[CellGroupData[{
+Cell[18730, 408, 373, 9, 70, "Text",
+ CellGroupingRules->{"SectionGrouping", 25}],
+Cell[19106, 419, 931, 26, 70, "Text"],
+Cell[20040, 447, 337, 9, 70, "Text",
+ CellGroupingRules->{"SectionGrouping", 25}],
+Cell[20380, 458, 466, 15, 70, "Text",
+ CellID->1403090782],
+Cell[CellGroupData[{
+Cell[20871, 477, 829, 24, 70, "Text"],
+Cell[21703, 503, 1200, 33, 70, "Text"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+(* NotebookSignature mSzXlHxwy9MeMD0FUwU@hs0# *)

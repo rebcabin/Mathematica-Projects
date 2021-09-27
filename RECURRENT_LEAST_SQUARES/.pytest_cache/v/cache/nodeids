@@ -1,0 +1,4 @@
+[
+  "tests/test_run_times.py::test_mc_normal",
+  "tests/test_run_times.py::test_mc_rls"
+]

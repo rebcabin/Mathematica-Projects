@@ -1,0 +1,445 @@
+GridLayout(bbs) = with
+{
+    maxH = bbs => MaxMap(bb -> bb!2, (bb, m) -> m);
+    maxW = bbs => MaxMap(bb -> bb!1, (bb, m) -> m);
+}
+    Map( (1..9), i -> [maxW * (1/2 + Mod(i-1,3)), 
+                       maxH * (1/2 + Floor((i-1)/3))] );
+
+epsilon = 0.05;
+                   
+WheelLayout(bbs) = with
+{   
+    maxH  = bbs => MaxMap(bb -> bb!2, (bb, m) -> m);
+    maxW  = bbs => MaxMap(bb -> bb!1, (bb, m) -> m);
+    max   = Max(maxH, maxW);
+    sqrt2 = 2 #^ (0.5);
+    r     = (1 + epsilon) * (2 * max / sqrt2);
+}
+    Map( (0..7), i -> [r + r * NCos(2*Pi*i/8), r + r * NSin(2*Pi*i/8)] );
+
+
+// Helpers    
+NSqrt(x) = (x #^ (0.5));
+
+EuclideanDistance(p1, p2) = NSqrt(Dot(p2-p1, p2-p1));
+
+SquaredEuclideanDistance(p1, p2) = Dot(p2-p1, p2-p1);
+
+RandomPoint(seed, k) = Random(seed, k ?? 1) => ToTuple(2);
+
+RandomPoints(seed, k) = RandomPoint(seed, k??1) : RandomPoints(seed + 1, k??1);
+
+IsSequence(x)    = Kind(x) == Sequence;
+IsTuple(x)       = Kind(x) == Tuple;
+IsRecord(x)      = Kind(x) == Record;
+IsString(x)      = Kind(x) == String;
+IsNumber(x)      = Kind(x) == Number;
+IsEmpty(x)       = True if (x == [] | x == () | x == [.]) else False;
+IsNullOrEmpty(x) = True if (x == Null or IsEmpty(x)) else False;
+IsCollection(xs) = (IsSequence(xs) or IsTuple(xs) or IsRecord(xs));
+
+ToTupleAll(xs) = with { x = First(ToSequence(xs)); rs = Rest(ToSequence(xs)); }
+    [] if (xs == () or xs == Null)
+    else ([x] ++ ToTupleAll(rs)) if not IsCollection(x)
+    else ([ToTupleAll(x)] ++ ToTupleAll(rs));
+    
+// Quantifiers
+
+Any(xs, qf) = OrElse(:Map(xs, qf));
+All(xs, qf) = AndAlso(:Map(xs, qf));
+
+// Stable: preserve ordering
+ComplementSequence(U, S) = ( u |: u <- U, ~Any(S, s -> s == u) );
+ComplementSequenceQ(U, S, predicate) = ( u |: u <- U, ~Any(S, s -> predicate(s, u)) );
+
+// Stable: preserve ordering
+Complement(U, S)             = ToTuple(ComplementSequence (ToSequence(U), ToSequence(S)));
+ComplementQ(U, S, predicate) = ToTuple(ComplementSequenceQ(ToSequence(U), ToSequence(S), predicate));
+
+SequenceDifference(U, S) = with 
+{
+    i = ToIndex(S, Id); 
+    elt(S, x) = i!x ~= ();
+}
+    ToIndex(U, u -> elt(S, u))!False;
+    
+SequenceDifferenceQ(U, S, EquivalenceValueFunction) = with
+{
+    i = ToIndex(S, EquivalenceValueFunction); 
+    elt(S, x) = i!x ~= ();
+}
+    ToIndex(U, u -> elt(S, u))!False;
+
+//SequenceDifference(Random(4855,1000)=>Take(1000), Random(2313,1000)=>Take(1000))=>Count();    
+    
+    
+
+/** /// TESTS
+SquaredEuclideanDistance([1,1,0], [1,1,0] + [3,4,0]);    
+
+EuclideanDistance([1,1,0], [1,1,0] + [3,4,0]);    
+    
+RandomPoint(seed = 1415);
+
+// Examples of "tweening" functions: They take three arguments:
+//
+// 1. A time parameter value, between 0 and 1 inclusive
+// 2. The starting position (tuple of 2-d coordinates)
+// 3. The ending position (tuple of 2-d coordinates)
+//
+// t is in first position to facilitate pipe-fitting.
+
+/**/
+LinearTween(tIn, p1, p2) = with 
+{
+    t1 = 1 if ((tIn ~= 0) and (tIn == Floor(tIn))) else Mod(tIn, 1);
+}
+    p1 + t1 * (p2 - p1); // Uses tuple arithmetic.
+    // Could  also use tIn instead of t1, in which case, we extrapolate.
+
+/** /// TESTS
+[0, 0.1, ..., 1] => Map(t -> LinearTween(t, [0,0], [1,1]));
+
+// parabolic-trajectory tweening, makes a nice one-bounce effect
+
+/**/
+ParabolicTween(tIn, p1, p2) = with
+{
+    t1 = 1 if ((tIn ~= 0) and (tIn == Floor(tIn))) else Mod(tIn, 1);
+    //d  = EuclideanDistance(p1, p2);
+    dx = p2!1 - p1!1;
+    dy = p2!2 - p1!2;
+    vx = 2*t1 - 1;   // goes from -1 to 1
+    vy = (1 - vx^2); // goes from 0 to 1, for aesthetics
+}    
+    ((p1+p2)/2) + (1/2)*[dx*vx - dy*vy, dy*vx + dx*vy];
+
+/** /// TESTS
+[0, 0.1, ..., 1] => Map(t -> ParabolicTween(t, [0,-1], [0, 1]));
+
+// Really want to say [0, 0.1, ..., 1] ~> ParabolicTween([0,-1], [0, 1]));
+
+// TWEENER MAKER -- Imagine that the line between to points, p1 and
+// p2, were the 'x' axis, going from 0 to 1, of an ordinary function
+// graph, y = f(x). If you pass the 'tweener maker' a function of 
+// that 'x' that computes a 'y' that you want, the 'tweener maker'
+// will return to you a function of a time, t in [0..1] and of two 
+// points. That function is a 'tweener:' give it a time and two
+// points and it will return a 'y' value, appropriately scaled and
+// rotated to the line between the two points, for the particular 
+// x = t.
+
+/**/
+TweenerMaker(fx) = (tIn, p1, p2) -> with
+{
+    t1 = 1 if ((tIn ~= 0) and (tIn == Floor(tIn))) else Mod(tIn, 1);
+    
+    dx = p2!1 - p1!1;
+    dy = p2!2 - p1!2;
+
+    vy = fx(t1); 
+}    
+    p1 + [dx*t1 - dy*vy, dy*t1 + dx*vy];
+
+/**/// TESTS
+
+// The linear tweener is the TweenerMaker of the CONSTANT ZERO function of t.
+
+/** /
+[0, 0.1, ..., 1] => Map(t -> LinearTween(t, [0,0], [1,1]));
+[0, 0.1, ..., 1] => Map(t -> TweenerMaker(t -> 0)(t, [0,0], [1,1]));
+
+// The quadratic tweener is 
+
+/** /
+[0, 0.1, ..., 1] => Map(t -> ParabolicTween(t, [0,-1], [0, 1]));
+[0, 0.1, ..., 1] => Map(t -> TweenerMaker(t -> (1 - (2*t - 1)^2)/2)(t, [0,-1], [0, 1]));
+
+
+
+// Clustering
+
+// The k-means algorithm (TODO)
+
+/**/
+// The QT algorithm
+
+// Produce all splits for each element e in a given sequence es. A split 
+// is a tuple of an element e and all other elements in the sequence. This 
+// REORDERS ELEMENTS to avoid nested calls of Reverse. 
+
+Splits(es) = with 
+{
+    nextSplit(priors, e, posts, splits) =
+        ([priors, e, posts] : splits) => Map(s -> [s!2, s!1 ++ s!3])
+        if (posts == ()) else nextSplit(
+            e : priors, 
+            First(posts), 
+            Rest(posts), 
+            [priors, e, posts] : splits);
+}
+    nextSplit((), First(es), Rest(es), ());
+
+// Comment via wikipedia:
+//
+// QT (quality threshold) clustering (Heyer, Kruglyak, Yooseph, 1999) is an 
+// alternative method of partitioning data, invented for gene clustering. 
+// It requires more computing power than k-means, but does not require 
+// specifying the number of clusters a priori, and always returns the same 
+// result when run several times. The algorithm is: The user chooses a 
+// maximum diameter for clusters. Build a candidate cluster for each point 
+// by including the closest point, the next closest, and so on, until the 
+// diameter of the cluster surpasses the threshold. Save a candidate 
+// cluster with the most points as the first true cluster, and remove all 
+// points in the cluster from further consideration. Recurse with the 
+// reduced set of points. 
+
+// NOTE: don't run this with more than about 50 points! It's inherently 
+// quadratic.
+
+QtClusters(pts, radius) = with 
+{
+    r2 = radius^2;
+    
+    qtClusterHelper(pts, clusters) = 
+        clusters if pts == () else with { top = topCluster(pts); }
+        qtClusterHelper(SequenceDifference(pts, top), top : clusters);
+        
+    // Produce a sequence of tuples, each containing 
+    // 1. a point
+    // 2. a sequence of tuples, each containing
+    //    2.1 a distance squared
+    //    2.2 another point
+
+    allDistances(ps) = Splits(ps)
+    
+        => Map(s -> [s!1, Map(s!2, p -> [SquaredEuclideanDistance(p, s!1), p])]);
+        
+    topCluster(pts) = allDistances(pts)
+
+        // In each 'allDistances,' keep only those that lie within the
+        // cluster 'radius' parameter (squared, for efficiency)
+        => Map( a -> [
+            a!1, // That's the reference point
+            a!2  // That's the tuple of distance and other point
+                => TakeWhere( dt -> dt!1 <= r2 )] )
+
+        // Now pick the cluster with the maximum number of points,
+        // arbitrary on ties
+        => MaxMap( a -> Count(a!2) )
+        
+        // Fish out the points (don't save the sq distances), and return
+        // it along with its reference point
+        => (a -> 
+            a!1 : // Here's the reference point, and here are...
+            (a!2 => Map(a -> a!2)))() // the other points in the cluster
+
+        ;
+} 
+    qtClusterHelper(pts, ());
+
+// A version that works with the more flexible data structure of rectangles.
+// Warning -- this is VERY slow for large sets.
+    
+QtClustersRectangles(rectangles, radius) = with 
+{
+    r2 = radius^2;
+    
+    qtClusterHelper(rects, clusters) = 
+        clusters if rects == () else with { top = topCluster(rects); }
+        qtClusterHelper(
+            ComplementSequenceQ(rects, top, (p, q) -> (p.X == q.X and p.Y == q.Y)), 
+            top : clusters);
+        
+    // Produce a sequence of sequences of rectangles, each 
+    // containing additional attributes:
+    //    1. .Distance equaling the distance to the reference rectangle
+    //    2. .ReferenceRectangle equaling the reference rectangle itself
+
+    allDistances(rects) = Splits(rects)
+    
+        => Map(s -> 
+            (s!1)[.Distance = 0] : 
+                Map(s!2, r -> r[//Record
+                    .Distance = SquaredEuclideanDistance(PointFromRect(r), PointFromRect(s!1)), 
+                    .ReferenceRectangle = s!1]));
+            
+    topCluster(rects) = allDistances(rects)
+
+        // In each 'allDistances,' keep only those that lie within the
+        // cluster 'radius' parameter (squared, for efficiency)
+        => Map( rs -> rs => TakeWhere(r -> r.Distance <= r2 ) )
+
+        // Now pick the cluster with the maximum number of points,
+        // arbitrary on ties
+        => MaxMap( rs -> Count(rs) )
+        
+        ;
+} 
+    qtClusterHelper(rectangles, ());
+    
+// A version that works very quickly.
+    
+GreedyClustersRectangles(rectangles, radius) = with 
+{
+    r2 = radius^2;
+    
+    greedySplit(refRect, others, d2, lesser, greater) = with 
+    {
+        r0 = First(others);
+        rs = Rest(others);
+    }
+        [refRect : lesser, greater] if (others == ()) else 
+        greedySplit(refRect, rs, d2, r0 : lesser, greater)
+            if SquaredEuclideanDistance(PointFromRect(refRect), PointFromRect(r0))
+                <= d2 else
+        greedySplit(refRect, rs, d2, lesser, r0 : greater);
+        
+    qtClusterHelper(rects, clusters) = clusters if rects == () else with 
+    { 
+        ds = greedySplit(First(rects), Rest(rects), r2, (), ());
+    }
+        qtClusterHelper(ds!2, ds!1 : clusters);
+} 
+    qtClusterHelper(rectangles, ());
+    
+// A version of the K-means algorithm
+
+KMeansClustersRectangles(rectangles, k, maxPasses, lastPass) = with // k == kmah == how many clusters (at most)
+{
+    c = Count(rectangles);
+    
+    maxDx = with {f = First(rectangles);} Rest(rectangles) => MaxMap(r -> Abs(f.X - r.X), (x,v) -> v);
+    maxDy = with {f = First(rectangles);} Rest(rectangles) => MaxMap(r -> Abs(f.Y - r.Y), (x,v) -> v);
+    maxD  = Max(maxDx, maxDy);
+    
+    testRadius = NSqrt(maxD);
+    
+    // heuristically cluster rectangles the first time through only
+    preprocessedRectangles = 
+        Concat(:GreedyClustersRectangles(rectangles, testRadius))
+        if lastPass == () else rectangles;
+    
+    km = Min(c, k);
+    
+    kpp = Floor(c / km); // how many per partition
+    extras = Mod(c, km);
+    
+    partitions(recs, parts, kpp, extras) = 
+        parts if recs == () else
+        partitions(Drop(recs, kpp),   Take(recs, kpp)   : parts, kpp, 0) if (extras <= 0) else
+        partitions(Drop(recs, kpp+1), Take(recs, kpp+1) : parts, kpp, extras - 1);
+        
+    firstPartitions = partitions(preprocessedRectangles, (), kpp, extras);
+    
+    firstMeans = firstPartitions => Map(
+        partition -> [ 
+            .X = partition => MeanMap( r -> r.X ),
+            .Y = partition => MeanMap( r -> r.Y),
+        ] );    
+        
+    withIndexOfClosestMean(rec, kmeans) = // kmeans are tuples of an index and a mean
+        [MinMap(
+            kmeans, 
+            m -> SquaredEuclideanDistance(
+                PointFromRect(rec), 
+                PointFromRect(m ! 2))
+            )!1, rec]; // index of closest mean and me
+            
+    indices = preprocessedRectangles => Map(r -> withIndexOfClosestMean(r, firstMeans => KMap(Tuple)));
+    
+    groups = indices => GroupBy(ind -> ind!1);
+    
+    ss = groups => Map(g -> g.Items => Map(i -> i!2));
+    
+    lexiSortRects(rects) = 
+        rects => MinMapMany(Infinity, r -> r.Y) => MinMapMany(Infinity, r -> r.X);
+        
+    thisPass = Sequence(rectangles) if (c <= 2) else ss => Map(lexiSortRects);
+    
+    equalRectSeqs(rs1, rs2) = (rs1 ~= ()) and (rs2 ~= ()) and And(:Zip(rs1, rs2, Equal));
+    
+    equalPasses(ps1, ps2) = (ps1 ~= ()) and (ps2 ~= ()) and And(:Zip(ps1, ps2, equalRectSeqs));
+
+    result = thisPass if ( (maxPasses <= 1) or equalPasses(thisPass, lastPass) ) else
+        KMeansClustersRectangles(Concat(:thisPass), k, maxPasses - 1, thisPass);
+}
+    result;
+
+// Helpers:
+    
+PointFromRect(rect) = [rect.X, rect.Y];
+
+newRectangle(X, Y, Top, Left, Width, Height) = 
+    [.Type = "Rectangle", .Y, .X, .Top, .Left, .Width, .Height];
+    
+RandomRectangle(seed, k) = with {p = RandomPoint(seed, k);}
+    newRectangle(X = p!1, Y = p!2);
+    
+RandomRectangles(seed, k) = RandomRectangle(seed, k) : RandomRectangles(seed + 1, k);
+
+/**/// TESTS
+{:
+
+    
+// pts = RandomPoints(8194, 100) => Take(200);
+
+// pts;
+
+// cs = QtClusters(pts, 50);
+
+// cs;
+
+
+
+rects = RandomRectangles(8194, 100) => Take(30);
+
+KMeansClustersRectangles(rects, 7, 4, ());    
+
+
+// rects = RandomRectangles(8194, 100) => Take(300);
+
+// clusters = GreedyClustersRectangles(rects, 20);
+
+// clusters => Map(Count);
+
+// clusters => SumMap(Count);
+    
+:}
+
+/**/
+// 2d helix example
+
+/** /// Something for David Berg
+with 
+{// Avg = seq0 => MeanMap(r -> r.Cost);
+
+    seq0 = 
+    (
+
+        with {Cost = 20001; Make = "Honda";} [.Cost = Cost, .Make = Make],
+        with {Cost = 30000; Make = "Acura";} [.Cost = Cost, .Make = Make]
+
+    ) ;
+}
+
+    seq0 => Map(r -> r[.Popularity = r.Cost / (seq0 => MeanMap(r -> r.Cost)) 
+                      ] 
+               ) => ToTuple();
+/**/
+
+
+ 
+
+
+    
+
+// WheelLayout(randomBBs(3304, 9, 40, 80)) => ToTuple();
+
+// randomBBs(s, n, lb, ub) = Zip
+    // ((Random(s,   ub-lb) + Repeat(lb)),
+     // (Random(s+1, ub-lb) + Repeat(lb)),
+     // Tuple) => Take(n);
+     
+     

@@ -1,0 +1,25 @@
+SquaredEuclideanDistance(p1, p2) = Dot(p2-p1, p2-p1);
+
+GreedyClustersRectangles(rectangles, radius) = with 
+{
+    r2 = radius^2;
+    
+    greedySplit(refRect, others, d2, lesser, greater) = with 
+    {
+        r0 = First(others);
+        rs = Rest(others);
+    }
+        [refRect : lesser, greater] if (others == ()) else 
+        greedySplit(refRect, rs, d2, r0 : lesser, greater)
+            if SquaredEuclideanDistance(PointFromRect(refRect), PointFromRect(r0))
+                <= d2 else
+        greedySplit(refRect, rs, d2, lesser, r0 : greater);
+        
+    qtClusterHelper(rects, clusters) = clusters if rects == () else with 
+    { 
+        ds = greedySplit(First(rects), Rest(rects), r2, (), ());
+    }
+        qtClusterHelper(ds!2, ds!1 : clusters);
+} 
+    qtClusterHelper(rectangles, ());
+    

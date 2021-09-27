@@ -1,0 +1,927 @@
+// Units.tsl
+//
+// Units and Dimensions
+//
+// (see Barry N. Taylor & Ambler Thompson Ed.. The International System of Units (SI).
+// http://physics.nist.gov/Pubs/SP330/sp330.pdf., and
+//
+// The following has a huge assortment of exact conversion constants
+// http://en.wikipedia.org/wiki/Conversion_of_units, and
+//
+// The following is an official government publication, not as complete
+// as the wikipedia entry, but consistent with it according to my spot checks.
+// I prefer the data in the wikipedia article:
+// http://ts.nist.gov/WeightsAndMeasures/Publications/appxc.cfm )
+//
+// Because of Tangram's exact arithmetic, we are able to preserve exact conversions in 
+// many circumstances.  
+
+// A Dimension is one of the fundamental bases of measurement. In Systeme Internationale,
+// there are seven dimensions or base units
+//
+//          ======== =========================
+//          Name     Quantity
+//          ======== =========================
+
+m   = .; // metre    length
+kg  = .; // kilogram mass
+s   = .; // second   time
+A   = .; // ampere   electric current
+K   = .; // kelvin   thermodynamic temperature
+cd  = .; // candela  luminous intensity
+mol = .; // mole     amount of substance
+
+// The definitions above establish the seven standard symbols on the left as symbolic
+// constants. They may be used as quantities in arithmetic expressions, and they
+// evaluate to themselves. They will cancel in rational expressions. Quantities of 
+// units must always be written in terms of a symbolic constant, whether base or 
+// derived, as in 60 * s or 14 * minute.
+
+// In the sections below, such as Length, Mass, and Time, we present a collection of 
+// derived units with conversion factors in terms of how much of a compatible base
+// unit is needed to make one quantity of the derived units, as in 
+// sPerMinute = 60 * s / minute.  Also, each derived unit gets a pair of conversion
+// functions, one to go to that unit from the base unit, as in
+// ToMinute(<some-number-of-seconds>),
+// and the inverse to go from some quantity of the derived unit to the base unit, as
+// in FromMinute(<some-number-of-minutes>). 
+
+// We express all other units as conversions to and from these standard dimensional units.
+// To go from a secondary unit A to another secondary unit B, compose a conversion from
+// A to a standard unit with a conversion from the standard unit to B.  This approach
+// keeps the number of primitive conversion functions proportional to the number of
+// standard dimensional units.  The alternative approach, where each pair of units,
+// primary or secondary, would have its own pair of conversion functions, would imply a
+// much larger number of primitive functions (proportional to the square of the number
+// of units).  See the examples below.
+
+// NAMING CONVENTIONS
+
+// Names of units are never in the plural, in keeping with international practice; but
+// names of function parameters often are.  We use camel back often, for instance 
+// in the names "nauticalMile" and "lightYear."  Suffixes like Troy and Avoirdupois are
+// sometimes treated as prefixes, depending on our opinion of prevailing style.  In the
+// names of units, US and UK are fully capitalized; in the names of functions they are
+// in camelback, for instance FromTonUs and ToTonUk, in keeping with .NET naming 
+// conventions.  We endeavor to stick to SI conventions when naming units, and to .NET
+// convensions when naming function symbols.
+//
+// We have some synonyms, such as ToKg and ToKilogram. 
+// 
+// Most sets of conversion functions have an identity, such as ToSecond and FromSecond.
+// This is for convenience of code generators, lest they need to distinguish base units
+// from others.
+
+// ************************************************************************************************
+// Length
+// ************************************************************************************************
+
+// Length is a fundamental dimension in Systeme Internationale. Its base unit is the meter.
+
+// Symbolic constants:
+
+inch                                    = .;
+foot                                    = .;
+yard                                    = .;
+mile                                    = .;
+furlong                                 = .;
+micron                                  = .;
+statuteMile                             = .;
+nauticalMile                            = .;
+parsec                                  = .;
+lightYear                               = .;
+astronomicalUnit                        = .;
+
+// Conversion factors (one-way: primary per secondary)
+
+mPerInch                                = (0.0254              * m / inch);         // exactly
+mPerFoot                                = (0.3048              * m / foot);         // exactly
+mPerYard                                = (0.9144              * m / yard);         // exactly
+mPerMile                                = (1609.344            * m / mile);         // exactly
+mPerFurlong                             = ((1/8)*mile/furlong) * mPerMile;          // exactly
+mPerMicron                              = (1e-6                * m / micron);       // exactly
+mPerStatuteMile                         = (1 * mile / statuteMile) * mPerMile;      // exactly
+mPerNauticalMile                        = (1852                * m / nauticalMile); // exactly
+
+mPerParsec                              = (3.08567782e16       * m / parsec);
+mPerLightYear                           = (9.4607304724808e15  * m / lightYear);
+mPerAstronomicalUnit                    = (1.49597871464e11    * m / astronomicalUnit);
+
+// Conversion functions
+
+ToMeter(metres)                         = metres;
+FromMeter(metres)                       = metres;
+
+ToInch(metres)                          = metres            / mPerInch;
+FromInch(inches)                        = inches            * mPerInch;
+
+ToFoot(metres)                          = metres            / mPerFoot;
+FromFoot(feet)                          = feet              * mPerFoot;
+
+Toyard(metres)                          = metres            / mPerYard;
+Fromyard(yards)                         = yards             * mPerYard;
+
+ToMile(metres)                          = metres            / mPerMile;
+FromMile(miles)                         = miles             * mPerMile;
+
+ToFurlong(metres)                       = metres            / mPerFurlong;
+FromFurlong(furlongs)                   = furlongs          * mPerFurlong;
+
+ToMicron(metres)                        = metres            / mPerMicron;
+FromMicron(microns)                     = microns           * mPerMicron;
+
+ToStatuteMile(metres)                   = metres            / mPerStatuteMile;
+FromStatuteMile(statuteMiles)           = statuteMiles      * mPerStatuteMile;
+
+ToNauticalMile(metres)                  = metres            / mPerNauticalMile;
+FromNauticalMile(nauticalMiles)         = nauticalMiles     * mPerNauticalMile;
+
+ToParsec(metres)                        = metres            / mPerParsec;
+FromParsec(parsecs)                     = parsecs           * mPerParsec;
+
+ToLightYear(metres)                     = metres            / mPerLightYear;
+FromLightYear(lightYears)               = lightYears        * mPerLightYear;
+
+ToAstronomicalUnit(metres)              = metres            / mPerAstronomicalUnit;
+FromAstronomicalUnit(astronomicalUnits) = astronomicalUnits * mPerAstronomicalUnit;
+
+/**/// Examples:
+@"(42e-6 * m)                           => FromMeter()            => ToMicron()";
+  (42e-6 * m)                           => FromMeter()            => ToMicron();
+
+@"(42 * micro * m)                      => FromMeter()            => ToMicron()";
+  (42 * micro * m)                      => FromMeter()            => ToMicron();
+
+@"(42e6  * micron)                      => FromMicron()           => ToMeter()";
+  (42e6  * micron)                      => FromMicron()           => ToMeter();
+
+@"(1 * furlong)                         => FromFurlong()          => ToMile()";
+  (1 * furlong)                         => FromFurlong()          => ToMile();
+
+@"(42 * m)                              => FromMeter()            => ToStatuteMile()";
+  (42 * m)                              => FromMeter()            => ToStatuteMile();
+
+@"(42 * statuteMile)                    => FromStatuteMile()      => ToMeter()";
+  (42 * statuteMile)                    => FromStatuteMile()      => ToMeter();
+
+@"(42e16  * m)                          => FromMeter()            => ToParsec()";
+  (42e16  * m)                          => FromMeter()            => ToParsec();
+
+@"(42e-16 * parsec)                     => FromParsec()           => ToMeter()";
+  (42e-16 * parsec)                     => FromParsec()           => ToMeter();
+
+@"(42e15  * m)                          => FromMeter()            => ToLightYear()";
+  (42e15  * m)                          => FromMeter()            => ToLightYear();
+
+@"(42e-15 * lightYear)                  => FromLightYear()        => ToMeter()";
+  (42e-15 * lightYear)                  => FromLightYear()        => ToMeter();
+
+@"(42e15  * m)                          => FromMeter()            => ToAstronomicalUnit()";
+  (42e15  * m)                          => FromMeter()            => ToAstronomicalUnit();
+
+@"(42e-15 * astronomicalUnit)           => FromAstronomicalUnit() => ToMeter()";
+  (42e-15 * astronomicalUnit)           => FromAstronomicalUnit() => ToMeter();
+/**/
+
+// ************************************************************************************************
+// Area
+// ************************************************************************************************
+
+// Area is a derived unit, based on quadratic combinations of lengths.
+
+m2PerInch2                              = mPerInch^2; // exactly
+m2PerFoot2                              = mPerFoot^2; // exactly
+m2PerYard2                              = mPerYard^2; // exactly
+m2PerMile2                              = mPerMile^2; // exactly
+
+// TODO: haven't settled on the appropriate treatment for centimeters, yet. Should they be
+// their own secondary unit? Or should they be a centi * m?
+
+ToSquareMeter(m2)                       = m2;
+FromSquareMeter(m2)                     = m2;
+
+ToSquareInch(m2)                        = m2   / m2PerInch2;
+FromSquareInch(in2)                     = in2  * m2PerInch2;
+
+ToSquareFoot(m2)                        = m2   / m2PerFoot2;
+FromSquareFoot(ft2)                     = ft2  * m2PerFoot2;
+
+ToSquareYard(m2)                        = m2   / m2PerYard2;
+FromSquareYard(yd2)                     = yd2  * m2PerYard2;
+
+ToSquareMile(m2)                        = m2   / m2PerMile2;
+FromSquareMile(mi2)                     = mi2  * m2PerMile2;
+
+/**/// Examples:
+@"(42000 * inch^2)                      => FromSquareInch()  => ToSquareMeter()";
+  (42000 * inch^2)                      => FromSquareInch()  => ToSquareMeter();
+
+@"(1 * centi * m)^2                     => FromSquareMeter() => ToSquareInch()";
+  (1 * centi * m)^2                     => FromSquareMeter() => ToSquareInch();
+
+@"(1 * inch^2)                          => FromSquareInch()  => ToSquareMeter()";
+  (1 * inch^2)                          => FromSquareInch()  => ToSquareMeter();
+/**/
+
+// ************************************************************************************************
+// Dry Volume
+// ************************************************************************************************
+
+// Dry Volume is a derived unit, based on cubic combinations of lengths.
+
+// Symbolic constants
+
+bushel                                  = .; // US, dry level (heaped is 25% more)
+peck                                    = .; // US, dry level
+dryGallon                               = .;
+dryQuart                                = .;
+dryPint                                 = .;
+liter                                   = .;
+
+// Conversion factors (one-way: primary per secondary)
+
+m3PerBushel                             = 2150.42 * inch^3    * m3PerCubicInch / bushel;    // exactly
+m3PerPeck                               = (1/4)   * bushel    * m3PerBushel    / peck;      // exactly
+m3PerDryGallon                          = (1/8)   * bushel    * m3PerBushel    / dryGallon; // exactly
+m3PerDryQuart                           = (1/4)   * dryGallon * m3PerDryGallon / dryQuart;  // exactly
+m3PerDryPint                            = (1/8)   * dryGallon * m3PerDryGallon / dryPint;   // exactly
+
+m3PerCubicInch                          = mPerInch^3;                                       // exactly
+m3PerCubicFoot                          = mPerFoot^3;                                       // exactly
+m3PerLiter                              = 0.001   * m^3 / liter;                           // exactly
+
+// Conversion functions
+
+ToCubicMeter(m3)                        = m3;
+FromCubicMeter(m3)                      = m3;
+
+ToBushel(m3)                            = m3          / m3PerBushel;
+FromBushel(bushels)                     = bushels     * m3PerBushel;
+
+ToPeck(m3)                              = m3          / m3PerPeck;
+FromPeck(pecks)                         = pecks       * m3PerPeck;
+
+ToDryGallon(m3)                         = m3          / m3PerDryGallon;
+FromDryGallon(dryGallons)               = dryGallons  * m3PerDryGallon;
+
+ToDryQuart(m3)                          = m3          / m3PerDryQuart;
+FromDryQuart(dryQuarts)                 = dryQuarts   * m3PerDryQuart;
+
+ToDryPint(m3)                           = m3          / m3PerDryPint;
+FromDryPint(dryPints)                   = dryPints    * m3PerDryPint;
+
+ToCubicInch(m3)                         = m3          / m3PerCubicInch;
+FromCubicInch(cubicInches)              = cubicInches * m3PerCubicInch;
+
+ToCubicFoot(m3)                         = m3          / m3PerCubicFoot;
+FromCubicFoot(cubicFeet)                = cubicFeet   * m3PerCubicFoot;
+
+ToLiter(m3)                             = m3          / m3PerLiter;
+FromLiter(liters)                       = liters      * m3PerLiter;
+
+// ************************************************************************************************
+// Liquid Volume
+// ************************************************************************************************
+
+// Liquid Volume is a derived unit, based on cubic combinations of lengths, m^3.
+
+// Symbolic constants:
+
+minim                                   = .;
+fluidDram                               = .;
+fluidOunce                              = .;
+gill                                    = .;
+liquidPint                              = .;
+liquidQuart                             = .;
+gallon                                  = .; // US, wet, a.k.a. Wine gallon; bridge to dry measure
+milliliter                              = .;
+teaspoon                                = .;
+tablespoon                              = .;
+
+// Conversion factors (one-way: primary per secondary)
+
+m3PerMinim                              = (1/480) * fluidOunce * m3PerFluidOunce / minim;       // exactly
+m3PerFluidDram                          = (1/8)   * fluidOunce * m3PerFluidOunce / fluidDram;   // exactly
+m3PerFluidOunce                         = (1/128) * gallon     * m3PerGallon     / fluidOunce;  // exactly
+m3PerGill                               = 4       * fluidOunce * m3PerFluidOunce / gill;        // exactly
+m3PerLiquidPint                         = (1/8)   * gallon     * m3PerGallon     / liquidPint;  // exactly
+m3PerLiquidQuart                        = (1/4)   * gallon     * m3PerGallon     / liquidQuart; // exactly
+m3PerGallon                             = 231 * inch^3 * m3PerCubicInch / gallon;               // exactly
+m3PerMilliliter                         = 0.000001             * m^3 / milliliter;              // exactly
+m3PerTeaspoon                           = (1/6)   * fluidOunce * m3PerFluidOunce / teaspoon;    // exactly
+m3PerTablespoon                         = (1/2)   * fluidOunce * m3PerFluidOunce / tablespoon;  // exactly
+
+// Conversion functions
+
+ToMinim(m3)                             = m3           / m3PerMinim;
+FromMinim(minims)                       = minims       * m3PerMinim;
+
+ToFluidDram(m3)                         = m3           / m3PerFluidDram;
+FromFluidDram(fluiddrams)               = fluiddrams   * m3PerFluidDram;
+
+ToFluidOunce(m3)                        = m3           / m3PerFluidOunce;
+FromFluidOunce(fluidounces)             = fluidounces  * m3PerFluidOunce;
+
+ToGill(m3)                              = m3           / m3PerGill;
+FromGill(gills)                         = gills        * m3PerGill;
+
+ToLiquidPint(m3)                        = m3           / m3PerLiquidPint;
+FromLiquidPint(liquidpints)             = liquidpints  * m3PerLiquidPint;
+
+ToLiquidQuart(m3)                       = m3           / m3PerLiquidQuart;
+FromLiquidQuart(liquidquarts)           = liquidquarts * m3PerLiquidQuart;
+
+ToGallon(m3)                            = m3           / m3PerGallon;
+FromGallon(gallons)                     = gallons      * m3PerGallon;
+
+ToMilliliter(m3)                        = m3           / m3PerMilliliter;
+FromMilliliter(milliliters)             = milliliters  * m3PerMilliliter;
+
+ToTeaspoon(m3)                          = m3           / m3PerTeaspoon;
+FromTeaspoon(teaspoons)                 = teaspoons    * m3PerTeaspoon;
+
+ToTablespoon(m3)                        = m3           / m3PerTablespoon;
+FromTablespoon(tablespoons)             = tablespoons  * m3PerTablespoon;
+
+/**/// Examples:
+@"(1 * teaspoon)                        => FromTeaspoon()   => ToFluidOunce()";
+  (1 * teaspoon)                        => FromTeaspoon()   => ToFluidOunce();
+
+@"(1 * tablespoon)                      => FromTablespoon() => ToFluidOunce()";
+  (1 * tablespoon)                      => FromTablespoon() => ToFluidOunce();
+
+/**/
+// ************************************************************************************************
+// Mass & Weight 
+// ************************************************************************************************
+
+// Mass is a fundamental dimension whose base unit is "kg". Note there is also a kgf or kilogram
+// force in the "Force" section of this document. That is a derived unit.
+
+// Symbolic constants
+
+gram                                    = .;
+milligram                               = .;
+grain                                   = .;
+carat                                   = .;
+metricCarat                             = .;
+
+lbm                                     = .; // for pound-force, see the "Force" section
+ozm                                     = .; // ounce-mass is a.k.a. avoirdupois ounce
+tonUS                                   = .;
+tonUK                                   = .;
+
+apothScruple                            = .;
+pennyweight                             = .;
+avdpDram                                = .;
+apthDram                                = .;
+avdpOunce                               = .;
+apothOunce                              = .;
+troyOunce                               = .;
+avdpPound                               = .;
+troyPound                               = .;
+
+shekel                                  = .;
+
+// Conversion factors (one-way: primary per secondary)
+
+kgPerGram                               = (1/1000)             * kg              / gram;        // exactly
+kgPerMilligram                          = (1/1000) * gram      * kgPerGram       / milligram;   // exactly
+
+kgPerGrain                              = 64.79891 * milligram * kgPerMilligram  / grain;       // exactly
+
+kgPerCarat                              = (3+1/16) * grain     * kgPerGrain      / carat;       // exactly
+kgPerMetricCarat                        = 200      * milligram * kgPerMilligram  / metricCarat; // exactly
+
+kgPerLbm                                = 7000     * grain     * kgPerGrain      / lbm;         // exactly
+kgPerOzm                                = (1/16)   * lbm       * kgPerLbm        / ozm;         // exactly
+kgPerTonUs                              = 2000     * lbm       * kgPerLbm        / tonUS;       // exactly
+kgPerTonUk                              = 2240     * lbm       * kgPerLbm        / tonUK;       // exactly
+
+kgPerApothScruple                       = 20       * grain     * kgPerGrain      / apothScruple;// exactly
+
+kgPerPennyweight                        = (1/20)   * troyOunce * kgPerTroyOunce  / pennyweight; // exactly
+
+kgPerAvdpDram                           = (27+11/32) * grain   * kgPerGrain      / avdpDram;    // exactly
+kgPerApthDram                           = 60         * grain   * kgPerGrain      / apthDram;    // exactly
+
+kgPerAvdpOunce                          = 1        * ozm       * kgPerOzm        / avdpOunce;   // exactly
+
+kgPerApothOunce                         = 1        * troyOunce * kgPerTroyOunce  / apothOunce;  // exactly
+kgPerTroyOunce                          = (1/12)   * troyPound * kgPerTroyPound  / troyOunce;   // exactly
+
+kgPerAvdpPound                          = 1        * lbm       * kgPerLbm        / avdpPound;   // exactly
+kgPerTroyPound                          = 5760     * grain     * kgPerGrain      / troyPound;   // exactly
+
+kgPerShekel                             = ((1/87.719298246)    * kg / shekel);
+
+// Conversion functions
+
+ToKilogram(kgs)                         = kgs;
+FromKilogram(kgs)                       = kgs;
+
+ToKg(kgs)                               = kgs;
+FromKg(kgs)                             = kgs;
+
+ToLbm(kgs)                              = kgs    / kgPerLbm;
+FromLbm(lbms)                           = lbms   * kgPerLbm;
+
+ToOzm(kgs)                              = kgs    / kgPerOzm;
+FromOzm(ozms)                           = ozms   * kgPerOzm;
+
+ToTonUs(kgs)                            = kgs    / kgPerTonUs;
+FromTonUs(tonsUs)                       = tonsUs * kgPerTonUs;
+
+ToTonUk(kgs)                            = kgs    / kgPerTonUk;
+FromTonUk(tonsUk)                       = tonsUk * kgPerTonUk;
+
+ToGrain(kgs)                            = kgs    / kgPerGrain;
+FromGrain(grs)                          = grs    * kgPerGrain;
+
+ToApothScruple(kgs)                     = kgs    / kgPerApothScruple;
+FromApothScruple(scs)                   = scs    * kgPerApothScruple;
+
+ToPennyweight(kgs)                      = kgs    / kgPerPennyweight;
+FromPennyweight(pws)                    = pws    * kgPerPennyweight;
+
+ToAvdpDram(kgs)                         = kgs    / kgPerAvdpDram;
+FromAvdpDram(dms)                       = dms    * kgPerAvdpDram;
+
+ToApthDram(kgs)                         = kgs    / kgPerApthDram;
+FromApthDram(dms)                       = dms    * kgPerApthDram;
+
+ToAvdpOunce(kgs)                        = kgs    / kgPerAvdpOunce;
+FromAvdpOunce(ozs)                      = ozs    * kgPerAvdpOunce;
+
+ToApothOunce(kgs)                       = kgs    / kgPerApothOunce;
+FromApothOunce(ozs)                     = ozs    * kgPerApothOunce;
+
+ToTroyOunce(kgs)                        = kgs    / kgPerTroyOunce;
+FromTroyOunce(ozs)                      = ozs    * kgPerTroyOunce;
+
+ToAvdpPound(kgs)                        = kgs    / kgPerAvdpPound;
+FromAvdpPound(pds)                      = pds    * kgPerAvdpPound;
+
+ToTroyPound(kgs)                        = kgs    / kgPerTroyPound;
+FromTroyPound(pds)                      = pds    * kgPerTroyPound;
+
+ToMilligram(kgs)                        = kgs    / kgPerMilligram;
+FromMilligram(mgs)                      = mgs    * kgPerMilligram;
+
+ToGram(kgs)                             = kgs    / kgPerGram;
+FromGram(gms)                           = gms    * kgPerGram;
+
+ToShekel(kgs)                           = kgs    / kgPerShekel;
+FromShekel(sks)                         = sks    * kgPerShekel;
+
+/**/// Examples:
+@"(1 * shekel)                          => FromShekel()     => ToOzm()";
+  (1 * shekel)                          => FromShekel()     => ToOzm();
+
+@"(1 * ozm)                             => FromOzm()        => ToShekel()";
+  (1 * ozm)                             => FromOzm()        => ToShekel();
+
+@"(1 * lbm)                             => FromLbm()        => ToGrain()";
+  (1 * lbm)                             => FromLbm()        => ToGrain();
+
+@"(1 * troyPound)                       => FromTroyPound()  => ToGrain()";
+  (1 * troyPound)                       => FromTroyPound()  => ToGrain();
+/**/
+
+// ************************************************************************************************
+// Time
+// ************************************************************************************************
+
+// Time is a fundamental dimension whose base unit is the second, SI symbols "s."
+
+// Symbolic constants:
+
+minute                                  = .;
+hour                                    = .;
+day                                     = .;
+week                                    = .;
+fortnight                               = .;
+yearJulian                              = .;
+planckTime                              = .;
+
+// Conversion factors (one-way: primary per secondary)
+
+sPerMinute                              = (60     * s      / minute);                  // exactly  
+sPerHour                                = (60     * minute / hour)       * sPerMinute; // exactly
+sPerDay                                 = (24     * hour   / day)        * sPerHour;   // exactly
+sPerWeek                                = ( 7     * day    / week)       * sPerDay;    // exactly
+sPerFortnight                           = ( 2     * week   / fortnight)  * sPerWeek;   // exactly
+sPerYearJulian                          = (365.25 * day    / yearJulian) * sPerDay;    
+sPerPlanckTime                          = 1.351211868e-43 * s / planckTime;
+
+// Conversion functions
+
+ToSecond(secs)                          = secs;
+FromSecond(secs)                        = secs;
+
+ToMinute(secs)                          = secs  / sPerMinute;
+FromMinute(mins)                        = mins  * sPerMinute;
+
+ToHour(secs)                            = secs  / sPerHour;
+FromHour(hours)                         = hours * sPerHour;
+
+ToDay(secs)                             = secs  / sPerDay;
+FromDay(days)                           = days  * sPerDay;
+
+ToWeek(secs)                            = secs  / sPerWeek;
+FromWeek(weeks)                         = weeks * sPerWeek;
+
+ToFortnight(secs)                       = secs  / sPerFortnight;
+FromFortnight(ftnts)                    = ftnts * sPerFortnight;
+
+ToYearJulian(secs)                      = secs  / sPerYearJulian;
+FromYearJulian(years)                   = years * sPerYearJulian;
+
+ToPlanckTime(secs)                      = secs  / sPerPlanckTime;
+FromPlanckTime(pts)                     = pts   * sPerPlanckTime;
+
+/**/// Examples:
+@"(1 * yearJulian)                      => FromYearJulian() => ToSecond();";
+  (1 * yearJulian)                      => FromYearJulian() => ToSecond();
+
+@"(1 * day)                             => FromDay()        => ToSecond();";
+  (1 * day)                             => FromDay()        => ToSecond();;
+
+@"(86400 * s)                           => FromSecond()     => ToDay()";
+  (86400 * s)                           => FromSecond()     => ToDay();
+
+@"(1 * femto * s)                       => FromSecond()     => ToYearJulian()";
+  (1 * femto * s)                       => FromSecond()     => ToYearJulian();
+
+@"(1 * fortnight)                       => FromFortnight()  => ToSecond();";
+  (1 * fortnight)                       => FromFortnight()  => ToSecond();;
+/**/
+
+// ************************************************************************************************
+// Speed
+// ************************************************************************************************
+
+// Speed is a derived unit, based on ratios of m / s, or mps.
+
+// Symbolic constants
+
+mps                                     = .; // (m / s);
+knot                                    = .;
+speedOfLight                            = .;
+c                                       = .;
+mach                                    = .;
+
+// Conversion factors
+
+mpsPerMph                               = mPerMile / sPerHour;                // exactly
+mpsPerFps                               = mPerFoot;                           // exactly
+mpsPerKnot                              = (0.514444  * m / s) / knot;
+mpsPerSpeedOfLight                      = (299792458 * m / s) / speedOfLight; // exactly
+mpsPerC                                 = (299792458 * m / s) / c;            // exactly
+mpsPerMach                              = (344       * m / s) / mach;
+
+// Conversion functions
+
+ToMps(mpsecs)                           = mpsecs * mps / (m / s);
+FromMps(mpsecs)                         = mpsecs * (m / s) / mps;
+
+ToMph(metersPerSecond)                  = metersPerSecond / mpsPerMph;
+FromMph(milesPerHour)                   = milesPerHour    * mpsPerMph;
+
+ToFps(metersPerSecond)                  = metersPerSecond / mpsPerFps;
+FromFps(feetPerSecond)                  = feetPerSecond   * mpsPerFps;
+
+ToKnot(metersPerSecond)                 = metersPerSecond / mpsPerKnot;
+FromKnot(knots)                         = knots           * mpsPerKnot;
+
+ToSpeedOfLight(metersPerSecond)         = metersPerSecond / mpsPerSpeedOfLight;
+FromSpeedOfLight(speedoflights)         = speedoflights   * mpsPerSpeedOfLight;
+
+ToC(metersPerSecond)                    = metersPerSecond / mpsPerC;
+FromC(cs)                               = cs              * mpsPerC;
+
+ToMach(metersPerSecond)                 = metersPerSecond / mpsPerMach;
+FromMach(machs)                         = machs           * mpsPerMach;
+
+/**/// Examples:
+@"(60 * mile / hour)                    => FromMph()    => ToMps()";
+  (60 * mile / hour)                    => FromMph()    => ToMps();
+
+@"(60 * mile / hour)                    => FromMph()    => ToFps()";
+  (60 * mile / hour)                    => FromMph()    => ToFps();
+
+@"(60 * mile / hour)                    => FromMph()    => ToKnot()";
+  (60 * mile / hour)                    => FromMph()    => ToKnot();
+
+@"(600 * mile / hour)                   => FromMph()    => ToMach()";
+  (600 * mile / hour)                   => FromMph()    => ToMach();
+
+@"(1000 * mach)                         => FromMach()   => ToSpeedOfLight()";
+  (1000 * mach)                         => FromMach()   => ToSpeedOfLight();
+
+@"(1 * c)                               => FromC()      => ToMach() => (x->Floor(x/mach))()";
+  (1 * c)                               => FromC()      => ToMach() => (x->Floor(x/mach))();
+
+@"(871489  * mach)                      => FromMach()   => ToC()";
+  (871489  * mach)                      => FromMach()   => ToC();
+
+@"((60 * mile) => FromMile() => ToFurlong()) / (hour => FromHour() => ToFortnight())";
+  ((60 * mile) => FromMile() => ToFurlong()) / (hour => FromHour() => ToFortnight());
+
+@"((furlong => FromFurlong()) / (fortnight => FromFortnight())) => ToMph()";
+  ((furlong => FromFurlong()) / (fortnight => FromFortnight())) => ToMph();
+/**/
+
+// ************************************************************************************************
+// Acceleration
+// ************************************************************************************************
+
+// Speed is a derived unit, based on ratios of m / s^2.
+
+// Symbolic constants
+
+g                                       = .;
+
+// Conversion factors
+
+mps2PerG                                = (9.80665 * m / s^2) / g;
+
+// Conversion functions
+
+ToG(mps2)                               = mps2 / mps2PerG;
+FromG(gs)                               = gs   * mps2PerG;
+
+/**/// Examples:
+@"((furlong => FromFurlong()) / (fortnight => FromFortnight())^2) => ToG()";
+  ((furlong => FromFurlong()) / (fortnight => FromFortnight())^2) => ToG();
+/**/
+
+// ************************************************************************************************
+// Force
+// ************************************************************************************************
+
+// Force is a derived unit, based on multiples of newton = kg * m / sec^2
+
+newton                                  = .; // (kg * m / s^2);
+
+// Symbolic constants
+
+atomicForce                             = .;
+dyne                                    = .;
+lbf                                     = .;
+kgf                                     = .;
+ozf                                     = .;
+
+// Conversion factors
+
+newtonPerAtomicForce                    = 8.23872206e-8   * (kg * m / s^2) / atomicForce;
+newtonPerDyn                            = 1e-5            * (kg * m / s^2) / dyne;     // exactly
+newtonPerLbf                            = 4.4482216152605 * (kg * m / s^2) / lbf;
+newtonPerKgf                            = 9.80665         * (kg * m / s^2) / kgf;
+newtonPerOzf                            = ((1/16) * newtonPerLbf * lbf / ozf);
+
+// Conversion functions
+
+ToNewton(newtons)                       = newtons * newton / (kg * m / s^2);
+FromNewton(newtons)                     = newtons * (kg * m / s^2) / newton;
+
+ToAtomicForce(newtons)                  = newtons / newtonPerAtomicForce;
+FromAtomicForce(afs)                    = afs     * newtonPerAtomicForce;
+
+ToDyn(newtons)                          = newtons / newtonPerDyn;
+FromDyn(dynes)                          = dynes   * newtonPerDyn;
+
+ToLbf(newtons)                          = newtons / newtonPerLbf;
+FromLbf(lbfs)                           = lbfs    * newtonPerLbf;
+
+ToKgf(newtons)                          = newtons / newtonPerKgf;
+FromKgf(kgfs)                           = kgfs    * newtonPerKgf;
+
+ToOzf(newtons)                          = newtons / newtonPerOzf;
+FromOzf(ozfs)                           = ozfs    * newtonPerOzf;
+
+/**/// Examples:
+@"Classic Caltech force unit of shekel-furlong/fortnight^2";
+
+(
+    ( ( (1 * shekel) => FromShekel() ) * ( (1 * furlong) => FromFurlong()) ) / 
+    //----------------------------------------------------------------------//
+                  ( ( (1 * fortnight) => FromFortnight())^2 )
+)
+    => ToNewton();
+    
+@"This is a VERY small force.";
+/**/
+
+// ************************************************************************************************
+// Power
+// ************************************************************************************************
+
+// Power is a derived unit, based on multiples of watt = kg * m^2 / sec^3
+
+// ************************************************************************************************
+// Energy
+// ************************************************************************************************
+
+// Energy is a derived unit, based on multiples of joule = kg * m^2 / sec^2
+
+joule                                   = .; // (kg * m^2 / s^2);
+
+// Symbolic constants
+
+wattHour                                = .;
+kilowattHour                            = .;
+horsepowerHour                          = .;
+erg                                     = .;
+footLb                                  = .;
+btu                                     = .;
+kiloton                                 = .;
+megaton                                 = .;
+electronVolt                            = .;
+kiloCalorieThermal                      = .;
+kiloCalorieNutritional                  = .;
+
+// Conversion Factors
+
+joulePerWattHour                        = 3600                   * (kg * m^2 / s^2) 
+                                                                 / wattHour;           // exactly
+joulePerKilowattHour                    = 3600000                * (kg * m^2 / s^2) 
+                                                                 / kilowattHour;       // exactly
+joulePerHorsepowerHour                  = 2.684519537696172792e6 * (kg * m^2 / s^2) 
+                                                                 / horsepowerHour;
+joulePerErg                             = 1e-7                   * (kg * m^2 / s^2) 
+                                                                 / erg;                // exactly
+joulePerFootLb                          = 1.3558179483314004     * (kg * m^2 / s^2) 
+                                                                 / footLb;
+joulePerBtu                             = 1055.05585262          * (kg * m^2 / s^2) 
+                                                                 / btu;
+joulePerKiloton                         = 4.184e12               * (kg * m^2 / s^2) 
+                                                                 / kiloton;            // exactly
+joulePerMegaton                         = 4.184e15               * (kg * m^2 / s^2) 
+                                                                 / megaton;            // exactly
+joulePerElectronVolt                    = 1.60217733e-19         * (kg * m^2 / s^2) 
+                                                                 / electronVolt;
+joulePerKiloCalorieThermal              = 4184                   * (kg * m^2 / s^2) 
+                                                                 / kiloCalorieThermal; // exactly
+joulePerKiloCalorieNutritional          = 4182                   * (kg * m^2 / s^2) 
+                                                                 / kiloCalorieNutritional;
+ 
+                                                                 // Conversion Functions
+
+ToJoule(joules)                         = joules * joule / (kg * m^2 / s^2);
+FromJoule(joules)                       = joules * (kg * m^2 / s^2) / joule;
+
+ToWattHour(joules)                      = joules / joulePerWattHour;
+FromWattHour(whrs)                      = whrs   * joulePerWattHour;
+
+ToKilowattHour(joules)                  = joules / joulePerKilowattHour;
+FromKilowattHour(whrs)                  = whrs   * joulePerKilowattHour;
+
+ToHorsepowerHour(joules)                = joules / joulePerHorsepowerHour;
+FromHorsepowerHour(whrs)                = whrs   * joulePerHorsepowerHour;
+
+ToErg(joules)                           = joules / joulePerErg;
+FromErg(ergs)                           = ergs   * joulePerErg;
+
+ToFootLb(joules)                        = joules / joulePerFootLb;
+FromFootLb(ftlbs)                       = ftlbs  * joulePerFootLb;
+
+ToBtu(joules)                           = joules / joulePerBtu;
+FromBtu(btus)                           = btus   * joulePerBtu;
+
+ToKiloton(joules)                       = joules / joulePerKiloton;
+FromKiloton(ktons)                      = ktons  * joulePerKiloton;
+
+ToMegaton(joules)                       = joules / joulePerMegaton;
+FromMegaton(mtons)                      = mtons  * joulePerMegaton;
+
+ToElectronVolt(joules)                  = joules / joulePerElectronVolt;
+FromElectronVolt(evs)                   = evs    * joulePerElectronVolt;
+
+ToKiloCalorieThermal(joules)            = joules / joulePerKiloCalorieThermal;
+FromKiloCalorieThermal(kcals)           = kcals  * joulePerKiloCalorieThermal;
+
+ToKiloCalorieNutritional(joules)        = joules / joulePerKiloCalorieNutritional;
+FromKiloCalorieNutritional(kcals)       = kcals  * joulePerKiloCalorieNutritional;
+
+/**/// Examples:
+@"(100 * erg)                           => FromErg()                    => ToJoule()";
+  (100 * erg)                           => FromErg()                    => ToJoule();
+
+@"(100 * btu)                           => FromBtu()                    => ToJoule()";
+  (100 * btu)                           => FromBtu()                    => ToJoule();
+
+@"(100 * electronvolt)                  => FromElectronVolt()           => ToJoule()";
+  (100 * electronVolt)                  => FromElectronVolt()           => ToJoule();
+
+@"(100 * footLb)                        => FromFootLb()                 => ToJoule()";
+  (100 * footLb)                        => FromFootLb()                 => ToJoule();
+
+@"(100 * kiloton)                       => FromKiloton()                => ToJoule()";
+  (100 * kiloton)                       => FromKiloton()                => ToJoule();
+
+@"(100 * megaton)                       => FromMegaton()                => ToJoule()";
+  (100 * megaton)                       => FromMegaton()                => ToJoule();
+
+@"(100 * footLb)                        => FromFootLb()                 => ToJoule()";
+  (100 * footLb)                        => FromFootLb()                 => ToJoule();
+
+@"(100 * wattHour)                      => FromWattHour()               => ToJoule()";
+  (100 * wattHour)                      => FromWattHour()               => ToJoule();
+
+@"(1000 * kiloCalorieNutritional)       => FromKiloCalorieNutritional() => ToJoule()";
+  (1000 * kiloCalorieNutritional)       => FromKiloCalorieNutritional() => ToJoule();
+/**/
+
+// ************************************************************************************************
+// Temperature
+// ************************************************************************************************
+
+// Temperature is a fundamental dimension in Systeme Internationale (though not so in 
+// physics, where it relates to energy through Boltzmann's constant). The base unit is
+// Kelvins, symbolized K.
+
+// Symbolic constants
+
+C                                       = .;
+F                                       = .;
+
+// TODO: conversion "factors" in this case would be 2x2 matrices, and temperatures would
+// be vectors in a 2-dimensional "homogeneous" coordinate system. However, that is a bit
+// of overkill for this scenario. For now, let's do the conversions only by functions
+// that effect the necessary affine transformations ("affine" meaning scale + offset).
+
+// Conversion functions
+
+ToKelvin(kelvins)                       = kelvins;
+FromKelvin(kelvins)                     = kelvins;
+
+ToCelsius(kelvins)                      = (kelvins  / K - 273.15) * C;
+FromCelsius(degreesC)                   = (degreesC / C + 273.15) * K;
+
+ToFahrenheit(kelvins)                   = ((kelvins  / K - 273.15) * (9/5) +  32   ) * F;
+FromFahrenheit(degreesF)                = ((degreesF / F -  32)    * (5/9) + 273.15) * K;
+
+/**/// Examples:
+@"(  0    * K)                          => FromKelvin()     => ToCelsius()";
+  (  0    * K)                          => FromKelvin()     => ToCelsius();
+
+@"(  0    * C)                          => FromCelsius()    => ToKelvin()";
+  (  0    * C)                          => FromCelsius()    => ToKelvin();
+
+@"(-40    * C)                          => FromCelsius()    => ToFahrenheit()";
+  (-40    * C)                          => FromCelsius()    => ToFahrenheit();
+
+@"(-40    * F)                          => FromFahrenheit() => ToCelsius()";
+  (-40    * F)                          => FromFahrenheit() => ToCelsius();
+
+@"(212    * F)                          => FromFahrenheit() => ToCelsius()";
+  (212    * F)                          => FromFahrenheit() => ToCelsius();
+
+@"( 32    * F)                          => FromFahrenheit() => ToCelsius()";
+  ( 32    * F)                          => FromFahrenheit() => ToCelsius();
+
+@"(100    * C)                          => FromCelsius()    => ToFahrenheit()";
+  (100    * C)                          => FromCelsius()    => ToFahrenheit();
+
+@"(  0    * C)                          => FromCelsius()    => ToFahrenheit()";
+  (  0    * C)                          => FromCelsius()    => ToFahrenheit();
+/**/
+
+// ************************************************************************************************
+// Standard prefixes for SI
+// ************************************************************************************************
+
+// Multiples
+// Name   deca- hecto- kilo- mega- giga- tera- peta-  exa- zetta- yotta-
+// Symbol    da      h     k     M     G     T     P     E      Z      Y
+// Factor  10^1   10^2  10^3  10^6  10^9 10^12 10^15 10^18  10^21  10^24
+/**/
+
+deca  =    10;
+hecto =   100;
+kilo  =  1000;
+mega  =  10^6;
+giga  =  10^9;
+tera  = 10^12;
+peta  = 10^15;
+exa   = 10^18;
+zetta = 10^21;
+yotta = 10^24;
+
+// Subdivisions
+// Name   deci- centi- milli- micro- nano- pico- femto- atto- zepto- yocto-
+// Symbol     d      c      m      µ     n     p      f     a      z      y
+// Factor  10-1   10-2   10-3   10-6  10-9 10-12  10-15 10-18  10-21  10-24
+
+deci  = 1 /    10;
+centi = 1 /   100;
+milli = 1 /  1000;
+micro = 1 /  10^6;
+nano  = 1 /  10^9;
+pico  = 1 / 10^12;
+femto = 1 / 10^15;
+atto  = 1 / 10^18;
+zecto = 1 / 10^21;
+yocto = 1 / 10^24;
+/**/

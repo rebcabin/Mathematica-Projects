@@ -1,0 +1,90 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf340
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\ftech\fcharset77 Symbol;\f2\ftech\fcharset0 Wingdings-Regular;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs24 \cf2 From: "Erik Meijer" <erik.meijer@meijcrosoft.com>\
+Subject: Type correct Bayes\
+Date: October 14, 2012 5:47:55 PM PDT\
+To: "Brian Beckman" <bc.beckman@gmail.com>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+\cf2 \
+\pard\pardeftab720
+
+\fs30 \cf2 OK, here is the type-correct version of Bayes:\
+\'a0\
+P(A^B|A)*P(A) = P(A^B) = P(B^A) = P(B^A|B)*P(B)\
+\'a0\
+Here is the proof\
+\'a0\
+P(A|B)*P(B)\
+=\
+P(A^B)\
+=\
+P(A^B^B)\
+=\
+P((A^B)^B)\
+=\
+P(A^B|B)*P(B)\
+\'a0\
+Now we can define the operational interpretation as\
+\'a0\
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 -- not sure if we need that 
+\f1 \'8c
+\f0  is 1, or else we need to inject Scale in certain spots\
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 P(A|B) = B 
+\f2 \'e0
+\f0  Dist<A> = B 
+\f2 \'e0
+\f0  \{ A\uc0\u8614 double \} \'96 finite function/Dictionary<A,double>/set of Axdouble pairs\
+\'a0\
+And (abusing notation a little)\
+\'a0\
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 P(B|A)*P(A) = \{ (b,p*q) | (a,p)
+\f1 \'eb
+\f0 P(A), (b,q)
+\f1 \'eb
+\f0 P(B|A) \}\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 -- bind\
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 P(B^A|A) = \\a -> \{ ((a,b),q) | (b,q)
+\f1 \'eb
+\f0 P(B|A)a\}\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\
+P(A^B)/P(B) = \\b -> \{ ((a,b),p/q) | ((a,b'),p) 
+\f1 \'eb
+\f0 P(A^B), b' = b, (b",q) <- P(B), b"=b \} \'a0\'a0\'a0\'a0\'a0\'a0\
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 Flip(P(A^B)) = \{ ((b,a),p) | ((a,b),p) 
+\f1 \'eb
+\f0 P(A^B) \}\
+\'a0\
+And we can prove using the monad laws that\
+\'a0\
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 P(B^A|B)\'a0 = Flip o P(A^B|A)*P(A)/P(B)\
+\'a0\
+We can also define\
+\'a0\
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 B|A = injective function A
+\f2 \'e0
+\f0 B (not sure if that is really needed, since filter is not, just makes sure there is no need to scale)\
+\'a0\
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 P(A|A) = \\a -> \{ (a,1) \} \'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 -- return P(A|A)*P(A) = P(A)\
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 (B|A)*P(A) = \{ (b,p) | (a,p) 
+\f1 \'eb
+\f0 P(A), b = (B|A)a \}\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 -- map\
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 P(A)?p = \{ (a,p) | (a,p) 
+\f1 \'eb
+\f0 P(A), p(a) \}\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 -- filter\
+P(
+\f1 \'ae
+\f0 ) = \{\}\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 \'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 -- zero P(A|B)* P(
+\f1 \'ae
+\f0 ) = P(
+\f1 \'ae
+\f0 )\
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 P(C|A^B, B|A)*P(A) = \{ (r,p*q) | (a,p)
+\f1 \'eb
+\f0 P(A), (b,q)
+\f1 \'eb
+\f0 P(B|A), r = (C|A^B)(a,b) \} \'96 weird SelectMany\
+\'a0\
+Quite amazing how much work it is to make all the handwaving disappear!\
+}

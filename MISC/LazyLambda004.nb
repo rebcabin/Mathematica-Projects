@@ -1,0 +1,1877 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 9.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     60775,       1868]
+NotebookOptionsPosition[     55813,       1705]
+NotebookOutlinePosition[     56260,       1723]
+CellTagsIndexPosition[     56217,       1720]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Anonymous Memoizing Lazy Lists", "Title"],
+
+Cell["\<\
+Brian Beckman
+8 Dec 2012\
+\>", "Subtitle"],
+
+Cell["\<\
+One reason to care about anonymized computations is that naming things costs \
+memory, and it's the kind of memory that lasts from one computation to \
+another -- session memory. Naming things means writing definitions and \
+storing them in tables for access in later computations. Building up big \
+memoization tables as definitions can cost a LOT of memory. We can save this \
+cost if we can avoid naming things, storing information in function \
+parameters that only last the lifetime of a single computation.\
+\>", "Text"],
+
+Cell[CellGroupData[{
+
+Cell["NON-ANONYMOUS LAZY LISTS", "Section"],
+
+Cell["\<\
+Lazy lists are a handy way of expressing infinite data streams. A typical \
+lazy list might look like the following:\
+\>", "Text"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"integersFrom", "[", "n_", "]"}], ":=", 
+  RowBox[{"{", 
+   RowBox[{"n", ",", 
+    RowBox[{
+     RowBox[{"integersFrom", "[", 
+      RowBox[{"n", "+", "1"}], "]"}], "&"}]}], "}"}]}]], "Input"],
+
+Cell[TextData[{
+ "Calling ",
+ StyleBox["integersFrom", "Input"],
+ " with some numerical argument produces a list in curly braces, the first \
+element of which is that numerical argument and the second element of which \
+is a delayed list in the form of a nullary function -- a function of no \
+parameters. That's what the ",
+ StyleBox["&", "Input"],
+ " means: \"the expression to my left is a function.\" We're doing Lisp-style \
+lists, which are pairs of values and lists."
+}], "Text"],
+
+Cell[TextData[{
+ "The list in the second slot of the lazy list won't be automatically \
+evaluated -- we must manually invoke the function that produces it when we \
+want the results. That is the essence of lazy computation. Lazy languages \
+like Haskell can decide when you need the results and just sidestep the \
+explicit wrapping in a nullary function and the manual invocation. With eager \
+or ",
+ StyleBox["strict",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " languages like ",
+ StyleBox["Mathematica",
+  FontSlant->"Italic"],
+ ", we must do the invocations manually. But that's good, because we can see \
+more clearly what's going on. "
+}], "Text"],
+
+Cell["\<\
+In our lazy lists, the second item will always be a nullary function.\
+\>", "Text"],
+
+Cell[TextData[{
+ "Start peeling integers off such a structure one at a time. ",
+ StyleBox["integersFrom[0]", "Input"],
+ " will be a lazy list of integers starting from 0, and \n",
+ StyleBox["\[LeftDoubleBracket]1\[RightDoubleBracket]", "Input"],
+ " will pick the first element from the resulting list:"
+}], "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"integersFrom", "[", "0", "]"}], "\[LeftDoubleBracket]", "1", 
+  "\[RightDoubleBracket]"}]], "Input"],
+
+Cell[BoxData["0"], "Output"]
+}, Open  ]],
+
+Cell[TextData[{
+ "If we pick the second element from ",
+ StyleBox["integersFrom[0]", "Input"],
+ ", that will be a nullary function that produces the next lazy list. \
+Manually invoke the function by appending ",
+ StyleBox["[]", "Input"],
+ " -- invocation brackets containing no arguments -- and then pick off the \
+first element of the result to get the next integer."
+}], "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"integersFrom", "[", "0", "]"}], "\[LeftDoubleBracket]", "2", 
+    "\[RightDoubleBracket]"}], "[", "]"}], "\[LeftDoubleBracket]", "1", 
+  "\[RightDoubleBracket]"}]], "Input"],
+
+Cell[BoxData["1"], "Output"]
+}, Open  ]],
+
+Cell["And so on:", "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      RowBox[{"integersFrom", "[", "0", "]"}], "\[LeftDoubleBracket]", "2", 
+      "\[RightDoubleBracket]"}], "[", "]"}], "\[LeftDoubleBracket]", "2", 
+    "\[RightDoubleBracket]"}], "[", "]"}], "\[LeftDoubleBracket]", "1", 
+  "\[RightDoubleBracket]"}]], "Input"],
+
+Cell[BoxData["2"], "Output"]
+}, Open  ]],
+
+Cell[TextData[{
+ "A pattern emerges that we can capture in some operators. ",
+ StyleBox["Value", "Input"],
+ " just picks the first element of a lazy list, and ",
+ StyleBox["next", "Input"],
+ " picks the second element -- the nullary function -- and invokes it on no \
+arguments:"
+}], "Text"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"value", "[", "stream_", "]"}], ":=", 
+   RowBox[{"stream", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}]}],
+   ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"next", "[", "stream_", "]"}], ":=", 
+   RowBox[{
+    RowBox[{"stream", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}], 
+    "[", "]"}]}], ";"}]}], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"value", "@", 
+  RowBox[{"integersFrom", "[", "0", "]"}]}]], "Input"],
+
+Cell[BoxData["0"], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"value", "@", 
+  RowBox[{"next", "@", 
+   RowBox[{"integersFrom", "[", "0", "]"}]}]}]], "Input"],
+
+Cell[BoxData["1"], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"value", "@", 
+  RowBox[{"next", "@", 
+   RowBox[{"next", "@", 
+    RowBox[{"integersFrom", "[", "0", "]"}]}]}]}]], "Input"],
+
+Cell[BoxData["2"], "Output"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Improve the ",
+ StyleBox["value", "Input"],
+ " operator so we can ask for the ",
+ Cell[BoxData[
+  FormBox["n", TraditionalForm]]],
+ " th value, recursively:"
+}], "Text"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "value", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"value", "[", 
+   RowBox[{"stream_", ",", 
+    RowBox[{"n_:", "1"}]}], "]"}], ":=", "\[IndentingNewLine]", 
+  RowBox[{"If", "[", 
+   RowBox[{
+    RowBox[{"n", "\[LessEqual]", "1"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"stream", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+    ",", "\[IndentingNewLine]", 
+    RowBox[{"value", "[", 
+     RowBox[{
+      RowBox[{"next", "[", "stream", "]"}], ",", 
+      RowBox[{"n", "-", "1"}]}], "]"}]}], "]"}]}]}], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"value", "[", 
+  RowBox[{
+   RowBox[{"integersFrom", "[", "1", "]"}], ",", "26"}], "]"}]], "Input"],
+
+Cell[BoxData["26"], "Output"]
+}, Open  ]],
+
+Cell["\<\
+Let's see a few values by mapping over a list of inputs:\
+\>", "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"value", "[", 
+    RowBox[{
+     RowBox[{"integersFrom", "[", "1", "]"}], ",", "#"}], "]"}], "&"}], "/@", 
+  
+  RowBox[{"{", 
+   RowBox[{
+   "1", ",", "2", ",", "3", ",", "4", ",", "5", ",", "10", ",", "15", ",", 
+    "20"}], "}"}]}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "1", ",", "2", ",", "3", ",", "4", ",", "5", ",", "10", ",", "15", ",", 
+   "20"}], "}"}]], "Output"]
+}, Open  ]],
+
+Cell[TextData[{
+ "We don't need ",
+ StyleBox["next", "Input"],
+ " any more -- only ",
+ StyleBox["value", "Input"],
+ " used it. Inline it in the body of ",
+ StyleBox["value", "Input"],
+ ":"
+}], "Text"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", 
+   RowBox[{"next", ",", "value"}], "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"value", "[", 
+    RowBox[{"stream_", ",", 
+     RowBox[{"n_:", "1"}]}], "]"}], ":=", "\[IndentingNewLine]", 
+   RowBox[{"If", "[", 
+    RowBox[{
+     RowBox[{"n", "\[LessEqual]", "1"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"stream", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}],
+      ",", "\[IndentingNewLine]", 
+     RowBox[{"value", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+        "stream", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}], "[",
+         "]"}], ",", 
+       RowBox[{"n", "-", "1"}]}], "]"}]}], "]"}]}], ";"}]}], "Input"],
+
+Cell[TextData[{
+ "As an aside, an efficient implementation of value requires either the ",
+ StyleBox["tail-recursion optimization",
+  FontSlant->"Italic"],
+ " in the interpreter or a re-expression in iterative form, which can be done \
+semi-automatically."
+}], "Text"],
+
+Cell["Write another lazy list as follows:", "Text"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "fibonaccis", "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"fibonaccis", "[", "n_", "]"}], ":=", "\[IndentingNewLine]", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"If", "[", 
+     RowBox[{
+      RowBox[{"n", "\[LessEqual]", "1"}], ",", "\[IndentingNewLine]", "1", 
+      ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"value", "[", 
+        RowBox[{"fibonaccis", "[", 
+         RowBox[{"n", "-", "1"}], "]"}], "]"}], "+", 
+       RowBox[{"value", "[", 
+        RowBox[{"fibonaccis", "[", 
+         RowBox[{"n", "-", "2"}], "]"}], "]"}]}]}], "]"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"fibonaccis", "[", 
+      RowBox[{"n", "+", "1"}], "]"}], "&"}]}], "\[IndentingNewLine]", 
+   "}"}]}]}], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Timing", "[", 
+  RowBox[{"value", "[", 
+   RowBox[{
+    RowBox[{"fibonaccis", "[", "1", "]"}], ",", "15"}], "]"}], "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "0.02656599999999999933697480969385651406`4.444926081588919", ",", "987"}], 
+  "}"}]], "Output"]
+}, Open  ]],
+
+Cell["\<\
+Of course, this is exponentially inefficient, as are all non-memoizing \
+recursive fibonaccis. Fib of 15 is already painful, and fib of 150 is \
+unthinkable. This can be mitigated as follows:\
+\>", "Text"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "fibonaccis", "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"fibonaccis", "[", "n_", "]"}], ":=", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"fibonaccis", "[", "n", "]"}], "=", "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"n", "\[LessEqual]", "1"}], ",", "\[IndentingNewLine]", "1", 
+       ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"value", "[", 
+         RowBox[{"fibonaccis", "[", 
+          RowBox[{"n", "-", "1"}], "]"}], "]"}], "+", 
+        RowBox[{"value", "[", 
+         RowBox[{"fibonaccis", "[", 
+          RowBox[{"n", "-", "2"}], "]"}], "]"}]}]}], "]"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"fibonaccis", "[", 
+       RowBox[{"n", "+", "1"}], "]"}], "&"}]}], "\[IndentingNewLine]", 
+    "}"}]}]}]}], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"fibonaccis", "[", "#", "]"}], "&"}], "/@", 
+  RowBox[{"{", 
+   RowBox[{
+   "1", ",", "2", ",", "3", ",", "4", ",", "5", ",", "6", ",", "7", ",", "8", 
+    ",", "9", ",", "10", ",", "15", ",", "20"}], "}"}]}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"1", ",", 
+     RowBox[{
+      RowBox[{"fibonaccis", "[", 
+       RowBox[{"1", "+", "1"}], "]"}], "&"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", 
+     RowBox[{
+      RowBox[{"fibonaccis", "[", 
+       RowBox[{"2", "+", "1"}], "]"}], "&"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"3", ",", 
+     RowBox[{
+      RowBox[{"fibonaccis", "[", 
+       RowBox[{"3", "+", "1"}], "]"}], "&"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"5", ",", 
+     RowBox[{
+      RowBox[{"fibonaccis", "[", 
+       RowBox[{"4", "+", "1"}], "]"}], "&"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"8", ",", 
+     RowBox[{
+      RowBox[{"fibonaccis", "[", 
+       RowBox[{"5", "+", "1"}], "]"}], "&"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"13", ",", 
+     RowBox[{
+      RowBox[{"fibonaccis", "[", 
+       RowBox[{"6", "+", "1"}], "]"}], "&"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"21", ",", 
+     RowBox[{
+      RowBox[{"fibonaccis", "[", 
+       RowBox[{"7", "+", "1"}], "]"}], "&"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"34", ",", 
+     RowBox[{
+      RowBox[{"fibonaccis", "[", 
+       RowBox[{"8", "+", "1"}], "]"}], "&"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"55", ",", 
+     RowBox[{
+      RowBox[{"fibonaccis", "[", 
+       RowBox[{"9", "+", "1"}], "]"}], "&"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"89", ",", 
+     RowBox[{
+      RowBox[{"fibonaccis", "[", 
+       RowBox[{"10", "+", "1"}], "]"}], "&"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"987", ",", 
+     RowBox[{
+      RowBox[{"fibonaccis", "[", 
+       RowBox[{"15", "+", "1"}], "]"}], "&"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"10946", ",", 
+     RowBox[{
+      RowBox[{"fibonaccis", "[", 
+       RowBox[{"20", "+", "1"}], "]"}], "&"}]}], "}"}]}], "}"}]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Timing", "[", 
+  RowBox[{"value", "[", 
+   RowBox[{
+    RowBox[{"fibonaccis", "[", "1", "]"}], ",", "150"}], "]"}], 
+  "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "0.00202799999999999985486609510587641125`3.3276678639409223", ",", 
+   "16130531424904581415797907386349"}], "}"}]], "Output"]
+}, Open  ]],
+
+Cell[TextData[{
+ "This is a well-known ",
+ StyleBox["Mathematica",
+  FontSlant->"Italic"],
+ " idiom for building a memo table by side effect. The memo table consists of \
+explicit, specific point-values for ",
+ StyleBox["fibonaccis", "Input"],
+ ", which the general ",
+ StyleBox["fibonaccis", "Input"],
+ " -- the one depending on a single parameter ",
+ StyleBox["n_", "Input"],
+ " -- creates on-the-fly. Subsequent references to ",
+ StyleBox["fibonaccis", "Input"],
+ " at known inputs will do a quick lookup on the specific values and avoid \
+the exponential recomputation. "
+}], "Text"],
+
+Cell[TextData[{
+ "This is non-anonymous programming on steroids -- everything is built up \
+inside the named object ",
+ StyleBox["fibonaccis", "Input"],
+ ", but it gives us great speed at the expense of memory. But this is global \
+memory in ",
+ StyleBox["Mathematica",
+  FontSlant->"Italic"],
+ "'s global brain. When we're done with the calculation, we have modified the \
+session state of ",
+ StyleBox["Mathematica",
+  FontSlant->"Italic"],
+ " and not left things the way we found them. In some scenarios, this would \
+not be allowed. We must find some other way to evaluate recursive formulas \
+without requiring session state -- using only ephemeral memory such as stack \
+frames that go away when our result is achieved."
+}], "Text"],
+
+Cell["\<\
+Let's get rid of the named functions and then even get rid of the named memo \
+table so we can have decent performance on our recursive evaluations.\
+\>", "Text"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["ANONYMIZE", "Section"],
+
+Cell["The mother of all anonymizers is the Y combinator:", "Text"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Y", "=", 
+   RowBox[{"(", 
+    RowBox[{"subjectCode", "\[Function]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"g", "\[Function]", 
+        RowBox[{"g", "@", "g"}]}], ")"}], "\[IndentingNewLine]", "[", 
+      RowBox[{"precursor", "\[Function]", 
+       RowBox[{"subjectCode", "\[IndentingNewLine]", "[", 
+        RowBox[{"n", "\[Function]", 
+         RowBox[{
+          RowBox[{"precursor", "[", "precursor", "]"}], "[", "n", "]"}]}], 
+        "]"}]}], "]"}]}], ")"}]}], ";"}]], "Input"],
+
+Cell[TextData[{
+ "Without going into how it works, Y is a function that takes another \
+function, ",
+ StyleBox["subjectCode", "Input"],
+ ", as an argument. That other function takes an argument ",
+ StyleBox["k", "Input"],
+ " and produces a function of ",
+ StyleBox["n", "Input"],
+ ". The function of ",
+ StyleBox["n", "Input"],
+ " can call ",
+ StyleBox["k", "Input"],
+ " as if ",
+ StyleBox["k", "Input"],
+ " were a recursive definition of the function of ",
+ StyleBox["n", "Input"],
+ ". The function of ",
+ StyleBox["n", "Input"],
+ " can be applied to workhorse arguments, that is, to arguments of the \
+subject code."
+}], "Text"],
+
+Cell[TextData[{
+ "In practice, Y is easy to use: just apply it to a function of ",
+ StyleBox["k", "Input"],
+ " that produces a function of ",
+ StyleBox["n", "Input"],
+ " that internally calls ",
+ StyleBox["k", "Input"],
+ ", then apply the result to the desired ",
+ StyleBox["n", "Input"],
+ ".  "
+}], "Text"],
+
+Cell[TextData[{
+ "Here is the lazy list of integers, this time starting at 1, without using \
+the name of the lazy list inside the definition of the lazy list: ",
+ StyleBox["s1", "Input"],
+ " does not refer to ",
+ StyleBox["s1", "Input"],
+ ":"
+}], "Text"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "s1", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"s1", "=", 
+   RowBox[{
+    RowBox[{"Y", "[", 
+     RowBox[{"k", "\[Function]", 
+      RowBox[{"n", "\[Function]", "\[IndentingNewLine]", 
+       RowBox[{"{", 
+        RowBox[{"n", ",", 
+         RowBox[{
+          RowBox[{"k", "[", 
+           RowBox[{"n", "+", "1"}], "]"}], "&"}]}], "}"}]}]}], 
+     "\[IndentingNewLine]", "]"}], "[", "1", "]"}]}], ";"}]}], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"value", "[", "s1", "]"}]], "Input"],
+
+Cell[BoxData["1"], "Output"]
+}, Open  ]],
+
+Cell[TextData[{
+ "We feed to Y a function of ",
+ StyleBox["k", "Input"],
+ ". That function of ",
+ StyleBox["k", "Input"],
+ " produces a function of ",
+ StyleBox["n", "Input"],
+ ". That function of ",
+ StyleBox["n", "Input"],
+ " produces a list in curly braces. The first element of that list is the \
+value ",
+ StyleBox["n", "Input"],
+ ", and the second element of that list is a delayed call of ",
+ StyleBox["k", "Input"],
+ " on the next value, ",
+ StyleBox["n+1", "Input"],
+ ". s1 is thus a lazy list of all the integers, just defined without \
+reference to any names but parameters. No global storage needed, no session \
+state. "
+}], "Text"],
+
+Cell[TextData[{
+ "Let's map calls of ",
+ StyleBox["value[s1,#]&", "Input"],
+ " over a sequence of inputs to consicely show it off multiple times:"
+}], "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"value", "[", 
+    RowBox[{"s1", ",", "#"}], "]"}], "&"}], "/@", 
+  RowBox[{"{", 
+   RowBox[{"1", ",", "2", ",", "3", ",", "4", ",", "26"}], "}"}]}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "2", ",", "3", ",", "4", ",", "26"}], "}"}]], "Output"]
+}, Open  ]],
+
+Cell["Now, on to an anonymized lazy list of fibonaccis:", "Text"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "s2", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"s2", "=", 
+   RowBox[{
+    RowBox[{"Y", "[", 
+     RowBox[{"k", "\[Function]", 
+      RowBox[{"n", "\[Function]", "\[IndentingNewLine]", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"n", "\[LessEqual]", "1"}], ",", "\[IndentingNewLine]", 
+           "1", ",", "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"value", "[", 
+             RowBox[{"k", "[", 
+              RowBox[{"n", "-", "1"}], "]"}], "]"}], "+", 
+            RowBox[{"value", "[", 
+             RowBox[{"k", "[", 
+              RowBox[{"n", "-", "2"}], "]"}], "]"}]}]}], "]"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"k", "[", 
+           RowBox[{"n", "+", "1"}], "]"}], "&"}]}], "}"}]}]}], 
+     "\[IndentingNewLine]", "]"}], "[", "1", "]"}]}], ";"}]}], "Input"],
+
+Cell["This one is still slow:", "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Timing", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"value", "[", 
+     RowBox[{"s2", ",", "#"}], "]"}], "&"}], "/@", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", " ", "2", ",", " ", "3", ",", " ", "4", ",", " ", "5", ",", " ",
+      "6", ",", " ", "7", ",", " ", "8", ",", " ", "9", ",", " ", "10", ",", 
+     "15", ",", "20"}], "}"}]}], "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0.87343899999999996541788505055592395365`5.961832493018197", ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", "2", ",", "3", ",", "5", ",", "8", ",", "13", ",", "21", ",", 
+     "34", ",", "55", ",", "89", ",", "987", ",", "10946"}], "}"}]}], 
+  "}"}]], "Output"]
+}, Open  ]],
+
+Cell[TextData[{
+ "It takes about a second to produce ",
+ StyleBox["fib[20]", "Input"],
+ ", and higher values become intolerable. We would never get to an absurd \
+input like 150."
+}], "Text"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["MEMOIZE", "Section"],
+
+Cell[TextData[{
+ "How can we speed it up without defining point values in some named object? \
+By defining point values in an un-named object, of course! Un-named objects \
+are best modeled in ",
+ StyleBox["Mathematica",
+  FontSlant->"Italic"],
+ " as lists of rules, one for each point-like input. We'll need to pass that \
+around in the argument list of ",
+ StyleBox["k", "Input"],
+ ", and the easiest way to do that is to make ",
+ StyleBox["n", "Input"],
+ ", the argument of k, a regular ",
+ StyleBox["Mathematica",
+  FontSlant->"Italic"],
+ " list to contain both a value and an anonymous dictionary. "
+}], "Text"],
+
+Cell[TextData[{
+ "We'll get to this form in a few steps. First, just change ",
+ StyleBox["n", "Input"],
+ " so that it's a list rather than an integer. This change spreads a lot of \
+indexing around the body of ",
+ StyleBox["k", "Input"],
+ ", so we want to make sure we get that right before proceeding:"
+}], "Text"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "s3", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"s3", "=", 
+   RowBox[{
+    RowBox[{"Y", "[", 
+     RowBox[{"k", "\[Function]", 
+      RowBox[{"n", "\[Function]", "\[IndentingNewLine]", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+            "n", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+            "\[LessEqual]", "1"}], ",", "\[IndentingNewLine]", 
+           RowBox[{"{", "1", "}"}], ",", "\[IndentingNewLine]", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"value", "[", 
+               RowBox[{"k", "[", 
+                RowBox[{"{", 
+                 RowBox[{
+                  RowBox[{
+                  "n", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}],
+                   "-", "1"}], "}"}], "]"}], "]"}], "\[LeftDoubleBracket]", 
+              "1", "\[RightDoubleBracket]"}], "+", "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"value", "[", 
+               RowBox[{"k", "[", 
+                RowBox[{"{", 
+                 RowBox[{
+                  RowBox[{
+                  "n", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}],
+                   "-", "2"}], "}"}], "]"}], "]"}], "\[LeftDoubleBracket]", 
+              "1", "\[RightDoubleBracket]"}]}], "}"}]}], 
+          "\[IndentingNewLine]", "]"}], ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"k", "[", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{
+             "n", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], "+",
+              "1"}], "}"}], "]"}], "&"}]}], "}"}]}]}], "\[IndentingNewLine]", 
+     "]"}], "[", 
+    RowBox[{"{", "1", "}"}], "]"}]}], ";"}]}], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Timing", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"value", "[", 
+     RowBox[{"s3", ",", "#"}], "]"}], "&"}], "/@", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", " ", "2", ",", " ", "3", ",", " ", "4", ",", " ", "5", ",", " ",
+      "6", ",", " ", "7", ",", " ", "8", ",", " ", "9", ",", " ", "10", ",", 
+     "15", ",", "20"}], "}"}]}], "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1.11378099999999990998844623391050845385`6.06739971826312", ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", "1", "}"}], ",", 
+     RowBox[{"{", "2", "}"}], ",", 
+     RowBox[{"{", "3", "}"}], ",", 
+     RowBox[{"{", "5", "}"}], ",", 
+     RowBox[{"{", "8", "}"}], ",", 
+     RowBox[{"{", "13", "}"}], ",", 
+     RowBox[{"{", "21", "}"}], ",", 
+     RowBox[{"{", "34", "}"}], ",", 
+     RowBox[{"{", "55", "}"}], ",", 
+     RowBox[{"{", "89", "}"}], ",", 
+     RowBox[{"{", "987", "}"}], ",", 
+     RowBox[{"{", "10946", "}"}]}], "}"}]}], "}"}]], "Output"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Now add a second element -- an empty list -- to ",
+ StyleBox["n", "Input"],
+ ", but ignore it in the code, just to make sure we get all the shaping \
+correct. We must modify six places where arguments to ",
+ StyleBox["k", "Input"],
+ " are constructed:"
+}], "Text"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "s4", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"s4", "=", 
+    RowBox[{
+     RowBox[{"Y", "[", 
+      RowBox[{"k", "\[Function]", 
+       RowBox[{"n", "\[Function]", "\[IndentingNewLine]", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{
+             "n", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+             "\[LessEqual]", "1"}], ",", "\[IndentingNewLine]", 
+            RowBox[{"{", 
+             RowBox[{"1", ",", 
+              RowBox[{"{", "}"}]}], "}"}], ",", 
+            RowBox[{"(*", " ", 
+             RowBox[{"modification", " ", "1"}], " ", "*)"}], 
+            "\[IndentingNewLine]", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{
+               RowBox[{
+                RowBox[{"value", "[", 
+                 RowBox[{"k", "[", 
+                  RowBox[{"{", 
+                   RowBox[{
+                    RowBox[{
+                    RowBox[{
+                    "n", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}], "-", "1"}], ",", 
+                    RowBox[{"{", "}"}]}], "}"}], "]"}], "]"}], 
+                "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], "+", 
+               " ", 
+               RowBox[{"(*", " ", 
+                RowBox[{"modification", " ", "2"}], " ", "*)"}], 
+               "\[IndentingNewLine]", 
+               RowBox[{
+                RowBox[{"value", "[", 
+                 RowBox[{"k", "[", 
+                  RowBox[{"{", 
+                   RowBox[{
+                    RowBox[{
+                    RowBox[{
+                    "n", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}], "-", "2"}], ",", 
+                    RowBox[{"{", "}"}]}], "}"}], "]"}], "]"}], 
+                "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}]}], ",",
+               "\[IndentingNewLine]", 
+              RowBox[{"(*", " ", 
+               RowBox[{"modification", " ", "3"}], " ", "*)"}], 
+              "\[IndentingNewLine]", 
+              RowBox[{"{", "}"}]}], "}"}]}], " ", 
+           RowBox[{"(*", " ", 
+            RowBox[{"modification", " ", "4"}], " ", "*)"}], 
+           "\[IndentingNewLine]", "]"}], ",", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"k", "[", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{
+               RowBox[{
+               "n", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+               "+", "1"}], ",", 
+              RowBox[{"{", "}"}]}], "}"}], "]"}], "&"}]}], "}"}]}]}], " ", 
+      RowBox[{"(*", " ", 
+       RowBox[{"modification", " ", "5"}], " ", "*)"}], "\[IndentingNewLine]",
+       "]"}], "[", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       RowBox[{"{", "}"}]}], "}"}], "]"}]}], ";"}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{"modification", " ", "6"}], " ", "*)"}]}]}], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Timing", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"value", "[", 
+     RowBox[{"s4", ",", "#"}], "]"}], "&"}], "/@", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", " ", "2", ",", " ", "3", ",", " ", "4", ",", " ", "5", ",", " ",
+      "6", ",", " ", "7", ",", " ", "8", ",", " ", "9", ",", " ", "10", ",", 
+     "15", ",", "20"}], "}"}]}], "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1.1254079999999999639470615875325165689`6.071909911305263", ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"5", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"8", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"13", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"21", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"34", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"55", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"89", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"987", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"10946", ",", 
+       RowBox[{"{", "}"}]}], "}"}]}], "}"}]}], "}"}]], "Output"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Now replace the internal constant empty lists with references to the second \
+slot of ",
+ StyleBox["n", "Input"],
+ ", where we will eventually store the dictionary:"
+}], "Text"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "s5", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"s5", "=", 
+   RowBox[{
+    RowBox[{"Y", "[", 
+     RowBox[{"k", "\[Function]", 
+      RowBox[{"n", "\[Function]", "\[IndentingNewLine]", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+            "n", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+            "\[LessEqual]", "1"}], ",", "\[IndentingNewLine]", 
+           RowBox[{"{", 
+            RowBox[{"1", ",", 
+             RowBox[{
+             "n", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}]}], 
+            "}"}], ",", "\[IndentingNewLine]", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{
+              RowBox[{
+               RowBox[{"value", "[", 
+                RowBox[{"k", "[", 
+                 RowBox[{"{", 
+                  RowBox[{
+                   RowBox[{
+                    RowBox[{
+                    "n", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}], "-", "1"}], ",", 
+                   RowBox[{
+                   "n", "\[LeftDoubleBracket]", "2", 
+                    "\[RightDoubleBracket]"}]}], "}"}], "]"}], "]"}], 
+               "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], "+", 
+              "\[IndentingNewLine]", 
+              RowBox[{
+               RowBox[{"value", "[", 
+                RowBox[{"k", "[", 
+                 RowBox[{"{", 
+                  RowBox[{
+                   RowBox[{
+                    RowBox[{
+                    "n", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}], "-", "2"}], ",", 
+                   RowBox[{
+                   "n", "\[LeftDoubleBracket]", "2", 
+                    "\[RightDoubleBracket]"}]}], "}"}], "]"}], "]"}], 
+               "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}]}], ",", 
+             "\[IndentingNewLine]", 
+             RowBox[{
+             "n", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}]}], 
+            "}"}]}], "\[IndentingNewLine]", "]"}], ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"k", "[", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{
+              RowBox[{
+              "n", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+              "+", "1"}], ",", 
+             RowBox[{
+             "n", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}]}], 
+            "}"}], "]"}], "&"}]}], "}"}]}]}], "\[IndentingNewLine]", "]"}], 
+    "[", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", 
+      RowBox[{"{", "}"}]}], "}"}], "]"}]}], ";"}]}], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Timing", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"value", "[", 
+     RowBox[{"s5", ",", "#"}], "]"}], "&"}], "/@", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", " ", "2", ",", " ", "3", ",", " ", "4", ",", " ", "5", ",", " ",
+      "6", ",", " ", "7", ",", " ", "8", ",", " ", "9", ",", " ", "10", ",", 
+     "15", ",", "20"}], "}"}]}], "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1.28911400000000009313794180343393236399`6.130891238221651", ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"5", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"8", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"13", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"21", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"34", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"55", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"89", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"987", ",", 
+       RowBox[{"{", "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"10946", ",", 
+       RowBox[{"{", "}"}]}], "}"}]}], "}"}]}], "}"}]], "Output"]
+}, Open  ]],
+
+Cell[TextData[{
+ "We're now ready to promote that second part of ",
+ StyleBox["n", "Input"],
+ " into a dictionary -- same as anonymous object, same as list of rules -- \
+for fast lookups. Let's take the convention that if a key is not present in \
+the dictionary, we produce ",
+ StyleBox["Null", "Input"],
+ ", and make a few helper functions:"
+}], "Text"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", 
+   RowBox[{"lookup", ",", "add"}], "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"lookup", "[", 
+    RowBox[{"dict_", ",", "key_"}], "]"}], ":=", 
+   RowBox[{"key", "/.", "dict"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"add", "[", 
+    RowBox[{"dict_", ",", "key_", ",", "value_"}], "]"}], ":=", 
+   "\[IndentingNewLine]", 
+   RowBox[{"With", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"trial", "=", 
+       RowBox[{"lookup", "[", 
+        RowBox[{"dict", ",", "key"}], "]"}]}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"trial", "=!=", "Null"}], ",", "\[IndentingNewLine]", "dict", 
+       ",", "\[IndentingNewLine]", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Head", "[", "dict", "]"}], "===", "Dispatch"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"Dispatch", "[", 
+          RowBox[{"Prepend", "[", 
+           RowBox[{
+            RowBox[{
+            "dict", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+            ",", 
+            RowBox[{"key", "\[Rule]", "value"}]}], "]"}], "]"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"Dispatch", "[", 
+          RowBox[{"Prepend", "[", 
+           RowBox[{"dict", ",", 
+            RowBox[{"key", "\[Rule]", "value"}]}], "]"}], "]"}]}], "]"}]}], 
+      "]"}]}], "]"}]}], ";"}]}], "Input"],
+
+Cell[TextData[{
+ StyleBox["Add", "Input"],
+ " converts the dictionary into a hash table by applying the ",
+ StyleBox["Mathematica",
+  FontSlant->"Italic"],
+ " built-in ",
+ StyleBox["Dispatch", "Input"],
+ " to it. This is similar to what relational databases do when computing \
+joins -- creates a temporary hash table and uses it. Before adding a new rule \
+to the table, ",
+ StyleBox["add", "Input"],
+ " must check whether the input table is already a hash table since the \
+original list of rules is stored in slot 1 of a hash table. ",
+ StyleBox["Add", "Input"],
+ " can only add a rule to a list of rules, not to a hash table, but ",
+ StyleBox["add", "Input"],
+ " can regenerate a new hash table in linear time. This is a potential hidden \
+quadratic in this code since the hash table will be created over and over \
+again. It does not seem to be a serious problem, here, likely overwhelmed by \
+other overheads."
+}], "Text"],
+
+Cell[TextData[{
+ "Now add the code to store computed values in the anonymous object. We must \
+modify the initial input from ",
+ StyleBox["{1, {}}", "Input"],
+ " to ",
+ StyleBox["{1, {_->Null}}", "Input"],
+ " so that the starting dictionary has the default rule."
+}], "Text"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "s6", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"s6", "=", 
+   RowBox[{
+    RowBox[{"Y", "[", 
+     RowBox[{"k", "\[Function]", 
+      RowBox[{"n", "\[Function]", "\[IndentingNewLine]", 
+       RowBox[{"Module", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"valToStore", ",", 
+           RowBox[{"dict", "=", 
+            RowBox[{
+            "n", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}]}]}], 
+          "}"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{
+              "n", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+              "\[LessEqual]", "1"}], ",", "\[IndentingNewLine]", 
+             RowBox[{"{", 
+              RowBox[{"1", ",", "dict"}], "}"}], ",", "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"valToStore", "=", "\[IndentingNewLine]", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"value", "[", 
+                  RowBox[{"k", "[", 
+                   RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{
+                    "n", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}], "-", "1"}], ",", "dict"}], 
+                    "}"}], "]"}], "]"}], "\[LeftDoubleBracket]", "1", 
+                 "\[RightDoubleBracket]"}], "+", "\[IndentingNewLine]", 
+                RowBox[{
+                 RowBox[{"value", "[", 
+                  RowBox[{"k", "[", 
+                   RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{
+                    "n", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}], "-", "2"}], ",", "dict"}], 
+                    "}"}], "]"}], "]"}], "\[LeftDoubleBracket]", "1", 
+                 "\[RightDoubleBracket]"}]}]}], ";", "\[IndentingNewLine]", 
+              RowBox[{"dict", "=", 
+               RowBox[{"add", "[", 
+                RowBox[{"dict", ",", 
+                 RowBox[{
+                 "n", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+                 ",", "valToStore"}], "]"}]}], ";", "\[IndentingNewLine]", 
+              RowBox[{"{", 
+               RowBox[{"valToStore", ",", "dict"}], "}"}]}]}], 
+            "\[IndentingNewLine]", "]"}], ",", "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"k", "[", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{
+                RowBox[{
+                "n", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+                "+", "1"}], ",", "dict"}], "}"}], "]"}], "&"}]}], "}"}]}], 
+        "]"}]}]}], "\[IndentingNewLine]", "]"}], "[", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", 
+      RowBox[{"{", 
+       RowBox[{"_", "\[Rule]", "Null"}], "}"}]}], "}"}], "]"}]}], 
+  ";"}]}], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Timing", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"value", "[", 
+     RowBox[{"s6", ",", "#"}], "]"}], "&"}], "/@", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", " ", "2", ",", " ", "3", ",", " ", "4", ",", " ", "5", ",", " ",
+      "6", ",", " ", "7", ",", " ", "8", ",", " ", "9", ",", " ", "10", ",", 
+     "15", ",", "20"}], "}"}]}], "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"6.8063840000000004337721293268259614706`6.853516360592545", ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       RowBox[{"{", 
+        RowBox[{"_", "\[Rule]", "Null"}], "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"2", "\[Rule]", "2"}], ",", 
+         RowBox[{"_", "\[Rule]", "Null"}]}], "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"3", "\[Rule]", "3"}], ",", 
+         RowBox[{"2", "\[Rule]", "2"}], ",", 
+         RowBox[{"_", "\[Rule]", "Null"}]}], "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"5", ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"4", "\[Rule]", "5"}], ",", 
+         RowBox[{"3", "\[Rule]", "3"}], ",", 
+         RowBox[{"2", "\[Rule]", "2"}], ",", 
+         RowBox[{"_", "\[Rule]", "Null"}]}], "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"8", ",", 
+       TagBox[
+        RowBox[{"Dispatch", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"5", "\[Rule]", "8"}], ",", 
+            RowBox[{"4", "\[Rule]", "5"}], ",", 
+            RowBox[{"3", "\[Rule]", "3"}], ",", 
+            RowBox[{"2", "\[Rule]", "2"}], ",", 
+            RowBox[{"_", "\[Rule]", "Null"}]}], "}"}], ",", 
+          TagBox[
+           InterpretationBox[
+            RowBox[{"-", "DispatchTables", "-"}],
+            1],
+           DisplayForm]}], "]"}],
+        Function[BoxForm`arg, 
+         ReplacePart[
+          HoldComplete[
+           Dispatch[BoxForm`e]], 
+          HoldComplete[BoxForm`arg], {1, 1}, {1, 1}], {HoldAllComplete}]]}], 
+      "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"13", ",", 
+       TagBox[
+        RowBox[{"Dispatch", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"6", "\[Rule]", "13"}], ",", 
+            RowBox[{"5", "\[Rule]", "8"}], ",", 
+            RowBox[{"4", "\[Rule]", "5"}], ",", 
+            RowBox[{"3", "\[Rule]", "3"}], ",", 
+            RowBox[{"2", "\[Rule]", "2"}], ",", 
+            RowBox[{"_", "\[Rule]", "Null"}]}], "}"}], ",", 
+          TagBox[
+           InterpretationBox[
+            RowBox[{"-", "DispatchTables", "-"}],
+            1],
+           DisplayForm]}], "]"}],
+        Function[BoxForm`arg, 
+         ReplacePart[
+          HoldComplete[
+           Dispatch[BoxForm`e]], 
+          HoldComplete[BoxForm`arg], {1, 1}, {1, 1}], {HoldAllComplete}]]}], 
+      "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"21", ",", 
+       TagBox[
+        RowBox[{"Dispatch", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"7", "\[Rule]", "21"}], ",", 
+            RowBox[{"6", "\[Rule]", "13"}], ",", 
+            RowBox[{"5", "\[Rule]", "8"}], ",", 
+            RowBox[{"4", "\[Rule]", "5"}], ",", 
+            RowBox[{"3", "\[Rule]", "3"}], ",", 
+            RowBox[{"2", "\[Rule]", "2"}], ",", 
+            RowBox[{"_", "\[Rule]", "Null"}]}], "}"}], ",", 
+          TagBox[
+           InterpretationBox[
+            RowBox[{"-", "DispatchTables", "-"}],
+            1],
+           DisplayForm]}], "]"}],
+        Function[BoxForm`arg, 
+         ReplacePart[
+          HoldComplete[
+           Dispatch[BoxForm`e]], 
+          HoldComplete[BoxForm`arg], {1, 1}, {1, 1}], {HoldAllComplete}]]}], 
+      "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"34", ",", 
+       TagBox[
+        RowBox[{"Dispatch", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"8", "\[Rule]", "34"}], ",", 
+            RowBox[{"7", "\[Rule]", "21"}], ",", 
+            RowBox[{"6", "\[Rule]", "13"}], ",", 
+            RowBox[{"5", "\[Rule]", "8"}], ",", 
+            RowBox[{"4", "\[Rule]", "5"}], ",", 
+            RowBox[{"3", "\[Rule]", "3"}], ",", 
+            RowBox[{"2", "\[Rule]", "2"}], ",", 
+            RowBox[{"_", "\[Rule]", "Null"}]}], "}"}], ",", 
+          TagBox[
+           InterpretationBox[
+            RowBox[{"-", "DispatchTables", "-"}],
+            1],
+           DisplayForm]}], "]"}],
+        Function[BoxForm`arg, 
+         ReplacePart[
+          HoldComplete[
+           Dispatch[BoxForm`e]], 
+          HoldComplete[BoxForm`arg], {1, 1}, {1, 1}], {HoldAllComplete}]]}], 
+      "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"55", ",", 
+       TagBox[
+        RowBox[{"Dispatch", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"9", "\[Rule]", "55"}], ",", 
+            RowBox[{"8", "\[Rule]", "34"}], ",", 
+            RowBox[{"7", "\[Rule]", "21"}], ",", 
+            RowBox[{"6", "\[Rule]", "13"}], ",", 
+            RowBox[{"5", "\[Rule]", "8"}], ",", 
+            RowBox[{"4", "\[Rule]", "5"}], ",", 
+            RowBox[{"3", "\[Rule]", "3"}], ",", 
+            RowBox[{"2", "\[Rule]", "2"}], ",", 
+            RowBox[{"_", "\[Rule]", "Null"}]}], "}"}], ",", 
+          TagBox[
+           InterpretationBox[
+            RowBox[{"-", "DispatchTables", "-"}],
+            1],
+           DisplayForm]}], "]"}],
+        Function[BoxForm`arg, 
+         ReplacePart[
+          HoldComplete[
+           Dispatch[BoxForm`e]], 
+          HoldComplete[BoxForm`arg], {1, 1}, {1, 1}], {HoldAllComplete}]]}], 
+      "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"89", ",", 
+       TagBox[
+        RowBox[{"Dispatch", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"10", "\[Rule]", "89"}], ",", 
+            RowBox[{"9", "\[Rule]", "55"}], ",", 
+            RowBox[{"8", "\[Rule]", "34"}], ",", 
+            RowBox[{"7", "\[Rule]", "21"}], ",", 
+            RowBox[{"6", "\[Rule]", "13"}], ",", 
+            RowBox[{"5", "\[Rule]", "8"}], ",", 
+            RowBox[{"4", "\[Rule]", "5"}], ",", 
+            RowBox[{"3", "\[Rule]", "3"}], ",", 
+            RowBox[{"2", "\[Rule]", "2"}], ",", 
+            RowBox[{"_", "\[Rule]", "Null"}]}], "}"}], ",", 
+          TagBox[
+           InterpretationBox[
+            RowBox[{"-", "DispatchTables", "-"}],
+            1],
+           DisplayForm]}], "]"}],
+        Function[BoxForm`arg, 
+         ReplacePart[
+          HoldComplete[
+           Dispatch[BoxForm`e]], 
+          HoldComplete[BoxForm`arg], {1, 1}, {1, 1}], {HoldAllComplete}]]}], 
+      "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"987", ",", 
+       TagBox[
+        RowBox[{"Dispatch", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"15", "\[Rule]", "987"}], ",", 
+            RowBox[{"14", "\[Rule]", "610"}], ",", 
+            RowBox[{"13", "\[Rule]", "377"}], ",", 
+            RowBox[{"12", "\[Rule]", "233"}], ",", 
+            RowBox[{"11", "\[Rule]", "144"}], ",", 
+            RowBox[{"10", "\[Rule]", "89"}], ",", 
+            RowBox[{"9", "\[Rule]", "55"}], ",", 
+            RowBox[{"8", "\[Rule]", "34"}], ",", 
+            RowBox[{"7", "\[Rule]", "21"}], ",", 
+            RowBox[{"6", "\[Rule]", "13"}], ",", 
+            RowBox[{"5", "\[Rule]", "8"}], ",", 
+            RowBox[{"4", "\[Rule]", "5"}], ",", 
+            RowBox[{"3", "\[Rule]", "3"}], ",", 
+            RowBox[{"2", "\[Rule]", "2"}], ",", 
+            RowBox[{"_", "\[Rule]", "Null"}]}], "}"}], ",", 
+          TagBox[
+           InterpretationBox[
+            RowBox[{"-", "DispatchTables", "-"}],
+            1],
+           DisplayForm]}], "]"}],
+        Function[BoxForm`arg, 
+         ReplacePart[
+          HoldComplete[
+           Dispatch[BoxForm`e]], 
+          HoldComplete[BoxForm`arg], {1, 1}, {1, 1}], {HoldAllComplete}]]}], 
+      "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"10946", ",", 
+       TagBox[
+        RowBox[{"Dispatch", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"20", "\[Rule]", "10946"}], ",", 
+            RowBox[{"19", "\[Rule]", "6765"}], ",", 
+            RowBox[{"18", "\[Rule]", "4181"}], ",", 
+            RowBox[{"17", "\[Rule]", "2584"}], ",", 
+            RowBox[{"16", "\[Rule]", "1597"}], ",", 
+            RowBox[{"15", "\[Rule]", "987"}], ",", 
+            RowBox[{"14", "\[Rule]", "610"}], ",", 
+            RowBox[{"13", "\[Rule]", "377"}], ",", 
+            RowBox[{"12", "\[Rule]", "233"}], ",", 
+            RowBox[{"11", "\[Rule]", "144"}], ",", 
+            RowBox[{"10", "\[Rule]", "89"}], ",", 
+            RowBox[{"9", "\[Rule]", "55"}], ",", 
+            RowBox[{"8", "\[Rule]", "34"}], ",", 
+            RowBox[{"7", "\[Rule]", "21"}], ",", 
+            RowBox[{"6", "\[Rule]", "13"}], ",", 
+            RowBox[{"5", "\[Rule]", "8"}], ",", 
+            RowBox[{"4", "\[Rule]", "5"}], ",", 
+            RowBox[{"3", "\[Rule]", "3"}], ",", 
+            RowBox[{"2", "\[Rule]", "2"}], ",", 
+            RowBox[{"_", "\[Rule]", "Null"}]}], "}"}], ",", 
+          TagBox[
+           InterpretationBox[
+            RowBox[{"-", "DispatchTables", "-"}],
+            1],
+           DisplayForm]}], "]"}],
+        Function[BoxForm`arg, 
+         ReplacePart[
+          HoldComplete[
+           Dispatch[BoxForm`e]], 
+          HoldComplete[BoxForm`arg], {1, 1}, {1, 1}], {HoldAllComplete}]]}], 
+      "}"}]}], "}"}]}], "}"}]], "Output"]
+}, Open  ]],
+
+Cell["Now add code to do lookups", "Text"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "s7", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"s7", "=", 
+   RowBox[{
+    RowBox[{"Y", "[", 
+     RowBox[{"k", "\[Function]", 
+      RowBox[{"n", "\[Function]", "\[IndentingNewLine]", 
+       RowBox[{"Module", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"valToStore", ",", 
+           RowBox[{"dict", "=", 
+            RowBox[{
+            "n", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}]}]}], 
+          "}"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{
+              "n", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+              "\[LessEqual]", "1"}], ",", "\[IndentingNewLine]", 
+             RowBox[{"{", 
+              RowBox[{"1", ",", "dict"}], "}"}], ",", "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"valToStore", "=", "\[IndentingNewLine]", 
+               RowBox[{"With", "[", 
+                RowBox[{
+                 RowBox[{"{", "\[IndentingNewLine]", 
+                  RowBox[{
+                   RowBox[{"v1", "=", 
+                    RowBox[{"lookup", "[", 
+                    RowBox[{"dict", ",", 
+                    RowBox[{
+                    RowBox[{
+                    "n", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}], "-", "1"}]}], "]"}]}], ",", 
+                   "\[IndentingNewLine]", 
+                   RowBox[{"v2", "=", 
+                    RowBox[{"lookup", "[", 
+                    RowBox[{"dict", ",", 
+                    RowBox[{
+                    RowBox[{
+                    "n", "\[LeftDoubleBracket]", "2", 
+                    "\[RightDoubleBracket]"}], "-", "2"}]}], "]"}]}]}], "}"}],
+                  ",", "\[IndentingNewLine]", 
+                 RowBox[{
+                  RowBox[{"If", "[", 
+                   RowBox[{
+                    RowBox[{"v1", "=!=", "Null"}], ",", "v1", ",", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{
+                    RowBox[{"value", "[", 
+                    RowBox[{"k", "[", 
+                    RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{
+                    "n", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}], "-", "1"}], ",", "dict"}], 
+                    "}"}], "]"}], "]"}], "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}]}], "]"}], "+", 
+                  "\[IndentingNewLine]", 
+                  RowBox[{"If", "[", 
+                   RowBox[{
+                    RowBox[{"v2", "=!=", "Null"}], ",", "v2", ",", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{
+                    RowBox[{"value", "[", 
+                    RowBox[{"k", "[", 
+                    RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{
+                    "n", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}], "-", "2"}], ",", "dict"}], 
+                    "}"}], "]"}], "]"}], "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}]}], "]"}]}]}], "]"}]}], ";", 
+              "\[IndentingNewLine]", 
+              RowBox[{"dict", "=", 
+               RowBox[{"add", "[", 
+                RowBox[{"dict", ",", 
+                 RowBox[{
+                 "n", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+                 ",", "valToStore"}], "]"}]}], ";", "\[IndentingNewLine]", 
+              RowBox[{"{", 
+               RowBox[{"valToStore", ",", "dict"}], "}"}]}]}], 
+            "\[IndentingNewLine]", "]"}], ",", "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"k", "[", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{
+                RowBox[{
+                "n", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+                "+", "1"}], ",", "dict"}], "}"}], "]"}], "&"}]}], "}"}]}], 
+        "]"}]}]}], "\[IndentingNewLine]", "]"}], "[", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", 
+      RowBox[{"{", 
+       RowBox[{"_", "\[Rule]", "Null"}], "}"}]}], "}"}], "]"}]}], 
+  ";"}]}], "Input"],
+
+Cell[TextData[{
+ "Now our regular example is much faster and an otherwise inconceivable \
+computation such as ",
+ StyleBox["fib[150]", "Input"],
+ " can be done in a reasonable time. "
+}], "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Timing", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"value", "[", 
+      RowBox[{"s7", ",", "#"}], "]"}], "\[LeftDoubleBracket]", "1", 
+     "\[RightDoubleBracket]"}], "&"}], "/@", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", " ", "2", ",", " ", "3", ",", " ", "4", ",", " ", "5", ",", " ",
+      "6", ",", " ", "7", ",", " ", "8", ",", " ", "9", ",", " ", "10", ",", 
+     "15", ",", "20"}], "}"}]}], "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0.06827900000000000635402841453469591215`4.854887065182452", ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", "2", ",", "3", ",", "5", ",", "8", ",", "13", ",", "21", ",", 
+     "34", ",", "55", ",", "89", ",", "987", ",", "10946"}], "}"}]}], 
+  "}"}]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Block", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"$RecursionLimit", "=", "2000"}], "}"}], ",", 
+   RowBox[{"Timing", "[", 
+    RowBox[{
+     RowBox[{"value", "[", 
+      RowBox[{"s7", ",", "150"}], "]"}], "\[LeftDoubleBracket]", "1", 
+     "\[RightDoubleBracket]"}], "]"}]}], "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "1.31412100000000009458744898438453674316`6.139235268771983", ",", 
+   "16130531424904581415797907386349"}], "}"}]], "Output"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["CONCLUSION", "Section"],
+
+Cell["\<\
+Many improvements can be made to this, such as getting rid of the mutable \
+variables in the Module by a monadic bind and refactoring the code for \
+readability. However, we have shown a general technique for creating lazy \
+memoizing lists without introducing names or session state into an evaluator \
+or interpreter.\
+\>", "Text"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{720, 852},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+ShowSelection->True,
+FrontEndVersion->"9.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (November 20, \
+2012)",
+StyleDefinitions->FrontEnd`FileName[{"Creative"}, "NaturalColor.nb", 
+  CharacterEncoding -> "UTF-8"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 47, 0, 75, "Title"],
+Cell[629, 24, 52, 3, 48, "Subtitle"],
+Cell[684, 29, 536, 8, 173, "Text"],
+Cell[CellGroupData[{
+Cell[1245, 41, 43, 0, 91, "Section"],
+Cell[1291, 43, 140, 3, 59, "Text"],
+Cell[1434, 48, 226, 7, 49, "Input"],
+Cell[1663, 57, 486, 10, 150, "Text"],
+Cell[2152, 69, 659, 15, 173, "Text"],
+Cell[2814, 86, 93, 2, 36, "Text"],
+Cell[2910, 90, 314, 6, 82, "Text"],
+Cell[CellGroupData[{
+Cell[3249, 100, 135, 3, 49, "Input"],
+Cell[3387, 105, 28, 0, 48, "Output"]
+}, Open  ]],
+Cell[3430, 108, 380, 8, 105, "Text"],
+Cell[CellGroupData[{
+Cell[3835, 120, 233, 6, 49, "Input"],
+Cell[4071, 128, 28, 0, 48, "Output"]
+}, Open  ]],
+Cell[4114, 131, 26, 0, 36, "Text"],
+Cell[CellGroupData[{
+Cell[4165, 135, 337, 9, 49, "Input"],
+Cell[4505, 146, 28, 0, 48, "Output"]
+}, Open  ]],
+Cell[4548, 149, 291, 7, 82, "Text"],
+Cell[4842, 158, 395, 11, 70, "Input"],
+Cell[CellGroupData[{
+Cell[5262, 173, 92, 2, 49, "Input"],
+Cell[5357, 177, 28, 0, 48, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5422, 182, 119, 3, 49, "Input"],
+Cell[5544, 187, 28, 0, 48, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5609, 192, 147, 4, 49, "Input"],
+Cell[5759, 198, 28, 0, 48, "Output"]
+}, Open  ]],
+Cell[5802, 201, 187, 7, 36, "Text"],
+Cell[5992, 210, 594, 15, 133, "Input"],
+Cell[CellGroupData[{
+Cell[6611, 229, 122, 3, 49, "Input"],
+Cell[6736, 234, 29, 0, 48, "Output"]
+}, Open  ]],
+Cell[6780, 237, 80, 2, 36, "Text"],
+Cell[CellGroupData[{
+Cell[6885, 243, 290, 10, 49, "Input"],
+Cell[7178, 255, 143, 4, 48, "Output"]
+}, Open  ]],
+Cell[7336, 262, 200, 8, 59, "Text"],
+Cell[7539, 272, 734, 20, 133, "Input"],
+Cell[8276, 294, 268, 6, 82, "Text"],
+Cell[8547, 302, 51, 0, 36, "Text"],
+Cell[8601, 304, 799, 23, 175, "Input"],
+Cell[CellGroupData[{
+Cell[9425, 331, 155, 4, 49, "Input"],
+Cell[9583, 337, 138, 4, 48, "Output"]
+}, Open  ]],
+Cell[9736, 344, 215, 4, 82, "Text"],
+Cell[9954, 350, 901, 25, 196, "Input"],
+Cell[CellGroupData[{
+Cell[10880, 379, 265, 7, 48, "Input"],
+Cell[11148, 388, 1855, 62, 175, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13040, 455, 159, 5, 49, "Input"],
+Cell[13202, 462, 169, 4, 48, "Output"]
+}, Open  ]],
+Cell[13386, 469, 587, 15, 150, "Text"],
+Cell[13976, 486, 738, 16, 218, "Text"],
+Cell[14717, 504, 172, 3, 82, "Text"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14926, 512, 28, 0, 91, "Section"],
+Cell[14957, 514, 66, 0, 36, "Text"],
+Cell[15026, 516, 530, 14, 91, "Input"],
+Cell[15559, 532, 630, 20, 127, "Text"],
+Cell[16192, 554, 307, 10, 59, "Text"],
+Cell[16502, 566, 255, 7, 82, "Text"],
+Cell[16760, 575, 485, 14, 112, "Input"],
+Cell[CellGroupData[{
+Cell[17270, 593, 59, 1, 48, "Input"],
+Cell[17332, 596, 28, 0, 48, "Output"]
+}, Open  ]],
+Cell[17375, 599, 645, 19, 150, "Text"],
+Cell[18023, 620, 158, 4, 59, "Text"],
+Cell[CellGroupData[{
+Cell[18206, 628, 205, 6, 48, "Input"],
+Cell[18414, 636, 104, 2, 48, "Output"]
+}, Open  ]],
+Cell[18533, 641, 65, 0, 36, "Text"],
+Cell[18601, 643, 960, 26, 175, "Input"],
+Cell[19564, 671, 39, 0, 36, "Text"],
+Cell[CellGroupData[{
+Cell[19628, 675, 377, 10, 70, "Input"],
+Cell[20008, 687, 304, 7, 48, "Output"]
+}, Open  ]],
+Cell[20327, 697, 191, 5, 59, "Text"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20555, 707, 26, 0, 163, "Section"],
+Cell[20584, 709, 616, 15, 184, "Text"],
+Cell[21203, 726, 315, 7, 82, "Text"],
+Cell[21521, 735, 1843, 47, 217, "Input"],
+Cell[CellGroupData[{
+Cell[23389, 786, 377, 10, 70, "Input"],
+Cell[23769, 798, 601, 16, 70, "Output"]
+}, Open  ]],
+Cell[24385, 817, 282, 7, 82, "Text"],
+Cell[24670, 826, 3006, 77, 301, "Input"],
+Cell[CellGroupData[{
+Cell[27701, 907, 377, 10, 70, "Input"],
+Cell[28081, 919, 1201, 40, 91, "Output"]
+}, Open  ]],
+Cell[29297, 962, 195, 5, 59, "Text"],
+Cell[29495, 969, 2704, 70, 238, "Input"],
+Cell[CellGroupData[{
+Cell[32224, 1043, 377, 10, 70, "Input"],
+Cell[32604, 1055, 1202, 40, 91, "Output"]
+}, Open  ]],
+Cell[33821, 1098, 355, 8, 105, "Text"],
+Cell[34179, 1108, 1487, 42, 217, "Input"],
+Cell[35669, 1152, 928, 20, 264, "Text"],
+Cell[36600, 1174, 275, 7, 82, "Text"],
+Cell[36878, 1183, 2996, 74, 301, "Input"],
+Cell[CellGroupData[{
+Cell[39899, 1261, 377, 10, 70, "Input"],
+Cell[40279, 1273, 9204, 253, 490, "Output"]
+}, Open  ]],
+Cell[49498, 1529, 42, 0, 36, "Text"],
+Cell[49543, 1531, 4305, 104, 406, "Input"],
+Cell[53851, 1637, 195, 5, 59, "Text"],
+Cell[CellGroupData[{
+Cell[54071, 1646, 454, 12, 70, "Input"],
+Cell[54528, 1660, 304, 7, 48, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[54869, 1672, 321, 9, 70, "Input"],
+Cell[55193, 1683, 168, 4, 48, "Output"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[55410, 1693, 29, 0, 163, "Section"],
+Cell[55442, 1695, 343, 6, 144, "Text"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

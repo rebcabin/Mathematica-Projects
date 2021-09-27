@@ -1,0 +1,1764 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     73858,       1756]
+NotebookOptionsPosition[     68402,       1648]
+NotebookOutlinePosition[     70465,       1699]
+CellTagsIndexPosition[     70137,       1687]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["The New Seeker", "DemoTitle",
+ CellChangeTimes->{{3.776526956422003*^9, 
+  3.7765269625659857`*^9}},ExpressionUUID->"f1861a30-c2b4-43c9-bdc2-\
+579f6f7106fe"],
+
+Cell[CellGroupData[{
+
+Cell["", "InitializationSection",ExpressionUUID->"5fb84896-4ef3-484f-88d2-6f09428cb81f"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"uniformInDball", "[", 
+    RowBox[{
+     RowBox[{"n_:", "50000"}], ",", 
+     RowBox[{"d_:", "2"}]}], "]"}], ":=", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Drop", "[", 
+      RowBox[{"#", ",", "2"}], "]"}], "&"}], "/@", "\[IndentingNewLine]", 
+    RowBox[{"Normalize", "/@", "\[IndentingNewLine]", 
+     RowBox[{"RandomVariate", "[", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"NormalDistribution", "[", "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"n", ",", 
+         RowBox[{"d", "+", "2"}]}], "}"}]}], "]"}]}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    StyleBox["getTarget",
+     Background->RGBColor[1, 1, 0]], "[", 
+    RowBox[{"d_:", "4"}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{"uniformInDball", "[", 
+     RowBox[{"1", ",", "d"}], "]"}], "\[LeftDoubleBracket]", "1", 
+    "\[RightDoubleBracket]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"sowSkipper", "=", "0"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"sowSkipModulus", "=", "200"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"sowSkip", "=", 
+   RowBox[{
+    RowBox[{"If", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Mod", "[", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"sowSkipper", "++"}], ")"}], ",", "sowSkipModulus"}], "]"}],
+        "===", "0"}], ",", 
+      RowBox[{"Sow", "@", "#"}], ",", 
+      RowBox[{"Identity", "@", "#"}]}], "]"}], "&"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"deathTest", "=", "True"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"doJudgment", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"yp_", ",", "dist_", ",", "\[Sigma]_"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "\[CapitalDelta]_", ",", "tar_", ",", "tol_", ",", "maxIter_", ",", 
+       "i_"}], "}"}]}], "]"}], ":=", "\[IndentingNewLine]", 
+   RowBox[{"With", "[", 
+    RowBox[{
+     RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"deathTest", " ", "&&", " ", 
+          RowBox[{"(", 
+           RowBox[{"dist", ">", 
+            RowBox[{"10", "maxIter", " ", "\[Sigma]"}]}], ")"}]}], ")"}], ",", 
+        RowBox[{"Throw", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+           "yp", ",", "dist", ",", "\[Sigma]", ",", "tar", ",", 
+            "\[CapitalDelta]", ",", "i"}], "}"}], ",", "\"\<Dead\>\""}], 
+         "]"}]}], "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"i", "\[GreaterEqual]", "maxIter"}], ",", 
+        RowBox[{"Throw", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+           "yp", ",", "dist", ",", "\[Sigma]", ",", "tar", ",", 
+            "\[CapitalDelta]", ",", "i"}], "}"}], ",", "\"\<Wandering\>\""}], 
+         "]"}]}], "]"}], ";", " ", "\[IndentingNewLine]", 
+      RowBox[{"With", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"a", "=", 
+          RowBox[{"Map", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"RandomVariate", "[", 
+              RowBox[{"NormalDistribution", "[", 
+               RowBox[{"#", ",", "\[Sigma]"}], "]"}], "]"}], "&"}], ",", 
+            "yp"}], "]"}]}], "}"}], ",", "\[IndentingNewLine]", 
+        RowBox[{"With", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"da", "=", 
+            RowBox[{"EuclideanDistance", "[", 
+             RowBox[{"tar", ",", "a"}], "]"}]}], "}"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{"da", "<", "tol"}], ",", 
+             RowBox[{"Throw", "[", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{
+                "a", ",", "da", ",", "\[Sigma]", ",", "tar", ",", 
+                 "\[CapitalDelta]", ",", "i"}], "}"}], ",", "\"\<Found\>\""}],
+               "]"}]}], "]"}], ";", "\[IndentingNewLine]", 
+           RowBox[{"With", "[", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{"b", "=", 
+               RowBox[{"Map", "[", 
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"RandomVariate", "[", 
+                   RowBox[{"NormalDistribution", "[", 
+                    RowBox[{"#", ",", "\[Sigma]"}], "]"}], "]"}], "&"}], ",", 
+                 "yp"}], "]"}]}], "}"}], ",", "\[IndentingNewLine]", 
+             RowBox[{"With", "[", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{"db", "=", 
+                 RowBox[{"EuclideanDistance", "[", 
+                  RowBox[{"tar", ",", "b"}], "]"}]}], "}"}], ",", 
+               "\[IndentingNewLine]", 
+               RowBox[{
+                RowBox[{"If", "[", 
+                 RowBox[{
+                  RowBox[{"db", "<", "tol"}], ",", 
+                  RowBox[{"Throw", "[", 
+                   RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{
+                    "b", ",", "db", ",", "\[Sigma]", ",", "tar", ",", 
+                    "\[CapitalDelta]", ",", "i"}], "}"}], ",", 
+                    "\"\<Found\>\""}], "]"}]}], "]"}], ";", 
+                "\[IndentingNewLine]", 
+                RowBox[{"With", "[", 
+                 RowBox[{
+                  RowBox[{"{", 
+                   RowBox[{"\[Nu]\[Sigma]", "=", 
+                    RowBox[{"Quiet", "[", 
+                    RowBox[{"\[Sigma]", "*", "\[CapitalDelta]"}], "]"}]}], 
+                   "}"}], ",", "\[IndentingNewLine]", 
+                  RowBox[{"sowSkip", "@", 
+                   RowBox[{"If", "[", 
+                    RowBox[{
+                    RowBox[{"da", "<", "db"}], ",", 
+                    RowBox[{"{", 
+                    RowBox[{"a", ",", "da", ",", "\[Nu]\[Sigma]"}], "}"}], 
+                    ",", 
+                    RowBox[{"{", 
+                    RowBox[{"b", ",", "db", ",", "\[Nu]\[Sigma]"}], "}"}]}], 
+                    "]"}]}]}], "]"}]}]}], "]"}]}], "]"}]}]}], "]"}]}], 
+       "]"}]}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"trialDict", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "yp_", ",", "dist_", ",", "\[Sigma]_", ",", "tar_", ",", 
+       "\[CapitalDelta]_", ",", "i_"}], "}"}], ",", "tag_"}], "]"}], ":=", 
+   "\[IndentingNewLine]", 
+   RowBox[{"<|", 
+    RowBox[{
+     RowBox[{"\"\<yp\>\"", "\[Rule]", "yp"}], ",", 
+     RowBox[{"\"\<dist\>\"", "\[Rule]", "dist"}], ",", 
+     RowBox[{"\"\<\[Sigma]\>\"", "\[Rule]", "\[Sigma]"}], ",", 
+     RowBox[{"\"\<tar\>\"", "\[Rule]", "tar"}], ",", 
+     RowBox[{"\"\<\[CapitalDelta]\>\"", "\[Rule]", "\[CapitalDelta]"}], ",", 
+     RowBox[{"\"\<i\>\"", "\[Rule]", "i"}], ",", 
+     RowBox[{"\"\<tag\>\"", "\[Rule]", "tag"}]}], "|>"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"picker", "[", "n_", "]"}], ":=", 
+   RowBox[{
+    RowBox[{"#", "\[LeftDoubleBracket]", "n", "\[RightDoubleBracket]"}], 
+    "&"}]}], ";", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"yp", ",", "dist", ",", "\[Sigma]"}], "}"}], "=", 
+   RowBox[{"picker", "/@", 
+    RowBox[{"Range", "[", "3", "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"echo", "=", "Echo"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"DBALLRADIUS", "=", "1.0"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"vizSeek2D002", "[", 
+    RowBox[{
+     RowBox[{"tol_:", "0.1"}], ",", 
+     RowBox[{"\[CapitalDelta]_:", "0.99599"}], ",", 
+     RowBox[{"maxIter_:", "10000"}], ",", 
+     RowBox[{"pr_:", "10"}], ",", 
+     RowBox[{"dim_:", "2"}]}], "]"}], ":=", "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{
+     "For", " ", "picking", " ", "a", " ", "random", " ", "pair", " ", "of", 
+      " ", "dims", " ", "for", " ", "display", " ", "from", " ", "big"}], "-", 
+     RowBox[{"dim", " ", 
+      RowBox[{"vectors", "."}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"With", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"indices", "=", 
+       RowBox[{"Sort", "@", 
+        RowBox[{"RandomSample", "[", 
+         RowBox[{
+          RowBox[{"Range", "[", "dim", "]"}], ",", "2"}], "]"}]}]}], "}"}], 
+     ",", "\[IndentingNewLine]", 
+     RowBox[{"With", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"indexer", "=", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"#", "\[LeftDoubleBracket]", 
+             RowBox[{
+             "indices", "\[LeftDoubleBracket]", "1", 
+              "\[RightDoubleBracket]"}], "\[RightDoubleBracket]"}], ",", 
+            RowBox[{"#", "\[LeftDoubleBracket]", 
+             RowBox[{
+             "indices", "\[LeftDoubleBracket]", "2", 
+              "\[RightDoubleBracket]"}], "\[RightDoubleBracket]"}]}], "}"}], 
+          "&"}]}], "}"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"With", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"sampler", "=", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"indexer", "[", 
+               RowBox[{"yp", "[", "#", "]"}], "]"}], ",", 
+              RowBox[{"dist", "[", "#", "]"}], ",", 
+              RowBox[{"\[Sigma]", "[", "#", "]"}]}], "}"}], "&"}]}], "}"}], 
+         ",", "\[IndentingNewLine]", 
+         RowBox[{"With", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"tar", "=", 
+              RowBox[{"getTarget", "[", "dim", "]"}]}], ",", 
+             RowBox[{"ini", "=", 
+              RowBox[{"ConstantArray", "[", 
+               RowBox[{"0", ",", "dim"}], "]"}]}]}], "}"}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"sowSkipper", "=", "0"}], ";", "\[IndentingNewLine]", 
+            RowBox[{"With", "[", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{"result", "=", 
+                RowBox[{
+                 StyleBox["Reap",
+                  Background->RGBColor[1, 1, 0]], 
+                 StyleBox["[",
+                  Background->RGBColor[1, 1, 0]], 
+                 RowBox[{
+                  StyleBox["Catch",
+                   Background->RGBColor[1, 1, 0]], 
+                  StyleBox["[",
+                   Background->RGBColor[1, 1, 0]], 
+                  RowBox[{
+                   RowBox[{
+                    StyleBox["Catch",
+                    Background->RGBColor[1, 1, 0]], 
+                    StyleBox["[",
+                    Background->RGBColor[1, 1, 0]], 
+                    RowBox[{
+                    RowBox[{
+                    StyleBox["Catch",
+                    Background->RGBColor[1, 1, 0]], 
+                    StyleBox["[",
+                    Background->RGBColor[1, 1, 0]], 
+                    RowBox[{
+                    RowBox[{
+                    StyleBox["Fold",
+                    Background->RGBColor[1, 1, 0]], 
+                    StyleBox["[",
+                    Background->RGBColor[1, 1, 0]], 
+                    StyleBox["\[IndentingNewLine]",
+                    Background->RGBColor[1, 1, 0]], 
+                    RowBox[{
+                    StyleBox["doJudgment",
+                    Background->RGBColor[0.87, 0.94, 1]], 
+                    StyleBox[",",
+                    Background->RGBColor[1, 1, 0]], 
+                    StyleBox[
+                    RowBox[{"{", 
+                    RowBox[{"ini", ",", "0", ",", "DBALLRADIUS"}], "}"}],
+                    Background->RGBColor[1, 1, 0]], 
+                    StyleBox[",",
+                    Background->RGBColor[1, 1, 0]], 
+                    StyleBox[
+                    RowBox[{"(*", " ", 
+                    RowBox[{"algo", " ", "step", " ", "2"}], " ", "*)"}],
+                    Background->RGBColor[1, 1, 0]], 
+                    StyleBox["\[IndentingNewLine]",
+                    Background->RGBColor[1, 1, 0]], 
+                    StyleBox[
+                    RowBox[{"Table", "[", 
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{
+                    "\[CapitalDelta]", ",", "tar", ",", "tol", ",", "maxIter",
+                     ",", "i"}], "}"}], ",", 
+                    RowBox[{"{", 
+                    RowBox[{"i", ",", "maxIter"}], "}"}]}], "]"}],
+                    Background->RGBColor[1, 1, 0]]}], 
+                    StyleBox["]",
+                    Background->RGBColor[1, 1, 0]]}], 
+                    StyleBox[",",
+                    Background->RGBColor[1, 1, 0]], 
+                    StyleBox["\[IndentingNewLine]",
+                    Background->RGBColor[1, 1, 0]], 
+                    StyleBox["\"\<Found\>\"",
+                    Background->RGBColor[1, 1, 0]], 
+                    StyleBox[",",
+                    Background->RGBColor[1, 1, 0]], 
+                    StyleBox["trialDict",
+                    Background->RGBColor[1, 1, 0]]}], 
+                    StyleBox["]",
+                    Background->RGBColor[1, 1, 0]]}], 
+                    StyleBox[",",
+                    Background->RGBColor[1, 1, 0]], 
+                    StyleBox["\"\<Dead\>\"",
+                    Background->RGBColor[1, 1, 0]], 
+                    StyleBox[",",
+                    Background->RGBColor[1, 1, 0]], 
+                    StyleBox["trialDict",
+                    Background->RGBColor[1, 1, 0]]}], 
+                    StyleBox["]",
+                    Background->RGBColor[1, 1, 0]]}], 
+                   StyleBox[",",
+                    Background->RGBColor[1, 1, 0]], 
+                   StyleBox["\"\<Wandering\>\"",
+                    Background->RGBColor[1, 1, 0]], 
+                   StyleBox[",",
+                    Background->RGBColor[1, 1, 0]], 
+                   StyleBox["trialDict",
+                    Background->RGBColor[1, 1, 0]]}], 
+                  StyleBox["]",
+                   Background->RGBColor[1, 1, 0]]}], "]"}]}], "}"}], ",", 
+              "\[IndentingNewLine]", 
+              RowBox[{"With", "[", 
+               RowBox[{
+                RowBox[{"{", 
+                 RowBox[{
+                  RowBox[{"tag", "=", 
+                   RowBox[{
+                    RowBox[{
+                    "result", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}], "[", "\"\<tag\>\"", "]"}]}], 
+                  ",", 
+                  RowBox[{"smtar", "=", 
+                   RowBox[{"indexer", "@", "tar"}]}], ",", 
+                  RowBox[{"sampled", "=", 
+                   RowBox[{"sampler", "/@", 
+                    RowBox[{"result", "\[LeftDoubleBracket]", 
+                    RowBox[{"2", ",", "1"}], "\[RightDoubleBracket]"}]}]}], 
+                  ",", 
+                  RowBox[{"l", "=", 
+                   RowBox[{
+                    RowBox[{
+                    "result", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}], "[", "\"\<i\>\"", "]"}]}]}], 
+                 "}"}], ",", "\[IndentingNewLine]", 
+                RowBox[{"Show", "[", 
+                 RowBox[{
+                  RowBox[{"Graphics", "[", 
+                   RowBox[{"{", "\[IndentingNewLine]", 
+                    RowBox[{"LightGray", ",", 
+                    RowBox[{"Disk", "[", "]"}], ",", "White", ",", 
+                    RowBox[{"Disk", "[", 
+                    RowBox[{"smtar", ",", "0.3"}], "]"}], ",", "Black", ",", 
+                    RowBox[{"Circle", "[", 
+                    RowBox[{"smtar", ",", "0.3"}], "]"}], ",", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{"MapIndexed", "[", "\[IndentingNewLine]", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{"Hue", "[", 
+                    FractionBox[
+                    RowBox[{"2.", "+", 
+                    RowBox[{"#2", "*", 
+                    RowBox[{"4", "/", 
+                    RowBox[{"Length", "[", "sampled", "]"}]}]}]}], "6."], 
+                    "]"}], ",", 
+                    RowBox[{"Circle", "[", 
+                    RowBox[{
+                    RowBox[{"yp", "[", "#1", "]"}], ",", 
+                    RowBox[{"\[Sigma]", "[", "#1", "]"}]}], "]"}], ",", 
+                    RowBox[{"Point", "[", 
+                    RowBox[{"yp", "[", "#1", "]"}], "]"}]}], "}"}], "&"}], 
+                    ",", "\[IndentingNewLine]", "sampled"}], "]"}], ",", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{"Text", "[", 
+                    RowBox[{
+                    RowBox[{"Style", "[", 
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{"l", ",", "tag", 
+                    RowBox[{"(*", 
+                    RowBox[{",", "\[CapitalDelta]", ",", "tol"}], "*)"}], ",", 
+                    RowBox[{"\[Sigma]", "[", 
+                    RowBox[{"Last", "[", "sampled", "]"}], "]"}]}], "}"}], 
+                    ",", "\"\<Text\>\"", ",", 
+                    RowBox[{"Background", "\[Rule]", "White"}]}], "]"}], ",", 
+                    
+                    RowBox[{"{", 
+                    RowBox[{"0", ",", 
+                    RowBox[{"pr", "*", "0.960"}]}], "}"}]}], "]"}]}], 
+                    "\[IndentingNewLine]", "}"}], "]"}], ",", 
+                  RowBox[{"AspectRatio", "\[Rule]", "Automatic"}], ",", 
+                  RowBox[{"Frame", "\[Rule]", "True"}], ",", 
+                  RowBox[{"PlotRange", "\[Rule]", 
+                   RowBox[{"1.025", "*", "pr"}]}]}], "]"}]}], "]"}]}], 
+             "]"}]}]}], "]"}]}], "]"}]}], "]"}]}], "]"}]}], ";"}]}], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.776521377831484*^9, 3.776521459428932*^9}, {
+   3.776615149201892*^9, 3.7766152500671673`*^9}, {3.7766153950280647`*^9, 
+   3.776615441908716*^9}, {3.7766155139988623`*^9, 3.776615519445424*^9}, 
+   3.776615552746604*^9, {3.776615807531967*^9, 3.776615818357655*^9}, {
+   3.7766159313119698`*^9, 3.7766159706938972`*^9}, {3.776618412861044*^9, 
+   3.7766185227914343`*^9}, {3.776618648098472*^9, 3.776618664963221*^9}, 
+   3.776619364866535*^9, {3.77661947214504*^9, 3.776619479351851*^9}, {
+   3.776619532302617*^9, 3.77661957485561*^9}, {3.7766196896210957`*^9, 
+   3.776619738016882*^9}},
+ CellLabel->"In[13]:=",
+ CellID->300021972,ExpressionUUID->"9af5cecd-e600-4c94-9afd-41a155e9ce42"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["", "ManipulateSection",ExpressionUUID->"795bce49-a747-43c6-b021-a2b6edb83c69"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Manipulate", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"vizSeek2D002", "[", 
+    RowBox[{
+     SuperscriptBox["10.", "le"], ",", 
+     RowBox[{"1.", "-", 
+      SuperscriptBox["10", 
+       RowBox[{"-", "ld"}]]}], ",", 
+     RowBox[{"Floor", "[", 
+      SuperscriptBox["10.", "lm"], "]"}], ",", "r", ",", "dim"}], "]"}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"Row", "[", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"Button", "[", 
+       RowBox[{"\"\<  DO AGAIN  \>\"", ",", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"le", "++"}], ";", 
+           RowBox[{"le", "--"}]}], ")"}], "&"}]}], "]"}], ",", "\"\<    \>\"",
+       ",", "\[IndentingNewLine]", 
+      RowBox[{"Button", "[", 
+       RowBox[{"\"\<  RESET  \>\"", ",", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"le", "=", 
+            RowBox[{"-", "2"}]}], ";", 
+           RowBox[{"ld", "=", "1.0"}], ";", 
+           RowBox[{"lm", "=", "2"}], ";", 
+           RowBox[{"r", "=", "2"}], ";", 
+           RowBox[{"dim", "=", "2"}]}], ")"}], "&"}]}], "]"}]}], "}"}], "]"}],
+    ",", "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"le", ",", 
+       RowBox[{"-", "2"}], ",", 
+       "\"\<\!\(\*SubscriptBox[\(log\), \(10\)]\)(tol)\>\""}], "}"}], ",", 
+     RowBox[{"-", "5"}], ",", "0", ",", "0.1", ",", 
+     RowBox[{"Appearance", "->", 
+      RowBox[{"{", 
+       RowBox[{"\"\<Open\>\"", ",", "\"\<Labeled\>\""}], "}"}]}]}], "}"}], 
+   ",", "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "ld", ",", "1.0", ",", 
+       "\"\<-\!\(\*SubscriptBox[\(log\), \(10\)]\)(1-\[CapitalDelta])\>\""}], 
+      "}"}], ",", "0.", ",", "5.", ",", "0.25", ",", 
+     RowBox[{"Appearance", "->", 
+      RowBox[{"{", 
+       RowBox[{"\"\<Open\>\"", ",", "\"\<Labeled\>\""}], "}"}]}]}], "}"}], 
+   ",", "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "lm", ",", "3", ",", 
+       "\"\<\!\(\*SubscriptBox[\(log\), \(10\)]\)(reps)\>\""}], "}"}], ",", 
+     "0", ",", "7", ",", "1", ",", 
+     RowBox[{"Appearance", "->", 
+      RowBox[{"{", 
+       RowBox[{"\"\<Open\>\"", ",", "\"\<Labeled\>\""}], "}"}]}]}], "}"}], 
+   ",", "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"r", ",", "2", ",", "\"\<plot range\>\""}], "}"}], ",", "1", 
+     ",", "30", ",", "1", ",", 
+     RowBox[{"Appearance", "->", 
+      RowBox[{"{", 
+       RowBox[{"\"\<Open\>\"", ",", "\"\<Labeled\>\""}], "}"}]}]}], "}"}], 
+   ",", "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"dim", ",", "2"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "2", ",", "5", ",", "10", ",", "20", ",", "50", ",", "100", ",", "200", 
+       ",", "500", ",", "1000", ",", "2000", ",", "5000", ",", "10000"}], 
+      "}"}], ",", 
+     RowBox[{"ControlType", "\[Rule]", "Setter"}]}], "}"}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"SaveDefinitions", "\[Rule]", "True"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.7765214867358837`*^9, 3.7765215081157703`*^9}, {
+  3.7765216537851954`*^9, 3.776521655679042*^9}, {3.776527801019382*^9, 
+  3.7765278015297937`*^9}},
+ CellLabel->"In[25]:=",ExpressionUUID->"ad6b3c56-ab5e-4744-986f-cb93ddfea91d"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`dim$$ = 10000, $CellContext`ld$$ = 
+    5., $CellContext`le$$ = -2, $CellContext`lm$$ = 7, $CellContext`r$$ = 30, 
+    Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
+    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
+    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{
+      Hold[
+       Row[{
+         Button[
+         "  DO AGAIN  ", (Increment[$CellContext`le$$]; 
+          Decrement[$CellContext`le$$])& ], "    ", 
+         Button[
+         "  RESET  ", ($CellContext`le$$ = -2; $CellContext`ld$$ = 
+           1.; $CellContext`lm$$ = 2; $CellContext`r$$ = 
+           2; $CellContext`dim$$ = 2)& ]}]], 
+      Manipulate`Dump`ThisIsNotAControl}, {{
+       Hold[$CellContext`le$$], -2, 
+       "\!\(\*SubscriptBox[\(log\), \(10\)]\)(tol)"}, -5, 0, 0.1}, {{
+       Hold[$CellContext`ld$$], 1., 
+       "-\!\(\*SubscriptBox[\(log\), \(10\)]\)(1-\[CapitalDelta])"}, 0., 5., 
+      0.25}, {{
+       Hold[$CellContext`lm$$], 3, 
+       "\!\(\*SubscriptBox[\(log\), \(10\)]\)(reps)"}, 0, 7, 1}, {{
+       Hold[$CellContext`r$$], 2, "plot range"}, 1, 30, 1}, {{
+       Hold[$CellContext`dim$$], 2}, {2, 5, 10, 20, 50, 100, 200, 500, 1000, 
+      2000, 5000, 10000}}}, Typeset`size$$ = {1080., {523., 540.}}, 
+    Typeset`update$$ = 0, Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    False, $CellContext`le$2290$$ = 0, $CellContext`ld$2295$$ = 
+    0, $CellContext`lm$2296$$ = 0, $CellContext`r$2297$$ = 
+    0, $CellContext`dim$2298$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`dim$$ = 2, $CellContext`ld$$ = 
+        1., $CellContext`le$$ = -2, $CellContext`lm$$ = 3, $CellContext`r$$ = 
+        2}, "ControllerVariables" :> {
+        Hold[$CellContext`le$$, $CellContext`le$2290$$, 0], 
+        Hold[$CellContext`ld$$, $CellContext`ld$2295$$, 0], 
+        Hold[$CellContext`lm$$, $CellContext`lm$2296$$, 0], 
+        Hold[$CellContext`r$$, $CellContext`r$2297$$, 0], 
+        Hold[$CellContext`dim$$, $CellContext`dim$2298$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, 
+      "Body" :> $CellContext`vizSeek2D002[
+       10.^$CellContext`le$$, 1. - 10^(-$CellContext`ld$$), 
+        Floor[10.^$CellContext`lm$$], $CellContext`r$$, $CellContext`dim$$], 
+      "Specifications" :> {
+        Row[{
+          Button[
+          "  DO AGAIN  ", (Increment[$CellContext`le$$]; 
+           Decrement[$CellContext`le$$])& ], "    ", 
+          Button[
+          "  RESET  ", ($CellContext`le$$ = -2; $CellContext`ld$$ = 
+            1.; $CellContext`lm$$ = 2; $CellContext`r$$ = 
+            2; $CellContext`dim$$ = 2)& ]}], {{$CellContext`le$$, -2, 
+          "\!\(\*SubscriptBox[\(log\), \(10\)]\)(tol)"}, -5, 0, 0.1, 
+         Appearance -> {"Open", "Labeled"}}, {{$CellContext`ld$$, 1., 
+          "-\!\(\*SubscriptBox[\(log\), \(10\)]\)(1-\[CapitalDelta])"}, 0., 
+         5., 0.25, 
+         Appearance -> {"Open", "Labeled"}}, {{$CellContext`lm$$, 3, 
+          "\!\(\*SubscriptBox[\(log\), \(10\)]\)(reps)"}, 0, 7, 1, 
+         Appearance -> {"Open", "Labeled"}}, {{$CellContext`r$$, 2, 
+          "plot range"}, 1, 30, 1, 
+         Appearance -> {"Open", "Labeled"}}, {{$CellContext`dim$$, 2}, {2, 5, 
+         10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000}, ControlType -> 
+         Setter}}, "Options" :> {}, 
+      "DefaultOptions" :> {ControllerLinking -> True}],
+     ImageSizeCache->{1207., {904., 921.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    Initialization:>({$CellContext`vizSeek2D002[
+         Optional[
+          Pattern[$CellContext`tol, 
+           Blank[]], 0.1], 
+         Optional[
+          Pattern[$CellContext`\[CapitalDelta], 
+           Blank[]], 0.99599], 
+         Optional[
+          Pattern[$CellContext`maxIter, 
+           Blank[]], 10000], 
+         Optional[
+          Pattern[$CellContext`pr, 
+           Blank[]], 10], 
+         Optional[
+          Pattern[$CellContext`dim, 
+           Blank[]], 2]] := With[{$CellContext`indices = Sort[
+            RandomSample[
+             Range[$CellContext`dim], 2]]}, 
+         With[{$CellContext`indexer = {
+             Part[#, 
+              Part[$CellContext`indices, 1]], 
+             Part[#, 
+              Part[$CellContext`indices, 2]]}& }, 
+          With[{$CellContext`sampler = {
+              $CellContext`indexer[
+               $CellContext`yp[#]], 
+              $CellContext`dist[#], 
+              $CellContext`\[Sigma][#]}& }, 
+           
+           With[{$CellContext`tar = $CellContext`getTarget[$CellContext`dim], \
+$CellContext`ini = 
+             ConstantArray[0, $CellContext`dim]}, $CellContext`sowSkipper = 0; 
+            With[{$CellContext`result = Reap[
+                 Catch[
+                  Catch[
+                   Catch[
+                    
+                    Fold[$CellContext`doJudgment, {$CellContext`ini, 
+                    0, $CellContext`DBALLRADIUS}, 
+                    
+                    Table[{$CellContext`\[CapitalDelta], $CellContext`tar, \
+$CellContext`tol, $CellContext`maxIter, $CellContext`i}, {$CellContext`i, \
+$CellContext`maxIter}]], "Found", $CellContext`trialDict], 
+                   "Dead", $CellContext`trialDict], 
+                  "Wandering", $CellContext`trialDict]]}, 
+              
+              With[{$CellContext`tag = 
+                Part[$CellContext`result, 1][
+                 "tag"], $CellContext`smtar = \
+$CellContext`indexer[$CellContext`tar], $CellContext`sampled = 
+                Map[$CellContext`sampler, 
+                  Part[$CellContext`result, 2, 1]], $CellContext`l = 
+                Part[$CellContext`result, 1]["i"]}, 
+               Show[
+                Graphics[{LightGray, 
+                  Disk[], White, 
+                  Disk[$CellContext`smtar, 0.3], Black, 
+                  Circle[$CellContext`smtar, 0.3], 
+                  MapIndexed[{
+                    Hue[(2. + #2 (4/Length[$CellContext`sampled]))/6.], 
+                    Circle[
+                    $CellContext`yp[#], 
+                    $CellContext`\[Sigma][#]], 
+                    Point[
+                    $CellContext`yp[#]]}& , $CellContext`sampled], 
+                  Text[
+                   Style[{$CellContext`l, $CellContext`tag, 
+                    $CellContext`\[Sigma][
+                    Last[$CellContext`sampled]]}, "Text", Background -> 
+                    White], {0, $CellContext`pr 0.96}]}], AspectRatio -> 
+                Automatic, Frame -> True, PlotRange -> 
+                1.025 $CellContext`pr]]]]]]], $CellContext`yp = 
+       Part[#, 1]& , $CellContext`dist = Part[#, 2]& , $CellContext`\[Sigma] = 
+       Part[#, 3]& , $CellContext`getTarget[
+         Optional[
+          Pattern[$CellContext`d, 
+           Blank[]], 4]] := Part[
+         $CellContext`uniformInDball[1, $CellContext`d], 
+         1], $CellContext`uniformInDball[
+         Optional[
+          Pattern[$CellContext`n, 
+           Blank[]], 50000], 
+         Optional[
+          Pattern[$CellContext`d, 
+           Blank[]], 2]] := Map[Drop[#, 2]& , 
+         Map[Normalize, 
+          RandomVariate[
+           
+           NormalDistribution[], {$CellContext`n, $CellContext`d + 
+            2}]]], $CellContext`sowSkipper = 0, $CellContext`doJudgment[{
+          Pattern[$CellContext`yp, 
+           Blank[]], 
+          Pattern[$CellContext`dist, 
+           Blank[]], 
+          Pattern[$CellContext`\[Sigma], 
+           Blank[]]}, {
+          Pattern[$CellContext`\[CapitalDelta], 
+           Blank[]], 
+          Pattern[$CellContext`tar, 
+           Blank[]], 
+          Pattern[$CellContext`tol, 
+           Blank[]], 
+          Pattern[$CellContext`maxIter, 
+           Blank[]], 
+          Pattern[$CellContext`i, 
+           Blank[]]}] := With[{}, If[
+           
+           And[$CellContext`deathTest, $CellContext`dist > 
+            10 $CellContext`maxIter $CellContext`\[Sigma]], 
+           
+           Throw[{$CellContext`yp, $CellContext`dist, $CellContext`\[Sigma], \
+$CellContext`tar, $CellContext`\[CapitalDelta], $CellContext`i}, "Dead"]]; 
+         If[$CellContext`i >= $CellContext`maxIter, 
+           
+           Throw[{$CellContext`yp, $CellContext`dist, $CellContext`\[Sigma], \
+$CellContext`tar, $CellContext`\[CapitalDelta], $CellContext`i}, 
+            "Wandering"]]; With[{$CellContext`a = Map[RandomVariate[
+               
+               NormalDistribution[#, $CellContext`\[Sigma]]]& , \
+$CellContext`yp]}, 
+           
+           With[{$CellContext`da = 
+             EuclideanDistance[$CellContext`tar, $CellContext`a]}, 
+            If[$CellContext`da < $CellContext`tol, 
+              
+              Throw[{$CellContext`a, $CellContext`da, $CellContext`\[Sigma], \
+$CellContext`tar, $CellContext`\[CapitalDelta], $CellContext`i}, "Found"]]; 
+            With[{$CellContext`b = Map[RandomVariate[
+                  
+                  NormalDistribution[#, $CellContext`\[Sigma]]]& , \
+$CellContext`yp]}, 
+              
+              With[{$CellContext`db = 
+                EuclideanDistance[$CellContext`tar, $CellContext`b]}, 
+               If[$CellContext`db < $CellContext`tol, 
+                 
+                 Throw[{$CellContext`b, $CellContext`db, \
+$CellContext`\[Sigma], $CellContext`tar, $CellContext`\[CapitalDelta], \
+$CellContext`i}, "Found"]]; 
+               With[{$CellContext`\[Nu]\[Sigma] = 
+                  Quiet[$CellContext`\[Sigma] $CellContext`\[CapitalDelta]]}, \
+
+                 $CellContext`sowSkip[
+                  
+                  If[$CellContext`da < $CellContext`db, {$CellContext`a, \
+$CellContext`da, $CellContext`\[Nu]\[Sigma]}, {$CellContext`b, \
+$CellContext`db, $CellContext`\[Nu]\[Sigma]}]]]]]]]], $CellContext`deathTest = 
+       True, $CellContext`sowSkip = If[Mod[
+           Increment[$CellContext`sowSkipper], $CellContext`sowSkipModulus] === 
+         0, 
+         Sow[#], 
+         Identity[#]]& , $CellContext`sowSkipModulus = 
+       200, $CellContext`DBALLRADIUS = 1., $CellContext`trialDict[{
+          Pattern[$CellContext`yp, 
+           Blank[]], 
+          Pattern[$CellContext`dist, 
+           Blank[]], 
+          Pattern[$CellContext`\[Sigma], 
+           Blank[]], 
+          Pattern[$CellContext`tar, 
+           Blank[]], 
+          Pattern[$CellContext`\[CapitalDelta], 
+           Blank[]], 
+          Pattern[$CellContext`i, 
+           Blank[]]}, 
+         Pattern[$CellContext`tag, 
+          Blank[]]] := 
+       Association[
+        "yp" -> $CellContext`yp, "dist" -> $CellContext`dist, 
+         "\[Sigma]" -> $CellContext`\[Sigma], "tar" -> $CellContext`tar, 
+         "\[CapitalDelta]" -> $CellContext`\[CapitalDelta], 
+         "i" -> $CellContext`i, "tag" -> $CellContext`tag]}; 
+     Typeset`initDone$$ = True),
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{3.77661941390312*^9, 3.776619588953438*^9, 
+  3.776619746777062*^9, 3.776620031638339*^9, 3.7766834514211817`*^9},
+ CellLabel->"Out[25]=",
+ CellID->1094124650,ExpressionUUID->"e5601d50-1f97-4e47-9a64-b44960957e79"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["", "ManipulateCaptionSection",ExpressionUUID->"36393991-14ea-4f70-beb1-91f8f2db5bcf"],
+
+Cell[TextData[{
+ "Search in D dimensions by pairwise preferences in a shrinking ball. The \
+controls, from top to bottom, specify (1) ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["log", "10"], TraditionalForm]], "InlineMath",ExpressionUUID->
+  "00cfa947-d9e3-4491-8a3b-f579ea3ce916"],
+ " of ",
+ StyleBox["tolerance",
+  FontSlant->"Italic"],
+ ", the Euclidean distance within which a guess is reckoned successful; (2) \
+the number of leading nines in ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[CapitalDelta]", "<", "1"}], TraditionalForm]], "InlineMath",
+  ExpressionUUID->"e65befb7-d055-4f1f-921b-7b1e4c44548b"],
+ ", which is the shrinkage factor for \[Sigma], the search radius; (3) ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["log", "10"], TraditionalForm]], "InlineMath",ExpressionUUID->
+  "c90a55de-50e6-45b0-9017-9b5f102ed0d4"],
+ " of ",
+ StyleBox["reps",
+  FontSlant->"Italic"],
+ ", the max number of iterations to devote to a search; (4) the plot range so \
+that we can see the extend of the walk; (5) dim, the number of dimensions of \
+Euclidean space. Only two dimensions are displayed, but those two are chosen \
+randomly. Seeker picks a ",
+ StyleBox["target",
+  FontSlant->"Italic"],
+ " point uniformly at random in the unit D-ball. That point is at the center \
+of the white disk within the gray unit D-ball. Seeker's first two guesses, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"A", ",", " ", "B"}], TraditionalForm]], "InlineMath",
+  ExpressionUUID->"cb692309-a99a-4342-babc-0731c96ecf74"],
+ ", are drawn from the Normal distribution with mean zero and standard \
+deviation 1, again represented by the gray disk. The nearer of the two \
+guesses, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"Y", "=", "A"}], TraditionalForm]], "InlineMath",ExpressionUUID->
+  "57974bb7-e5e6-48e6-8ba8-384ceb40cf08"],
+ " or ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"Y", "=", "B"}], TraditionalForm]], "InlineMath",ExpressionUUID->
+  "3ea09938-407f-46ee-af1e-782940b46d2f"],
+ ", to the target is retained and put at the center of a new pair drawn from \
+a Normal distribution with mean ",
+ Cell[BoxData[
+  FormBox["Y", TraditionalForm]], "InlineMath",ExpressionUUID->
+  "9cb8647d-3ba9-4df4-a80d-56bc8d024e88"],
+ " and standard deviation ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[CapitalDelta]", " ", "\[Sigma]"}], TraditionalForm]], 
+  "InlineMath",ExpressionUUID->"393594f8-c3ce-4e70-9031-8439b4615473"],
+ ". The process recurses until one of the following occurs: (1) ",
+ StyleBox["Wandering",
+  FontSlant->"Italic"],
+ ": the number of guesses exceeds the maximum specified by the third control; \
+(2) ",
+ StyleBox["Dead",
+  FontSlant->"Italic"],
+ ": the distance of the current search center ",
+ Cell[BoxData[
+  FormBox["Y", TraditionalForm]], "InlineMath",ExpressionUUID->
+  "02d59273-a7c3-45b6-8903-5da81a7e6413"],
+ " from the target exceeds ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"10", "\[Times]", "\[Sigma]", "\[Times]", 
+    StyleBox["maxIter",
+     FontSlant->"Italic"]}], TraditionalForm]], "InlineMath",ExpressionUUID->
+  "8c28161f-dfc6-424b-a491-615ecf37faee"],
+ "; this is a quick-exit heuristic that is important for runs in high \
+dimensions; (3) ",
+ StyleBox["Found",
+  FontSlant->"Italic"],
+ ": the distance of ",
+ Cell[BoxData[
+  FormBox["Y", TraditionalForm]], "InlineMath",ExpressionUUID->
+  "17b04f57-8a7f-4b03-8ec0-f8fe4452bdea"],
+ " from the target is less than ",
+ StyleBox["tolerance",
+  FontSlant->"Italic"],
+ ", specified by the first control. If all your searches die, consider \
+increasing the second control, that is, consider shrinking the searches less \
+rapidly. If none die, then shrink more rapidly, because you're probably \
+searchnig more conservatively than you have to do. If all your searches \
+wander, consider increasing ",
+ StyleBox["maxIter",
+  FontSlant->"Italic"],
+ ", the third control, or decreasing the second control, that is, consider \
+shrinking the searches more rapidly. With a little practice, you will develop \
+an feel for "
+}], "ManipulateCaption",
+ CellChangeTimes->{{3.776525267041013*^9, 3.7765259401270523`*^9}, {
+  3.776526046634489*^9, 3.7765260971508827`*^9}, {3.7765261601477423`*^9, 
+  3.7765262198717546`*^9}, {3.7765262678860807`*^9, 3.7765266066934958`*^9}, {
+  3.7765269762343817`*^9, 3.7765270076647873`*^9}},
+ CellID->1021410911,ExpressionUUID->"54b77cc2-eef4-451c-bea6-4389a224ece6"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["", "ThumbnailSection",ExpressionUUID->"0da799e3-2cea-49f2-94a7-83b1002e6afd"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`dim$$ = 50, $CellContext`ld$$ = 
+    2.5, $CellContext`le$$ = -2, $CellContext`lm$$ = 4, $CellContext`r$$ = 2, 
+    Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
+    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
+    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{
+      Hold[
+       Row[{
+         Button[
+         "  DO AGAIN  ", (Increment[$CellContext`le$$]; 
+          Decrement[$CellContext`le$$])& ], "    ", 
+         Button[
+         "  RESET  ", ($CellContext`le$$ = -2; $CellContext`ld$$ = 
+           1.; $CellContext`lm$$ = 2; $CellContext`r$$ = 
+           2; $CellContext`dim$$ = 2)& ]}]], 
+      Manipulate`Dump`ThisIsNotAControl}, {{
+       Hold[$CellContext`le$$], -2, 
+       "\!\(\*SubscriptBox[\(log\), \(10\)]\)(tol)"}, -5, 0, 0.1}, {{
+       Hold[$CellContext`ld$$], 1., 
+       "-\!\(\*SubscriptBox[\(log\), \(10\)]\)(1-\[CapitalDelta])"}, 0., 5., 
+      0.25}, {{
+       Hold[$CellContext`lm$$], 3, 
+       "\!\(\*SubscriptBox[\(log\), \(10\)]\)(reps)"}, 0, 7, 1}, {{
+       Hold[$CellContext`r$$], 2, "plot range"}, 1, 30, 1}, {{
+       Hold[$CellContext`dim$$], 2}, {2, 5, 10, 20, 50, 100, 200, 500, 1000, 
+      2000, 5000, 10000}}}, Typeset`size$$ = {1080., {534., 550.}}, 
+    Typeset`update$$ = 0, Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    False, $CellContext`le$2263$$ = 0, $CellContext`ld$2268$$ = 
+    0, $CellContext`lm$2269$$ = 0, $CellContext`r$2270$$ = 
+    0, $CellContext`dim$2271$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`dim$$ = 2, $CellContext`ld$$ = 
+        1., $CellContext`le$$ = -2, $CellContext`lm$$ = 3, $CellContext`r$$ = 
+        2}, "ControllerVariables" :> {
+        Hold[$CellContext`le$$, $CellContext`le$2263$$, 0], 
+        Hold[$CellContext`ld$$, $CellContext`ld$2268$$, 0], 
+        Hold[$CellContext`lm$$, $CellContext`lm$2269$$, 0], 
+        Hold[$CellContext`r$$, $CellContext`r$2270$$, 0], 
+        Hold[$CellContext`dim$$, $CellContext`dim$2271$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, 
+      "Body" :> $CellContext`vizSeek2D002[
+       10.^$CellContext`le$$, 1. - 10^(-$CellContext`ld$$), 
+        Floor[10.^$CellContext`lm$$], $CellContext`r$$, $CellContext`dim$$], 
+      "Specifications" :> {
+        Row[{
+          Button[
+          "  DO AGAIN  ", (Increment[$CellContext`le$$]; 
+           Decrement[$CellContext`le$$])& ], "    ", 
+          Button[
+          "  RESET  ", ($CellContext`le$$ = -2; $CellContext`ld$$ = 
+            1.; $CellContext`lm$$ = 2; $CellContext`r$$ = 
+            2; $CellContext`dim$$ = 2)& ]}], {{$CellContext`le$$, -2, 
+          "\!\(\*SubscriptBox[\(log\), \(10\)]\)(tol)"}, -5, 0, 0.1, 
+         Appearance -> {"Open", "Labeled"}}, {{$CellContext`ld$$, 1., 
+          "-\!\(\*SubscriptBox[\(log\), \(10\)]\)(1-\[CapitalDelta])"}, 0., 
+         5., 0.25, 
+         Appearance -> {"Open", "Labeled"}}, {{$CellContext`lm$$, 3, 
+          "\!\(\*SubscriptBox[\(log\), \(10\)]\)(reps)"}, 0, 7, 1, 
+         Appearance -> {"Open", "Labeled"}}, {{$CellContext`r$$, 2, 
+          "plot range"}, 1, 30, 1, 
+         Appearance -> {"Open", "Labeled"}}, {{$CellContext`dim$$, 2}, {2, 5, 
+         10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000}, ControlType -> 
+         Setter}}, "Options" :> {}, 
+      "DefaultOptions" :> {ControllerLinking -> True}],
+     ImageSizeCache->{1207., {914., 931.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    Initialization:>({$CellContext`vizSeek2D002[
+         Optional[
+          Pattern[$CellContext`tol, 
+           Blank[]], 0.1], 
+         Optional[
+          Pattern[$CellContext`\[CapitalDelta], 
+           Blank[]], 0.99599], 
+         Optional[
+          Pattern[$CellContext`maxIter, 
+           Blank[]], 10000], 
+         Optional[
+          Pattern[$CellContext`pr, 
+           Blank[]], 10], 
+         Optional[
+          Pattern[$CellContext`dim, 
+           Blank[]], 2]] := With[{$CellContext`indices = Sort[
+            RandomSample[
+             Range[$CellContext`dim], 2]]}, 
+         With[{$CellContext`indexer = {
+             Part[#, 
+              Part[$CellContext`indices, 1]], 
+             Part[#, 
+              Part[$CellContext`indices, 2]]}& }, 
+          With[{$CellContext`sampler = {
+              $CellContext`indexer[
+               $CellContext`yp[#]], 
+              $CellContext`dist[#], 
+              $CellContext`\[Sigma][#]}& }, 
+           
+           With[{$CellContext`tar = $CellContext`getTarget[$CellContext`dim], \
+$CellContext`ini = ConstantArray[0, $CellContext`dim]}, 
+            With[{$CellContext`result = Reap[
+                Catch[
+                 Catch[
+                  Catch[
+                   
+                   Fold[$CellContext`doJudgment, {$CellContext`ini, 
+                    0, $CellContext`DBALLRADIUS}, 
+                    
+                    Table[{$CellContext`\[CapitalDelta], $CellContext`tar, \
+$CellContext`tol, $CellContext`maxIter, $CellContext`i}, {$CellContext`i, \
+$CellContext`maxIter}]], "Found", $CellContext`trialDict], 
+                  "Dead", $CellContext`trialDict], 
+                 "Wandering", $CellContext`trialDict]]}, 
+             
+             With[{$CellContext`tag = 
+               Part[$CellContext`result, 1]["tag"], $CellContext`points = 
+               Part[$CellContext`result, 2, 
+                 1], $CellContext`smtar = \
+$CellContext`indexer[$CellContext`tar], $CellContext`sampled = 
+               Map[$CellContext`sampler, 
+                 Part[$CellContext`result, 2, 1]], $CellContext`l = Length[
+                 Part[$CellContext`result, 2, 1]]}, 
+              Show[
+               Graphics[{LightGray, 
+                 Disk[], White, 
+                 Disk[$CellContext`smtar, 0.3], Black, 
+                 Circle[$CellContext`smtar, 0.3], 
+                 MapIndexed[{
+                   Hue[(2. + #2 (4/$CellContext`l))/6.], 
+                   Circle[
+                    $CellContext`yp[#], 
+                    $CellContext`\[Sigma][#]], 
+                   Point[
+                    $CellContext`yp[#]]}& , $CellContext`sampled], 
+                 Text[
+                  Style[{$CellContext`l, $CellContext`tag, 
+                    $CellContext`\[Sigma][
+                    Last[$CellContext`sampled]]}, "Text", Background -> 
+                   White], {0, $CellContext`pr 0.96}]}], AspectRatio -> 
+               Automatic, Frame -> True, PlotRange -> 
+               1.025 $CellContext`pr]]]]]]], $CellContext`yp = 
+       Part[#, 1]& , $CellContext`dist = Part[#, 2]& , $CellContext`\[Sigma] = 
+       Part[#, 3]& , $CellContext`getTarget[
+         Optional[
+          Pattern[$CellContext`d, 
+           Blank[]], 4]] := Part[
+         $CellContext`uniformInDball[1, $CellContext`d], 
+         1], $CellContext`uniformInDball[
+         Optional[
+          Pattern[$CellContext`n, 
+           Blank[]], 50000], 
+         Optional[
+          Pattern[$CellContext`d, 
+           Blank[]], 2]] := Map[Drop[#, 2]& , 
+         Map[Normalize, 
+          RandomVariate[
+           
+           NormalDistribution[], {$CellContext`n, $CellContext`d + 
+            2}]]], $CellContext`doJudgment[{
+          Pattern[$CellContext`yp, 
+           Blank[]], 
+          Pattern[$CellContext`dist, 
+           Blank[]], 
+          Pattern[$CellContext`\[Sigma], 
+           Blank[]]}, {
+          Pattern[$CellContext`\[CapitalDelta], 
+           Blank[]], 
+          Pattern[$CellContext`tar, 
+           Blank[]], 
+          Pattern[$CellContext`tol, 
+           Blank[]], 
+          Pattern[$CellContext`maxIter, 
+           Blank[]], 
+          Pattern[$CellContext`i, 
+           Blank[]]}] := With[{}, If[
+           
+           And[$CellContext`deathTest, $CellContext`dist > (
+              10 $CellContext`maxIter) $CellContext`\[Sigma]], 
+           
+           Throw[{$CellContext`yp, $CellContext`dist, $CellContext`\[Sigma], \
+$CellContext`tar, $CellContext`\[CapitalDelta], $CellContext`i}, "Dead"]]; 
+         If[$CellContext`i >= $CellContext`maxIter, 
+           
+           Throw[{$CellContext`yp, $CellContext`dist, $CellContext`\[Sigma], \
+$CellContext`tar, $CellContext`\[CapitalDelta], $CellContext`i}, 
+            "Wandering"]]; With[{$CellContext`a = Map[RandomVariate[
+               
+               NormalDistribution[#, $CellContext`\[Sigma]]]& , \
+$CellContext`yp]}, 
+           
+           With[{$CellContext`da = 
+             EuclideanDistance[$CellContext`tar, $CellContext`a]}, 
+            If[$CellContext`da < $CellContext`tol, 
+              
+              Throw[{$CellContext`a, $CellContext`da, $CellContext`\[Sigma], \
+$CellContext`tar, $CellContext`\[CapitalDelta], $CellContext`i}, "Found"]]; 
+            With[{$CellContext`b = Map[RandomVariate[
+                  
+                  NormalDistribution[#, $CellContext`\[Sigma]]]& , \
+$CellContext`yp]}, 
+              
+              With[{$CellContext`db = 
+                EuclideanDistance[$CellContext`tar, $CellContext`b]}, 
+               If[$CellContext`db < $CellContext`tol, 
+                 
+                 Throw[{$CellContext`b, $CellContext`db, \
+$CellContext`\[Sigma], $CellContext`tar, $CellContext`\[CapitalDelta], \
+$CellContext`i}, "Found"]]; 
+               With[{$CellContext`\[Nu]\[Sigma] = 
+                  Quiet[$CellContext`\[Sigma] $CellContext`\[CapitalDelta]]}, \
+
+                 $CellContext`sow[
+                  
+                  If[$CellContext`da < $CellContext`db, {$CellContext`a, \
+$CellContext`da, $CellContext`\[Nu]\[Sigma]}, {$CellContext`b, \
+$CellContext`db, $CellContext`\[Nu]\[Sigma]}]]]]]]]], $CellContext`deathTest = 
+       True, $CellContext`sow = Sow, $CellContext`DBALLRADIUS = 
+       1., $CellContext`trialDict[{
+          Pattern[$CellContext`yp, 
+           Blank[]], 
+          Pattern[$CellContext`dist, 
+           Blank[]], 
+          Pattern[$CellContext`\[Sigma], 
+           Blank[]], 
+          Pattern[$CellContext`tar, 
+           Blank[]], 
+          Pattern[$CellContext`\[CapitalDelta], 
+           Blank[]], 
+          Pattern[$CellContext`i, 
+           Blank[]]}, 
+         Pattern[$CellContext`tag, 
+          Blank[]]] := 
+       Association[
+        "yp" -> $CellContext`yp, "dist" -> $CellContext`dist, 
+         "\[Sigma]" -> $CellContext`\[Sigma], "tar" -> $CellContext`tar, 
+         "\[CapitalDelta]" -> $CellContext`\[CapitalDelta], 
+         "i" -> $CellContext`i, "tag" -> $CellContext`tag]}; 
+     Typeset`initDone$$ = True),
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellEditDuplicate->False,
+ GeneratedCell->False,
+ CellAutoOverwrite->False,
+ CellChangeTimes->{
+  3.7765266698609333`*^9, {3.776526788302796*^9, 
+   3.776526811915464*^9}},ExpressionUUID->"1c0fabd8-33f2-4640-a129-\
+049a8a079c10"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["", "SnapshotsSection",ExpressionUUID->"1727c4b4-bcb7-4c97-a329-5f6e86b5f9e0"],
+
+Cell[BoxData[
+ RowBox[{
+  GraphicsBox[{{}, {{{}, {}, 
+      {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6], 
+       LineBox[{{0.999915, 1.}, {0.9999156623351958, 1.}, {0.9999163195093572,
+         9.}, {0.9999169715627002, 30.}, {0.999917618535127, 62.}, {
+        0.9999182604662288, 78.}, {0.9999188973952888, 88.}, {
+        0.9999195293612837, 86.}, {0.9999201564028867, 72.}, {
+        0.9999207785584693, 30.}, {0.9999213958661043, 1.}, {
+        0.999922008363568, 0.}, {0.9999226160883419, 0.}, {0.9999232190776157,
+         0.}, {0.9999238173682894, 0.}, {0.999924410996975, 0.}, {0.999925, 
+        0.}}]}, 
+      {RGBColor[0.880722, 0.611041, 0.142051], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6], 
+       LineBox[{{0.999915, 0.}, {0.9999156623351958, 0.}, {0.9999163195093572,
+         0.}, {0.9999169715627002, 0.}, {0.999917618535127, 0.}, {
+        0.9999182604662288, 0.}, {0.9999188973952888, 0.}, {
+        0.9999195293612837, 0.}, {0.9999201564028867, 0.}, {
+        0.9999207785584693, 0.}, {0.9999213958661043, 0.}, {0.999922008363568,
+         0.}, {0.9999226160883419, 0.}, {0.9999232190776157, 0.}, {
+        0.9999238173682894, 0.}, {0.999924410996975, 0.}, {0.999925, 0.}}]}, 
+      {RGBColor[0.560181, 0.691569, 0.194885], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6], 
+       LineBox[{{0.999915, 99.}, {0.9999156623351958, 99.}, {
+        0.9999163195093572, 91.}, {0.9999169715627002, 70.}, {
+        0.999917618535127, 38.}, {0.9999182604662288, 22.}, {
+        0.9999188973952888, 12.}, {0.9999195293612837, 14.}, {
+        0.9999201564028867, 28.}, {0.9999207785584693, 70.}, {
+        0.9999213958661043, 99.}, {0.999922008363568, 100.}, {
+        0.9999226160883419, 100.}, {0.9999232190776157, 100.}, {
+        0.9999238173682894, 100.}, {0.999924410996975, 100.}, {0.999925, 
+        100.}}]}}, {
+      {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6]}, 
+      {RGBColor[0.880722, 0.611041, 0.142051], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6]}, 
+      {RGBColor[0.560181, 0.691569, 0.194885], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[
+       1.6]}}, {
+      {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6]}, 
+      {RGBColor[0.880722, 0.611041, 0.142051], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6]}, 
+      {RGBColor[0.560181, 0.691569, 0.194885], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[
+       1.6]}, {}, {}, {}, {}, {}, {}, {}}, {
+      {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6]}, 
+      {RGBColor[0.880722, 0.611041, 0.142051], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6]}, 
+      {RGBColor[0.560181, 0.691569, 0.194885], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[
+       1.6]}, {}, {}, {}, {}, {}, {}, {}}}, {{}, {}}},
+   AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+   Axes->{True, True},
+   AxesLabel->{None, None},
+   AxesOrigin->{0.9999147916666669, 0},
+   DisplayFunction->Identity,
+   Frame->{{True, True}, {True, True}},
+   FrameLabel->{{
+      FormBox["\"Percentage\"", TraditionalForm], 
+      FormBox["\"\"", TraditionalForm]}, {
+      FormBox[
+      "\"\[CapitalDelta] (shrinkage factor for \[Sigma])\"", TraditionalForm], 
+      FormBox[
+      "\"Seeker versus \[CapitalDelta], dim = 2000, # rollouts = \
+100\\ntolerance = 0.01, # iters/rollout = 160000\"", TraditionalForm]}},
+   FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+   GridLines->{None, None},
+   GridLinesStyle->Directive[
+     GrayLevel[0.5, 0.4]],
+   ImageSize->{374., Automatic},
+   Method->{
+    "OptimizePlotMarkers" -> True, 
+     "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+         (Identity[#]& )[
+          Part[#, 1]], 
+         (Identity[#]& )[
+          Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+         (Identity[#]& )[
+          Part[#, 1]], 
+         (Identity[#]& )[
+          Part[#, 2]]}& )}},
+   PlotRange->{{0.9999147916666669, 0.999925}, {0, 100.}},
+   PlotRangeClipping->True,
+   PlotRangePadding->{{
+      Scaled[0.02], 
+      Scaled[0.02]}, {
+      Scaled[0.02], 
+      Scaled[0.05]}},
+   Ticks->{Automatic, Automatic}], 
+  GraphicsBox[{{}, {{{}, {}, 
+      {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6], 
+       LineBox[{{0.999, 0.}, {0.9991340356766399, 30.}, {0.9992501057906675, 
+        100.}, {0.9993506183684238, 100.}, {0.9994376586748097, 100.}, {
+        0.9995130324748341, 0.}, {0.9995783034965714, 0.}, {
+        0.9996348258727452, 0.}, {0.9996837722339832, 0.}, {
+        0.9997261580365736, 0.}, {0.9997628626294338, 0.}, {
+        0.9997946474973542, 0.}, {0.9998221720589962, 0.}, {0.999846007347394,
+         0.}, {0.9998666478567837, 0.}, {0.9998845218015311, 0.}, {0.9999, 
+        0.}}]}, 
+      {RGBColor[0.880722, 0.611041, 0.142051], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6], 
+       LineBox[{{0.999, 100.}, {0.9991340356766399, 70.}, {0.9992501057906675,
+         0.}, {0.9993506183684238, 0.}, {0.9994376586748097, 0.}, {
+        0.9995130324748341, 0.}, {0.9995783034965714, 0.}, {
+        0.9996348258727452, 0.}, {0.9996837722339832, 0.}, {
+        0.9997261580365736, 0.}, {0.9997628626294338, 0.}, {
+        0.9997946474973542, 0.}, {0.9998221720589962, 0.}, {0.999846007347394,
+         0.}, {0.9998666478567837, 0.}, {0.9998845218015311, 0.}, {0.9999, 
+        0.}}]}, 
+      {RGBColor[0.560181, 0.691569, 0.194885], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6], 
+       LineBox[{{0.999, 0.}, {0.9991340356766399, 0.}, {0.9992501057906675, 
+        0.}, {0.9993506183684238, 0.}, {0.9994376586748097, 0.}, {
+        0.9995130324748341, 100.}, {0.9995783034965714, 100.}, {
+        0.9996348258727452, 100.}, {0.9996837722339832, 100.}, {
+        0.9997261580365736, 100.}, {0.9997628626294338, 100.}, {
+        0.9997946474973542, 100.}, {0.9998221720589962, 100.}, {
+        0.999846007347394, 100.}, {0.9998666478567837, 100.}, {
+        0.9998845218015311, 100.}, {0.9999, 100.}}]}}, {
+      {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6]}, 
+      {RGBColor[0.880722, 0.611041, 0.142051], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6]}, 
+      {RGBColor[0.560181, 0.691569, 0.194885], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[
+       1.6]}}, {
+      {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6]}, 
+      {RGBColor[0.880722, 0.611041, 0.142051], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6]}, 
+      {RGBColor[0.560181, 0.691569, 0.194885], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[
+       1.6]}, {}, {}, {}, {}, {}, {}, {}}, {
+      {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6]}, 
+      {RGBColor[0.880722, 0.611041, 0.142051], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[1.6]}, 
+      {RGBColor[0.560181, 0.691569, 0.194885], PointSize[
+        NCache[
+         Rational[1, 60], 0.016666666666666666`]], AbsoluteThickness[
+       1.6]}, {}, {}, {}, {}, {}, {}, {}}}, {{}, {}}},
+   AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+   Axes->{True, True},
+   AxesLabel->{None, None},
+   AxesOrigin->{0.9989812500000004, 0},
+   DisplayFunction->Identity,
+   Frame->{{True, True}, {True, True}},
+   FrameLabel->{{
+      FormBox["\"Percentage\"", TraditionalForm], 
+      FormBox["\"\"", TraditionalForm]}, {
+      FormBox[
+      "\"\[CapitalDelta] (shrinkage factor for \[Sigma])\"", TraditionalForm], 
+      FormBox[
+      "\"Seeker versus \[CapitalDelta], dim = 200, # rollouts = \
+100\\ntolerance = 0.01, # iters/rollout = 20000\"", TraditionalForm]}},
+   FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+   GridLines->{None, None},
+   GridLinesStyle->Directive[
+     GrayLevel[0.5, 0.4]],
+   ImageSize->{374.5, Automatic},
+   Method->{
+    "OptimizePlotMarkers" -> True, 
+     "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+         (Identity[#]& )[
+          Part[#, 1]], 
+         (Identity[#]& )[
+          Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+         (Identity[#]& )[
+          Part[#, 1]], 
+         (Identity[#]& )[
+          Part[#, 2]]}& )}},
+   PlotRange->{{0.9989812500000004, 0.9999}, {0, 100.}},
+   PlotRangeClipping->True,
+   PlotRangePadding->{{
+      Scaled[0.02], 
+      Scaled[0.02]}, {
+      Scaled[0.02], 
+      Scaled[0.05]}},
+   Ticks->{Automatic, Automatic}]}]], "Output",
+ CellEditDuplicate->False,
+ GeneratedCell->False,
+ CellAutoOverwrite->False,
+ CellChangeTimes->{{3.776521570546735*^9, 
+  3.776521599227153*^9}},ExpressionUUID->"215d2d61-4265-4dac-8a3d-\
+d4523cee79d4"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["", "DetailsSection",ExpressionUUID->"f24a15e2-76b1-4f57-9b96-839595ab086b"],
+
+Cell[TextData[{
+ "The charts above are summaries of 1,600 runs in each of 2,000 and 200 \
+dimensions. It shows the percentage of searches that ended up wandering \
+(green), that ended up dead (yellow), or that were successful (blue). For \
+each setting of the controls, there is a \"best\" range of values for \
+\[CapitalDelta], those being the ones that yield the largest percentage of ",
+ StyleBox["Found",
+  FontSlant->"Italic"],
+ " versus ",
+ StyleBox["Wandering",
+  FontSlant->"Italic"],
+ " or ",
+ StyleBox["Dead",
+  FontSlant->"Italic"],
+ ". The chart in 2,000 dimensions took more than six hours to run with ",
+ StyleBox["ParallelMap",
+  FontSlant->"Italic"],
+ " on six cores. "
+}], "DetailNotes",
+ CellChangeTimes->{{3.776527047957293*^9, 3.77652736549186*^9}, {
+  3.776694274654296*^9, 3.776694289422386*^9}},
+ CellID->56996680,ExpressionUUID->"9046a5cb-5d2a-467b-bbaf-74310409070c"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["", "ControlSuggestionsSection",ExpressionUUID->"ce5b6436-39b7-496f-9691-0c7d890dd634"],
+
+Cell[BoxData[
+ TooltipBox[
+  RowBox[{
+   CheckboxBox[False], Cell[
+   " Resize Images",ExpressionUUID->"d740fb5e-d9f9-48e2-9df8-97b588021c5a"]}],
+  
+  "\"Click inside an image to reveal its orange resize frame.\\nDrag any of \
+the orange resize handles to resize the image.\""]], "ControlSuggestions",
+ FontFamily->"Verdana",
+ CellTags->
+  "ResizeImages",ExpressionUUID->"722a000c-f0a5-4c12-8320-62712ad13002"],
+
+Cell[BoxData[
+ TooltipBox[
+  RowBox[{
+   CheckboxBox[False], Cell[
+   " Rotate and Zoom in 3D",ExpressionUUID->
+    "e36c65f0-bc75-4a53-a710-092980c0af12"]}],
+  RowBox[{
+   "\"Drag a 3D graphic to rotate it. Starting the drag near the center \
+tumbles\\nthe graphic; starting near a corner turns it parallel to the plane \
+of the screen.\\nHold down \"", 
+    FrameBox[
+    "Ctrl", Background -> GrayLevel[0.9], FrameMargins -> 2, FrameStyle -> 
+     GrayLevel[0.9]], "\" (or \"", 
+    FrameBox[
+    "Cmd", Background -> GrayLevel[0.9], FrameMargins -> 2, FrameStyle -> 
+     GrayLevel[0.9]], 
+    "\" on Mac) and drag up and down to zoom.\""}]]], "ControlSuggestions",
+ FontFamily->"Verdana",
+ CellTags->
+  "RotateAndZoomIn3D",ExpressionUUID->"0a0308cc-c91e-4dc3-aa74-5000fc27d52e"],
+
+Cell[BoxData[
+ TooltipBox[
+  RowBox[{
+   CheckboxBox[False], Cell[
+   " Drag Locators",ExpressionUUID->"1386f9b7-754b-4661-92f8-27e73fff00fd"]}],
+  
+  RowBox[{"\"Drag any locator (\"", 
+    GraphicsBox[
+     LocatorBox[
+      Scaled[{0.5, 0.5}]], ImageSize -> 20], 
+    "\", etc.) to move it around.\""}]]], "ControlSuggestions",
+ FontFamily->"Verdana",
+ CellTags->
+  "DragLocators",ExpressionUUID->"0491147a-9a00-40e4-bd2b-de871bd5ff60"],
+
+Cell[BoxData[
+ TooltipBox[
+  RowBox[{
+   CheckboxBox[False], Cell[
+   " Create and Delete Locators",ExpressionUUID->
+    "7ab7e5d7-d4a8-4212-b581-491bbd25f7fa"]}],
+  RowBox[{"\"Insert a new locator in the graphic by holding down the \"", 
+    FrameBox[
+    "Alt", Background -> GrayLevel[0.9], FrameMargins -> 2, FrameStyle -> 
+     GrayLevel[0.9]], 
+    "\" key\\nand clicking where you want it to be. Delete a locator by \
+clicking it\\nwhile holding down the \"", 
+    FrameBox[
+    "Alt", Background -> GrayLevel[0.9], FrameMargins -> 2, FrameStyle -> 
+     GrayLevel[0.9]], "\" key.\""}]]], "ControlSuggestions",
+ FontFamily->"Verdana",
+ CellTags->
+  "CreateAndDeleteLocators",ExpressionUUID->"8cf4a445-16e6-454d-a4b1-\
+a4fa2ce3d6c9"],
+
+Cell[BoxData[
+ TooltipBox[
+  RowBox[{
+   CheckboxBox[False], Cell[
+   " Slider Zoom",ExpressionUUID->"d817816e-d7f4-473f-b27b-fc4d5511860a"]}],
+  RowBox[{"\"Hold down the \"", 
+    FrameBox[
+    "Alt", Background -> GrayLevel[0.9], FrameMargins -> 2, FrameStyle -> 
+     GrayLevel[0.9]], 
+    "\" key while moving a slider to make fine adjustments in the slider \
+value.\\nHold \"", 
+    FrameBox[
+    "Ctrl", Background -> GrayLevel[0.9], FrameMargins -> 2, FrameStyle -> 
+     GrayLevel[0.9]], "\" and/or \"", 
+    FrameBox[
+    "Shift", Background -> GrayLevel[0.9], FrameMargins -> 2, FrameStyle -> 
+     GrayLevel[0.9]], "\" at the same time as \"", 
+    FrameBox[
+    "Alt", Background -> GrayLevel[0.9], FrameMargins -> 2, FrameStyle -> 
+     GrayLevel[0.9]], 
+    "\" to make ever finer adjustments.\""}]]], "ControlSuggestions",
+ FontFamily->"Verdana",
+ CellTags->
+  "SliderZoom",ExpressionUUID->"e85eee5d-3e88-4d4e-acd1-7986cffae942"],
+
+Cell[BoxData[
+ TooltipBox[
+  RowBox[{
+   CheckboxBox[False], Cell[
+   " Gamepad Controls",ExpressionUUID->
+    "1412065b-3a73-4b19-833f-9a3ea9f3c758"]}],
+  "\"Control this Demonstration with a gamepad or other\\nhuman interface \
+device connected to your computer.\""]], "ControlSuggestions",
+ CellChangeTimes->{3.35696210375764*^9, 3.3895522232313623`*^9},
+ FontFamily->"Verdana",
+ CellTags->
+  "GamepadControls",ExpressionUUID->"0cd3830c-5387-43fc-ba25-8103076d5cc8"],
+
+Cell[BoxData[
+ TooltipBox[
+  RowBox[{
+   CheckboxBox[False], Cell[
+   " Automatic Animation",ExpressionUUID->
+    "fdb3ea50-236c-4a6a-9f46-da3f4d3b3fa7"]}],
+  RowBox[{"\"Animate a slider in this Demonstration by clicking the\"", 
+    AdjustmentBox[
+     Cell[
+      GraphicsData[
+      "CompressedBitmap", 
+       "eJzzTSzJSM1NLMlMTlRwL0osyMhMLlZwyy8CCjEzMjAwcIKwAgOI/R/IhBKc\n\
+/4EAyGAG0f+nTZsGwgysIJIRKsWKLAXGIHFmEpUgLADxWUAkI24jZs+eTaEt\n\
+IG+wQKRmzJgBlYf5lhEA30OqWA=="], "Graphics", ImageSize -> {9, 9}, ImageMargins -> 
+      0, CellBaseline -> Baseline], BoxBaselineShift -> 0.1839080459770115, 
+     BoxMargins -> {{0., 0.}, {-0.1839080459770115, 0.1839080459770115}}], 
+    "\"button\\nnext to the slider, and then clicking the play button that \
+appears.\\nAnimate all controls by selecting \"", 
+    StyleBox["Autorun", FontWeight -> "Bold"], "\" from the\"", 
+    AdjustmentBox[
+     Cell[
+      GraphicsData[
+      "CompressedBitmap", 
+       "eJyNULENwyAQfEySIlMwTVJlCGRFsosokeNtqBmDBagoaZjAI1C8/8GUUUC6\n\
+57h7cQ8PvU7Pl17nUav7oj/TPH7V7b2QJAUAXBkKmCPRowxICy64bRvGGNF7\n\
+X8CctGoDSN4xhIDGGDhzFXwUh3/ClBKrDQPmnGXtI6u0OOd+tZBVUqy1xSaH\n\
+UqiK6pPe4XdEdAz6563tx/gejuORGMxJaz8mdpJn7hc="], "Graphics", 
+      ImageSize -> {10, 10}, ImageMargins -> 0, CellBaseline -> Baseline], 
+     BoxBaselineShift -> 0.1839080459770115, 
+     BoxMargins -> {{0., 0.}, {-0.1839080459770115, 0.1839080459770115}}], 
+    "\"menu.\""}]]], "ControlSuggestions",
+ FontFamily->"Verdana",
+ CellTags->
+  "AutomaticAnimation",ExpressionUUID->"60601e53-564b-4ad5-b005-550292656e1b"],
+
+Cell[BoxData[
+ TooltipBox[
+  RowBox[{
+   CheckboxBox[False], Cell[
+   " Bookmark Animation",ExpressionUUID->
+    "43f01fba-e940-4e66-941b-d0a8f28ff905"]}],
+  RowBox[{
+   "\"See a prepared animation of this Demonstration by selecting\\n\"", 
+    StyleBox["Animate Bookmarks", FontWeight -> "Bold"], "\" from the\"", 
+    AdjustmentBox[
+     Cell[
+      GraphicsData[
+      "CompressedBitmap", 
+       "eJyNULENwyAQfEySIlMwTVJlCGRFsosokeNtqBmDBagoaZjAI1C8/8GUUUC6\n\
+57h7cQ8PvU7Pl17nUav7oj/TPH7V7b2QJAUAXBkKmCPRowxICy64bRvGGNF7\n\
+X8CctGoDSN4xhIDGGDhzFXwUh3/ClBKrDQPmnGXtI6u0OOd+tZBVUqy1xSaH\n\
+UqiK6pPe4XdEdAz6563tx/gejuORGMxJaz8mdpJn7hc="], "Graphics", 
+      ImageSize -> {10, 10}, ImageMargins -> 0, CellBaseline -> Baseline], 
+     BoxBaselineShift -> 0.1839080459770115, 
+     BoxMargins -> {{0., 0.}, {-0.1839080459770115, 0.1839080459770115}}], 
+    "\"menu.\""}]]], "ControlSuggestions",
+ FontFamily->"Verdana",
+ CellTags->
+  "BookmarkAnimation",ExpressionUUID->"eacf999c-5d20-4943-b7f6-a3751634b7e3"]
+}, Open  ]],
+
+Cell["", "SearchTermsSection",ExpressionUUID->"d298615d-bf0f-4b98-abc2-11aa62a7db9a"],
+
+Cell["", "RelatedLinksSection",ExpressionUUID->"733d3ebc-c813-4e55-a671-ec4e083d9023"],
+
+Cell[CellGroupData[{
+
+Cell["", "AuthorSection",ExpressionUUID->"9106b849-6f5a-4d61-952e-8b8e17c2ea14"],
+
+Cell["Contributed by: XXXX", "Author",
+ CellChangeTimes->{
+  3.35696210375764*^9, {3.432333043774981*^9, 
+   3.432333045441087*^9}},ExpressionUUID->"8431dc37-7a3a-471d-b209-\
+1a758628f3b9"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{3840, Automatic},
+WindowMargins->{{0, Automatic}, {0, Automatic}},
+Magnification:>3. Inherited,
+FrontEndVersion->"12.0 for Linux x86 (64-bit) (April 8, 2019)",
+StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "Demonstration.nb", 
+  CharacterEncoding -> "UTF-8"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "AutomaticAnimation"->{
+  Cell[65313, 1571, 1564, 33, 71, "ControlSuggestions",ExpressionUUID->"60601e53-564b-4ad5-b005-550292656e1b",
+   CellTags->"AutomaticAnimation"]},
+ "BookmarkAnimation"->{
+  Cell[66880, 1606, 1008, 23, 71, "ControlSuggestions",ExpressionUUID->"eacf999c-5d20-4943-b7f6-a3751634b7e3",
+   CellTags->"BookmarkAnimation"]},
+ "CreateAndDeleteLocators"->{
+  Cell[63152, 1513, 739, 18, 71, "ControlSuggestions",ExpressionUUID->"8cf4a445-16e6-454d-a4b1-a4fa2ce3d6c9",
+   CellTags->"CreateAndDeleteLocators"]},
+ "DragLocators"->{
+  Cell[62711, 1498, 438, 13, 71, "ControlSuggestions",ExpressionUUID->"0491147a-9a00-40e4-bd2b-de871bd5ff60",
+   CellTags->"DragLocators"]},
+ "GamepadControls"->{
+  Cell[64841, 1558, 469, 11, 71, "ControlSuggestions",ExpressionUUID->"0cd3830c-5387-43fc-ba25-8103076d5cc8",
+   CellTags->"GamepadControls"]},
+ "ResizeImages"->{
+  Cell[61512, 1465, 410, 10, 71, "ControlSuggestions",ExpressionUUID->"722a000c-f0a5-4c12-8320-62712ad13002",
+   CellTags->"ResizeImages"]},
+ "RotateAndZoomIn3D"->{
+  Cell[61925, 1477, 783, 19, 71, "ControlSuggestions",ExpressionUUID->"0a0308cc-c91e-4dc3-aa74-5000fc27d52e",
+   CellTags->"RotateAndZoomIn3D"]},
+ "SliderZoom"->{
+  Cell[63894, 1533, 944, 23, 71, "ControlSuggestions",ExpressionUUID->"e85eee5d-3e88-4d4e-acd1-7986cffae942",
+   CellTags->"SliderZoom"]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"AutomaticAnimation", 68801, 1660},
+ {"BookmarkAnimation", 68973, 1663},
+ {"CreateAndDeleteLocators", 69150, 1666},
+ {"DragLocators", 69321, 1669},
+ {"GamepadControls", 69484, 1672},
+ {"ResizeImages", 69647, 1675},
+ {"RotateAndZoomIn3D", 69812, 1678},
+ {"SliderZoom", 69975, 1681}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 163, 3, 233, "DemoTitle",ExpressionUUID->"f1861a30-c2b4-43c9-bdc2-579f6f7106fe"],
+Cell[CellGroupData[{
+Cell[768, 29, 88, 0, 915, "InitializationSection",ExpressionUUID->"5fb84896-4ef3-484f-88d2-6f09428cb81f"],
+Cell[859, 31, 18402, 446, 3269, "Input",ExpressionUUID->"9af5cecd-e600-4c94-9afd-41a155e9ce42",
+ InitializationCell->True,
+ CellID->300021972]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19298, 482, 84, 0, 751, "ManipulateSection",ExpressionUUID->"795bce49-a747-43c6-b021-a2b6edb83c69"],
+Cell[CellGroupData[{
+Cell[19407, 486, 3364, 92, 716, "Input",ExpressionUUID->"ad6b3c56-ab5e-4744-986f-cb93ddfea91d"],
+Cell[22774, 580, 11605, 258, 1857, "Output",ExpressionUUID->"e5601d50-1f97-4e47-9a64-b44960957e79",
+ CellID->1094124650]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[34428, 844, 91, 0, 493, "ManipulateCaptionSection",ExpressionUUID->"36393991-14ea-4f70-beb1-91f8f2db5bcf"],
+Cell[34522, 846, 4347, 102, 479, "ManipulateCaption",ExpressionUUID->"54b77cc2-eef4-451c-bea6-4389a224ece6",
+ CellID->1021410911]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[38906, 953, 83, 0, 537, "ThumbnailSection",ExpressionUUID->"0da799e3-2cea-49f2-94a7-83b1002e6afd"],
+Cell[38992, 955, 11386, 257, 1877, "Output",ExpressionUUID->"1c0fabd8-33f2-4640-a129-049a8a079c10"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[50415, 1217, 83, 0, 447, "SnapshotsSection",ExpressionUUID->"1727c4b4-bcb7-4c97-a329-5f6e86b5f9e0"],
+Cell[50501, 1219, 9866, 211, 828, "Output",ExpressionUUID->"215d2d61-4265-4dac-8a3d-d4523cee79d4"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[60404, 1435, 81, 0, 1036, "DetailsSection",ExpressionUUID->"f24a15e2-76b1-4f57-9b96-839595ab086b"],
+Cell[60488, 1437, 892, 21, 173, "DetailNotes",ExpressionUUID->"9046a5cb-5d2a-467b-bbaf-74310409070c",
+ CellID->56996680]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[61417, 1463, 92, 0, 393, "ControlSuggestionsSection",ExpressionUUID->"ce5b6436-39b7-496f-9691-0c7d890dd634"],
+Cell[61512, 1465, 410, 10, 71, "ControlSuggestions",ExpressionUUID->"722a000c-f0a5-4c12-8320-62712ad13002",
+ CellTags->"ResizeImages"],
+Cell[61925, 1477, 783, 19, 71, "ControlSuggestions",ExpressionUUID->"0a0308cc-c91e-4dc3-aa74-5000fc27d52e",
+ CellTags->"RotateAndZoomIn3D"],
+Cell[62711, 1498, 438, 13, 71, "ControlSuggestions",ExpressionUUID->"0491147a-9a00-40e4-bd2b-de871bd5ff60",
+ CellTags->"DragLocators"],
+Cell[63152, 1513, 739, 18, 71, "ControlSuggestions",ExpressionUUID->"8cf4a445-16e6-454d-a4b1-a4fa2ce3d6c9",
+ CellTags->"CreateAndDeleteLocators"],
+Cell[63894, 1533, 944, 23, 71, "ControlSuggestions",ExpressionUUID->"e85eee5d-3e88-4d4e-acd1-7986cffae942",
+ CellTags->"SliderZoom"],
+Cell[64841, 1558, 469, 11, 71, "ControlSuggestions",ExpressionUUID->"0cd3830c-5387-43fc-ba25-8103076d5cc8",
+ CellTags->"GamepadControls"],
+Cell[65313, 1571, 1564, 33, 71, "ControlSuggestions",ExpressionUUID->"60601e53-564b-4ad5-b005-550292656e1b",
+ CellTags->"AutomaticAnimation"],
+Cell[66880, 1606, 1008, 23, 71, "ControlSuggestions",ExpressionUUID->"eacf999c-5d20-4943-b7f6-a3751634b7e3",
+ CellTags->"BookmarkAnimation"]
+}, Open  ]],
+Cell[67903, 1632, 85, 0, 493, "SearchTermsSection",ExpressionUUID->"d298615d-bf0f-4b98-abc2-11aa62a7db9a"],
+Cell[67991, 1634, 86, 0, 347, "RelatedLinksSection",ExpressionUUID->"733d3ebc-c813-4e55-a671-ec4e083d9023"],
+Cell[CellGroupData[{
+Cell[68102, 1638, 80, 0, 297, "AuthorSection",ExpressionUUID->"9106b849-6f5a-4d61-952e-8b8e17c2ea14"],
+Cell[68185, 1640, 189, 4, 72, "Author",ExpressionUUID->"8431dc37-7a3a-471d-b209-1a758628f3b9"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

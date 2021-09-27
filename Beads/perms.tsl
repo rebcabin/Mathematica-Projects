@@ -1,0 +1,56 @@
+IsSequence(x)    = Kind(x) == Sequence;
+IsTuple(x)       = Kind(x) == Tuple;
+IsRecord(x)      = Kind(x) == Record;
+IsString(x)      = Kind(x) == String;
+IsNumber(x)      = Kind(x) == Number;
+IsEmpty(x)       = True if (x == [] | x == () | x == [.]) else False;
+IsNullOrEmpty(x) = True if (x == Null or IsEmpty(x)) else False;
+IsCollection(xs) = (IsSequence(xs) or IsTuple(xs) or IsRecord(xs));
+
+ToTupleAll(xs) = with { x = First(ToSequence(xs)); rs = Rest(ToSequence(xs)); }
+    [] if (xs == () or xs == Null)
+    else ([x] ++ ToTupleAll(rs)) if not IsCollection(x)
+    else ([ToTupleAll(x)] ++ ToTupleAll(rs));
+    
+preps(x, yss) = ( x : ys |: ys <- yss );
+
+perms(xs) = ((),) if (xs == ()) else
+     Concat( :(xs => Map(x -> preps(x, perms(xs => TakeWhere(y -> y ~== x))))) );
+    
+// perms( (1,2,3) ) => ToTupleAll();
+
+oneFromEach(:sources) = ((),) if (sources == ()) else
+    ( s : os |: s <- First(sources), os <- oneFromEach(:Rest(sources)) );
+    
+    
+// oneFromEach( ("A", "B", "C") ) => ToTupleAll();
+
+// oneFromEach( ("A",) ) => ToTupleAll();
+
+// oneFromEach( ("A", "B", "C"), ("E", "F", "G", "H") ) => ToTupleAll();
+
+// perms(([1], [2], [3])) => ToTupleAll();
+
+// preps(1, ((2, 3),)) => ToTupleAll();
+
+// preps(Tuple(1), ((Tuple(2), Tuple(3)),)) => ToTupleAll();
+
+// preps(Sequence(1), ((Sequence(2), Sequence(3)),)) => ToTupleAll();
+
+// preps(1, ((2, 3),)) => ToTupleAll();
+
+// perms((Tuple(1), Tuple(2), Tuple(3))) => ToTupleAll();
+
+// perms((Sequence(1), Sequence(2), Sequence(3)));
+
+// perms(([1], [2], [3])) => ToTupleAll();
+
+// perms( ((1,), (2,)) ) => ToTupleAll();
+
+// preps( (1,), ((2,), (3,)) ) => ToTupleAll();
+
+// perms( ( (1,), (2,), (3,) ) ) => ToTupleAll();
+
+// perms((("A", "B", "C"), ("E", "F", "G", "H"), ("I", "J"))) => ToTupleAll();
+
+( oneFromEach(:perm) |: perm <- perms((("A", "B", "C"), ("E", "F", "G", "H"), ("I", "J"))) ) => ToTupleAll();

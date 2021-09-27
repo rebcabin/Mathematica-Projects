@@ -1,0 +1,417 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     10965,        408]
+NotebookOptionsPosition[      9343,        348]
+NotebookOutlinePosition[      9786,        366]
+CellTagsIndexPosition[      9743,        363]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["MOTIVATING EXAMPLE", "Section"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{"sample", "=", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"3", ",", "27"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"13", ",", "7"}], "}"}]}], "}"}]}], ")"}], "//", 
+  "MatrixForm"}]], "Input"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"3", "27"},
+     {"13", "7"}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"PrependColumn", "[", 
+   RowBox[{"matrix_", ",", "column_"}], "]"}], ":=", 
+  RowBox[{"MapThread", "[", 
+   RowBox[{"Prepend", ",", 
+    RowBox[{"{", 
+     RowBox[{"matrix", ",", "column"}], "}"}]}], "]"}]}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Grid", "[", 
+  RowBox[{
+   RowBox[{"Prepend", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"PrependColumn", "[", 
+      RowBox[{"sample", ",", 
+       RowBox[{"{", 
+        RowBox[{"\"\<Boy\>\"", ",", "\"\<Girl\>\""}], "}"}]}], "]"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"\"\<\>\"", ",", "\"\<Kilt\>\"", ",", "\"\<Pant\>\""}], "}"}]}],
+     "]"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"Frame", "\[Rule]", "All"}]}], "]"}]], "Input"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"\"\>", "\<\"Kilt\"\>", "\<\"Pant\"\>"},
+    {"\<\"Boy\"\>", "3", "27"},
+    {"\<\"Girl\"\>", "13", "7"}
+   },
+   AutoDelete->False,
+   GridBoxFrame->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"TableForm", "[", 
+  RowBox[{"sample", ",", 
+   RowBox[{"TableHeadings", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"\"\<Boy\>\"", ",", "\"\<Girl\>\""}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"\"\<Kilt\>\"", ",", "\"\<Pant\>\""}], "}"}]}], "}"}]}], ",", 
+   RowBox[{"TableAlignments", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{"Right", ",", "Bottom"}], "}"}]}]}], "]"}]], "Input"],
+
+Cell[BoxData[
+ TagBox[
+  TagBox[GridBox[{
+     {
+      StyleBox["\[Null]",
+       ShowStringCharacters->False], 
+      TagBox["\<\"Kilt\"\>",
+       HoldForm], 
+      TagBox["\<\"Pant\"\>",
+       HoldForm]},
+     {
+      TagBox["\<\"Boy\"\>",
+       HoldForm], "3", "27"},
+     {
+      TagBox["\<\"Girl\"\>",
+       HoldForm], "13", "7"}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Right}}, "ColumnsIndexed" -> {}, "Rows" -> {{Bottom}}, 
+      "RowsIndexed" -> {}},
+    GridBoxDividers->{
+     "Columns" -> {False, True, {False}, False}, "ColumnsIndexed" -> {}, 
+      "Rows" -> {False, True, {False}, False}, "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[2.0999999999999996`]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}],
+   {OutputFormsDump`HeadedRows, OutputFormsDump`HeadedColumns}],
+  Function[BoxForm`e$, 
+   TableForm[
+   BoxForm`e$, TableHeadings -> {{"Boy", "Girl"}, {"Kilt", "Pant"}}, 
+    TableAlignments -> {Right, Bottom}]]]], "Output"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["DEFINITIONS", "Section"],
+
+Cell[CellGroupData[{
+
+Cell["Functions", "Subsection"],
+
+Cell[TextData[{
+ StyleBox["DEFINITION",
+  FontWeight->"Bold"],
+ ": A ",
+ StyleBox["finite function",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " is a single-valued mapping from a finite subset of some set -- the ",
+ StyleBox["domain",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " -- to a subset -- the ",
+ StyleBox["range",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " -- of some other set -- the ",
+ StyleBox["co-domain",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ ". It is equivalent to a list of pairs "
+}], "Text"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        SubscriptBox["x", "1"], " ", "\[Epsilon]", " ", "domain"}], ",", " ", 
+       
+       RowBox[{
+        SubscriptBox["y", "1"], " ", "\[Epsilon]", " ", "codomain"}]}], "}"}],
+      ",", " ", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        SubscriptBox["x", "2"], " ", "\[Epsilon]", " ", "domain"}], ",", " ", 
+       
+       RowBox[{
+        SubscriptBox["y", "2"], " ", "\[Epsilon]", " ", "codomain"}]}], "}"}],
+      ",", " ", "..."}], "}"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " "
+}], "Text"],
+
+Cell[TextData[{
+ "in which all values ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       SubscriptBox["x", "i"], "|", "i"}], "=", "1"}], ",", "2", ",", "..."}],
+     "}"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " in the first slots, from the domain are distinct. It's also equivalent to \
+a SQL table in with the domain column as primary key and to many other \
+representations such as dictionaries (single-valued hash tables), objects \
+(where the domain is the set of member symbols), lists of replacement rules, \
+and so on."
+}], "Text"],
+
+Cell[TextData[{
+ StyleBox["DEFINITION",
+  FontWeight->"Bold"],
+ ": An ",
+ StyleBox["injective finite function",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " or just an ",
+ StyleBox["injection",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " (for the purposes of this paper) is a finite function in which every value \
+in the codomain also appears just once. An injection is ",
+ StyleBox["invertible",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ ": flipping every pair in the list produces another finite function, the ",
+ StyleBox["inverse",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " of the original function. "
+}], "Text"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Random Variables", "Subsection"],
+
+Cell[TextData[{
+ StyleBox["DEFINITION",
+  FontWeight->"Bold"],
+ ": A ",
+ StyleBox["discrete random variable",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " is an ",
+ StyleBox["Action<A>", "Input",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " (in the dot net sense): a function that takes no inputs and produces a \
+value drawn at random from a countable set ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ", which corresponds to the dot net type ",
+ StyleBox["A", "Input"],
+ ". Mathematically, an action is a multivalued, non-deterministic function \
+from a special domain to ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ". The special domain is a set \[UpTee] corresponding to the dot net \
+pseudotype ",
+ StyleBox["void", "Input"],
+ " containing a single, distinguished, globally unique value named ",
+ StyleBox["unit", "Input"],
+ " and denoted ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"(", ")"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ". "
+}], "Text"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Distributions", "Subsection"],
+
+Cell[TextData[{
+ StyleBox["DEFINITION",
+  FontWeight->"Bold"],
+ ": A ",
+ StyleBox["distribution",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " of a discrete random variable is a finite function from values of the \
+variable -- the domain of the random variable -- to numbers. The numbers \
+represent proportional counts of values of the random variable in a \
+theoretically infinite collection of trials measuring the random variable. "
+}], "Text"],
+
+Cell["Scaled", "Subsubsection"],
+
+Cell["Normalized", "Subsubsection"]
+}, Open  ]],
+
+Cell["\<\
+Non-Uniform Pseudo-Random Number Generation\
+\>", "Subsection"],
+
+Cell[CellGroupData[{
+
+Cell["Old Bayes", "Subsection"],
+
+Cell["\<\
+Let A be a random variable that ranges over\
+\>", "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"P", "[", 
+   RowBox[{"Given", "[", 
+    RowBox[{
+     RowBox[{"A", "&&", "B"}], ",", "A"}], "]"}], "]"}], "//", 
+  "FullForm"}]], "Input"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   RowBox[{"P", "[", 
+    RowBox[{"Given", "[", 
+     RowBox[{
+      RowBox[{"And", "[", 
+       RowBox[{"A", ",", "B"}], "]"}], ",", "A"}], "]"}], "]"}],
+   ShowSpecialCharacters->False,
+   ShowStringCharacters->True,
+   NumberMarks->True],
+  FullForm]], "Output"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{720, 852},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+Magnification->1.25,
+FrontEndVersion->"8.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (July 22, \
+2012)",
+StyleDefinitions->FrontEnd`FileName[{"Creative"}, "NaturalColor.nb", 
+  CharacterEncoding -> "UTF-8"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 37, 0, 89, "Section"],
+Cell[CellGroupData[{
+Cell[641, 26, 277, 10, 46, "Input"],
+Cell[921, 38, 587, 17, 80, "Output"]
+}, Open  ]],
+Cell[1523, 58, 253, 7, 66, "Input"],
+Cell[CellGroupData[{
+Cell[1801, 69, 501, 13, 104, "Input"],
+Cell[2305, 84, 333, 9, 96, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2675, 98, 450, 12, 85, "Input"],
+Cell[3128, 112, 1150, 34, 100, "Output"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4327, 152, 30, 0, 89, "Section"],
+Cell[CellGroupData[{
+Cell[4382, 156, 31, 0, 42, "Subsection"],
+Cell[4416, 158, 535, 20, 71, "Text"],
+Cell[4954, 180, 654, 23, 34, "Text"],
+Cell[5611, 205, 600, 16, 93, "Text"],
+Cell[6214, 223, 639, 21, 90, "Text"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6890, 249, 38, 0, 42, "Subsection"],
+Cell[6931, 251, 1058, 34, 131, "Text"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8026, 290, 35, 0, 42, "Subsection"],
+Cell[8064, 292, 452, 11, 90, "Text"],
+Cell[8519, 305, 31, 0, 30, "Subsubsection"],
+Cell[8553, 307, 35, 0, 21, "Subsubsection"]
+}, Open  ]],
+Cell[8603, 310, 73, 2, 42, "Subsection"],
+Cell[CellGroupData[{
+Cell[8701, 316, 31, 0, 31, "Subsection"],
+Cell[8735, 318, 67, 2, 33, "Text"],
+Cell[CellGroupData[{
+Cell[8827, 324, 173, 6, 46, "Input"],
+Cell[9003, 332, 300, 11, 60, "Output"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

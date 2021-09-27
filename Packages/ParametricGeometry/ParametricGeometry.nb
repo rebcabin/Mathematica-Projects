@@ -1,0 +1,1346 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     47013,       1337]
+NotebookOptionsPosition[     45190,       1278]
+NotebookOutlinePosition[     45532,       1293]
+CellTagsIndexPosition[     45489,       1290]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Colinear Point and Parameter", "Title",
+ CellChangeTimes->{{3.5357225299617205`*^9, 3.5357225345140843`*^9}}],
+
+Cell["\<\
+Brian Beckman
+16 Jan 2012\
+\>", "Text",
+ CellChangeTimes->{{3.535723074058739*^9, 3.5357230806827793`*^9}}],
+
+Cell[TextData[{
+ "colinearPointAndParameter is a fundamental function we need in our \
+geospatial libraries (SignalsAndContext\\Main\\Monza\\Libraries\\VETS) in C# \
+(and probably later in JavaScript) for doing geometrical calculations with \
+line segments. Given a line segment (think \[OpenCurlyDoubleQuote]minimal \
+piece of the digitized road network\[CloseCurlyDoubleQuote]) and a point that \
+may be off the segment (think \[OpenCurlyDoubleQuote]GPS point\
+\[CloseCurlyDoubleQuote]), find the ",
+ StyleBox["CLOSEST POINT ON THE SEGMENT TO THE GIVEN POINT",
+  FontWeight->"Bold"],
+ ". We will, in practice, convert from lon-lat to metric coordinates -- more \
+on that after the main presentation; there are a few reasonable ways to do \
+it. "
+}], "Text",
+ CellChangeTimes->{{3.535722545707987*^9, 3.535722672592108*^9}, {
+  3.5357227832214527`*^9, 3.5357228301677294`*^9}, {3.5357230839565325`*^9, 
+  3.5357231448988867`*^9}, {3.5357256426758575`*^9, 3.535725687172307*^9}}],
+
+Cell["More precisely:", "Text",
+ CellChangeTimes->{{3.535722545707987*^9, 3.535722672592108*^9}, {
+  3.5357227832214527`*^9, 3.535722824967301*^9}}],
+
+Cell[TextData[{
+ "colinearPointAndParameter[",
+ Cell[BoxData[
+  FormBox["u", TraditionalForm]]],
+ ", ",
+ Cell[BoxData[
+  FormBox["v", TraditionalForm]]],
+ ", ",
+ Cell[BoxData[
+  FormBox["p", TraditionalForm]]],
+ "], where ",
+ Cell[BoxData[
+  FormBox["u", TraditionalForm]]],
+ ", ",
+ Cell[BoxData[
+  FormBox["v", TraditionalForm]]],
+ ", and ",
+ Cell[BoxData[
+  FormBox["p", TraditionalForm]]],
+ " are points in two- or three-dimensional space, returns a pair consisting \
+of another point ",
+ Cell[BoxData[
+  FormBox["q", TraditionalForm]]],
+ " and a real number, the parameter ",
+ Cell[BoxData[
+  FormBox["t", TraditionalForm]]],
+ ". "
+}], "Text",
+ CellChangeTimes->{{3.5357204182241993`*^9, 3.5357206804781914`*^9}, 
+   3.5357223179881363`*^9, {3.5357226896984816`*^9, 3.535722700969864*^9}, {
+   3.5357227423261895`*^9, 3.535722750614857*^9}, 3.5357228444668574`*^9, {
+   3.5357232128438244`*^9, 3.5357232135688753`*^9}}],
+
+Cell[TextData[{
+ "Think of ",
+ Cell[BoxData[
+  FormBox["u", TraditionalForm]]],
+ " -- the \[OpenCurlyDoubleQuote]start\[CloseCurlyDoubleQuote] point -- and ",
+ Cell[BoxData[
+  FormBox["v", TraditionalForm]]],
+ " -- the \[OpenCurlyDoubleQuote]end\[CloseCurlyDoubleQuote] point -- as \
+definining a ",
+ StyleBox["directed line segment",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " or ",
+ StyleBox["rooted vector",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"u", "\[Rule]", "v"}], TraditionalForm]]],
+ " (unrooted vectors just define direction; rooted vectors define a direction \
+from their beginning points). Now imagine the infinite continuation of the \
+segment ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"u", "\[Rule]", "v"}], TraditionalForm]]],
+ " in both directions (see following diagram):"
+}], "Text",
+ CellChangeTimes->{{3.5357204182241993`*^9, 3.5357206804781914`*^9}, 
+   3.5357223179881363`*^9, {3.5357226896984816`*^9, 3.535722700969864*^9}, {
+   3.5357227423261895`*^9, 3.535722750614857*^9}, 3.5357228444668574`*^9, {
+   3.535723752128996*^9, 3.5357238073339176`*^9}, {3.5357241509894466`*^9, 
+   3.535724161259773*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"Ignore", " ", "this", " ", "block", " ", "of", " ", 
+    RowBox[{"code", ":", " ", 
+     RowBox[{"it", " ", "just", " ", "produces", " ", "a", " ", 
+      RowBox[{"diagram", "."}]}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"lowLim", "=", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "1.8"}], ",", 
+         RowBox[{"-", "1.8"}]}], "}"}]}], ",", 
+      RowBox[{"hiLim", "=", 
+       RowBox[{"{", 
+        RowBox[{"1.8", ",", "1.8"}], "}"}]}]}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Manipulate", "[", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"Show", "[", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"ListLinePlot", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"u", "-", 
+             RowBox[{"10", 
+              RowBox[{"(", 
+               RowBox[{"v", "-", "u"}], ")"}]}]}], ",", 
+            RowBox[{"v", "+", 
+             RowBox[{"10", 
+              RowBox[{"(", 
+               RowBox[{"v", "-", "u"}], ")"}]}]}]}], "}"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"PlotRange", "\[Rule]", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"-", "2"}], ",", "2"}], "}"}], ",", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"-", "2"}], ",", "2"}], "}"}]}], "}"}]}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"AspectRatio", "\[Rule]", "1"}]}], "]"}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"Graphics", "[", 
+         RowBox[{"{", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"Arrow", "[", 
+            RowBox[{"{", 
+             RowBox[{"u", ",", "v"}], "}"}], "]"}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Text", "[", 
+            RowBox[{"\"\<u\>\"", ",", 
+             RowBox[{"u", "+", 
+              RowBox[{"{", 
+               RowBox[{"0", ",", "0.15"}], "}"}]}]}], "]"}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Text", "[", 
+            RowBox[{"\"\<p\>\"", ",", 
+             RowBox[{"p", "+", 
+              RowBox[{"{", 
+               RowBox[{"0", ",", "0.15"}], "}"}]}]}], "]"}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Text", "[", 
+            RowBox[{"\"\<v\>\"", ",", 
+             RowBox[{"v", "+", 
+              RowBox[{"{", 
+               RowBox[{"0", ",", "0.15"}], "}"}]}]}], "]"}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Text", "[", 
+            RowBox[{
+             RowBox[{"\"\<vu slope: \>\"", "<>", 
+              RowBox[{"If", "[", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{
+                  RowBox[{
+                  "v", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}],
+                   "-", 
+                  RowBox[{
+                  "u", "\[LeftDoubleBracket]", "1", 
+                   "\[RightDoubleBracket]"}]}], "\[Equal]", "0"}], ",", 
+                "\[IndentingNewLine]", "\"\<Infinity\>\"", ",", 
+                "\[IndentingNewLine]", 
+                RowBox[{"ToString", "@", 
+                 FractionBox[
+                  RowBox[{
+                   RowBox[{
+                   "v", "\[LeftDoubleBracket]", "2", 
+                    "\[RightDoubleBracket]"}], "-", 
+                   RowBox[{
+                   "u", "\[LeftDoubleBracket]", "2", 
+                    "\[RightDoubleBracket]"}]}], 
+                  RowBox[{
+                   RowBox[{
+                   "v", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}], "-", 
+                   RowBox[{
+                   "u", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}]}]]}]}], "]"}]}], ",", 
+             "\[IndentingNewLine]", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"-", "1.25"}], ",", "1.9"}], "}"}]}], "]"}]}], 
+          "\[IndentingNewLine]", "}"}], "]"}]}], "]"}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"u", ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", "1"}], ",", 
+            RowBox[{"-", "0.5"}]}], "}"}]}], "}"}], ",", "lowLim", ",", 
+        "hiLim", ",", "Locator"}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"v", ",", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", "0.75"}], "}"}]}], "}"}], ",", "lowLim", ",", 
+        "hiLim", ",", "Locator"}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"p", ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", "0.75"}], ",", "0.6"}], "}"}]}], "}"}], ",", 
+        "lowLim", ",", "hiLim", ",", "Locator"}], "}"}]}], 
+     "\[IndentingNewLine]", "]"}]}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.5357223542140875`*^9, 3.5357224769579296`*^9}, {
+  3.535722703796095*^9, 3.535722737012769*^9}, {3.53572318420303*^9, 
+  3.535723195735459*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`p$$ = {-0.75, 
+    0.6}, $CellContext`u$$ = {-1, -0.5}, $CellContext`v$$ = {1, 0.75}, 
+    Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
+    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
+    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`u$$], {-1, -0.5}}, {-1.8, -1.8}, {1.8, 1.8}}, {{
+       Hold[$CellContext`v$$], {1, 0.75}}, {-1.8, -1.8}, {1.8, 1.8}}, {{
+       Hold[$CellContext`p$$], {-0.75, 0.6}}, {-1.8, -1.8}, {1.8, 1.8}}}, 
+    Typeset`size$$ = {540., {268., 277.}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    True, $CellContext`u$33489$$ = {0, 0}, $CellContext`v$33490$$ = {0, 
+    0}, $CellContext`p$33491$$ = {0, 0}}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`p$$ = {-0.75, 
+         0.6}, $CellContext`u$$ = {-1, -0.5}, $CellContext`v$$ = {1, 0.75}}, 
+      "ControllerVariables" :> {
+        Hold[$CellContext`u$$, $CellContext`u$33489$$, {0, 0}], 
+        Hold[$CellContext`v$$, $CellContext`v$33490$$, {0, 0}], 
+        Hold[$CellContext`p$$, $CellContext`p$33491$$, {0, 0}]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> Show[
+        ListLinePlot[{$CellContext`u$$ - 
+          10 ($CellContext`v$$ - $CellContext`u$$), $CellContext`v$$ + 
+          10 ($CellContext`v$$ - $CellContext`u$$)}, 
+         PlotRange -> {{-2, 2}, {-2, 2}}, AspectRatio -> 1], 
+        Graphics[{
+          Arrow[{$CellContext`u$$, $CellContext`v$$}], 
+          Text["u", $CellContext`u$$ + {0, 0.15}], 
+          Text["p", $CellContext`p$$ + {0, 0.15}], 
+          Text["v", $CellContext`v$$ + {0, 0.15}], 
+          Text[
+           StringJoin["vu slope: ", 
+            If[
+            Part[$CellContext`v$$, 1] - Part[$CellContext`u$$, 1] == 0, 
+             "Infinity", 
+             
+             ToString[(Part[$CellContext`v$$, 2] - 
+               Part[$CellContext`u$$, 2])/(Part[$CellContext`v$$, 1] - 
+              Part[$CellContext`u$$, 1])]]], {-1.25, 1.9}]}]], 
+      "Specifications" :> {{{$CellContext`u$$, {-1, -0.5}}, {-1.8, -1.8}, {
+         1.8, 1.8}, ControlType -> 
+         Locator}, {{$CellContext`v$$, {1, 0.75}}, {-1.8, -1.8}, {1.8, 1.8}, 
+         ControlType -> 
+         Locator}, {{$CellContext`p$$, {-0.75, 0.6}}, {-1.8, -1.8}, {1.8, 
+         1.8}, ControlType -> Locator}}, "Options" :> {}, 
+      "DefaultOptions" :> {}],
+     ImageSizeCache->{620., {317., 324.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{{3.5357224010233355`*^9, 3.5357224291425962`*^9}, {
+   3.5357224779519987`*^9, 3.535722488068821*^9}, 3.5357227617072296`*^9, 
+   3.5357231977086143`*^9, 3.535723242849722*^9, 3.5423709037561584`*^9}]
+}, Open  ]],
+
+Cell[TextData[{
+ "The point ",
+ StyleBox["q",
+  FontSlant->"Italic"],
+ " that we seek lies on the infinite extension of the line segment ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"u", "\[Rule]", "v"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " and is as close as possible to the line segment in the metric of the \
+geometry (the Euclidean metric, which measures Pythagorean distances, or the \
+Haversin metric, which measures distances on great circles). Let us call ",
+ Cell[BoxData[
+  FormBox["q", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " the \[OpenCurlyDoubleQuote]colinear point;\[CloseCurlyDoubleQuote] we \
+could call it the \[OpenCurlyDoubleQuote]closest \
+point\[CloseCurlyDoubleQuote] or any number of other suitable names. "
+}], "Text",
+ CellChangeTimes->{{3.5357204182241993`*^9, 3.535720608442927*^9}, {
+  3.535722771005476*^9, 3.5357227777180247`*^9}, {3.535722864650974*^9, 
+  3.5357229541731377`*^9}, {3.5357230092230406`*^9, 3.5357230557052402`*^9}, {
+  3.5357233074293947`*^9, 3.535723396048482*^9}}],
+
+Cell[TextData[{
+ "Our definition of the parameter ",
+ Cell[BoxData[
+  FormBox["t", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " is such that ",
+ Cell[BoxData[
+  FormBox["t", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " lies between 0 and 1 if and only if ",
+ Cell[BoxData[
+  FormBox["q", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " lies geometrically between ",
+ Cell[BoxData[
+  FormBox["u", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " and ",
+ Cell[BoxData[
+  FormBox["v", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ "; ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"t", "=", "0"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " exactly when ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"q", "=", "u"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ", that is, the colinear point coincides with the start point ",
+ Cell[BoxData[
+  FormBox["u", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " of the segment ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"u", "\[Rule]", "v"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ "; ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"t", "=", "1"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " exactly when ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"q", "=", "v"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ", that is, the colinear point coincides with the end point ",
+ Cell[BoxData[
+  FormBox["v", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " of the segment ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"u", "\[Rule]", "v"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ "; ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"t", "<", "0"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " when ",
+ Cell[BoxData[
+  FormBox["q", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " lies on the infinite extension of ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"u", "\[Rule]", "v"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " on the ",
+ Cell[BoxData[
+  FormBox["u", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " side, that is, metrically closer to ",
+ Cell[BoxData[
+  FormBox["u", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " than to ",
+ Cell[BoxData[
+  FormBox["v", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ "; ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"t", ">", "1"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " when ",
+ Cell[BoxData[
+  FormBox["q", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " lies on the infinite extension of ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"u", "\[Rule]", "v"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " on the ",
+ Cell[BoxData[
+  FormBox["v", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " side, that is, metrically closer to ",
+ Cell[BoxData[
+  FormBox["v", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " than to ",
+ Cell[BoxData[
+  FormBox["u", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ". "
+}], "Text",
+ CellChangeTimes->{{3.5357204182241993`*^9, 3.535720608442927*^9}, {
+  3.535722771005476*^9, 3.5357227777180247`*^9}, {3.535722864650974*^9, 
+  3.5357229541731377`*^9}, {3.5357230092230406`*^9, 3.5357230557052402`*^9}, {
+  3.5357233074293947`*^9, 3.535723570352924*^9}}],
+
+Cell[TextData[{
+ "We solve this by noting that the ",
+ StyleBox["inner product",
+  FontSlant->"Italic"],
+ " (",
+ "http://en.wikipedia.org/wiki/Inner_product_space) ",
+ "in the metric space gives the ",
+ StyleBox["scaled orthogonal projection",
+  FontSlant->"Italic"],
+ " of the rooted vector ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"u", "\[Rule]", "p"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " on the rooted vector ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"u", "\[Rule]", "v"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ". Let\[CloseCurlyQuote]s compute that."
+}], "Text",
+ CellChangeTimes->{{3.5357235942418528`*^9, 3.535723738763425*^9}, {
+  3.5357238284396095`*^9, 3.535723891956688*^9}, {3.5357239515824327`*^9, 
+  3.53572408663978*^9}, {3.5357263403736205`*^9, 3.535726342076791*^9}}],
+
+Cell[TextData[{
+ "The components of the rooted vector ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"u", "\[Rule]", "v"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " are just the elementwise difference (the vector difference) of the \
+coordinates of the points ",
+ Cell[BoxData[
+  FormBox["u", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " and ",
+ Cell[BoxData[
+  FormBox["v", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ", namely ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"u", "-", "v"}], "=", 
+    RowBox[{"def", "=", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{
+        SubscriptBox["u", "1"], "-", 
+        SubscriptBox["v", "1"]}], ",", " ", 
+       RowBox[{
+        SubscriptBox["u", "2"], "-", 
+        SubscriptBox["v", "2"]}]}], ")"}]}]}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " in two dimensions, and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{
+       SubscriptBox["u", "1"], "-", 
+       SubscriptBox["v", "1"]}], ",", " ", 
+      RowBox[{
+       SubscriptBox["u", "2"], "-", 
+       SubscriptBox["v", "2"]}], ",", " ", 
+      RowBox[{
+       SubscriptBox["u", "3"], "-", 
+       SubscriptBox["v", "3"]}]}], ")"}], Cell[""]}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ "in three dimensions. In the Mathematica code below, we can just write this \
+as ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"u", "-", "v"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ "; in C#, we must write Vector classes to do this (I think VETS already has \
+support for it. Exercise: check)."
+}], "Text",
+ CellChangeTimes->{{3.5357235942418528`*^9, 3.535723738763425*^9}, {
+   3.5357238284396095`*^9, 3.535723891956688*^9}, {3.5357239515824327`*^9, 
+   3.535724132137412*^9}, 3.535724183739562*^9, {3.5357255846390543`*^9, 
+   3.535725595136104*^9}}],
+
+Cell[TextData[{
+ "The scaled orthogonal projection of rooted vector ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"p", "-", "u"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " on rooted vector ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"v", "-", "u"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " is"
+}], "Text",
+ CellChangeTimes->{{3.5357235942418528`*^9, 3.535723738763425*^9}, {
+  3.5357238284396095`*^9, 3.535723891956688*^9}, {3.5357239515824327`*^9, 
+  3.535724132137412*^9}, {3.535724183739562*^9, 3.535724230566326*^9}}],
+
+Cell[TextData[Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"p", "-", "u"}], ")"}], "\[CenterDot]", 
+   RowBox[{"(", 
+    RowBox[{"v", "-", "u"}], ")"}]}], TraditionalForm]],
+ FormatType->"TraditionalForm"]], "Text",
+ CellChangeTimes->{{3.5357235942418528`*^9, 3.535723738763425*^9}, {
+  3.5357238284396095`*^9, 3.535723891956688*^9}, {3.5357239515824327`*^9, 
+  3.535724132137412*^9}, {3.535724183739562*^9, 3.535724250503415*^9}, {
+  3.5357248545974755`*^9, 3.5357248570776625`*^9}}],
+
+Cell["\<\
+where the \[OpenCurlyDoubleQuote]dot product\[CloseCurlyDoubleQuote] is the \
+usual Euclidean inner product (later, we generalize this to the Haversin \
+metric):\
+\>", "Text",
+ CellChangeTimes->{{3.5357248626961036`*^9, 3.5357248930415816`*^9}}],
+
+Cell[TextData[{
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"a", "\[CenterDot]", "b"}], "=", 
+    RowBox[{"def", "=", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        SubscriptBox["a", "1"], "\[Times]", 
+        SubscriptBox["b", "1"]}], ")"}], "+", 
+      RowBox[{"(", 
+       RowBox[{
+        SubscriptBox["a", "2"], "\[Times]", 
+        SubscriptBox["b", "2"]}], ")"}]}]}]}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " in two dimensions, or ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      SubscriptBox["a", "1"], "\[Times]", 
+      SubscriptBox["b", "1"]}], ")"}], "+", 
+    RowBox[{"(", 
+     RowBox[{
+      SubscriptBox["a", "2"], "\[Times]", 
+      SubscriptBox["b", "2"]}], ")"}], "+", 
+    RowBox[{"(", 
+     RowBox[{
+      SubscriptBox["a", "3"], "\[Times]", 
+      SubscriptBox["b", "3"]}], ")"}]}], TraditionalForm]]],
+ " in three dimensions. "
+}], "Text",
+ CellChangeTimes->{{3.5357249002396717`*^9, 3.5357250283088846`*^9}, 
+   3.5357254548000717`*^9}],
+
+Cell["\<\
+Considering our points in three dimensions, then, we can have Mathematica \
+calculate this for us prettily:\
+\>", "Text",
+ CellChangeTimes->{{3.5357249002396717`*^9, 3.5357250283088846`*^9}, {
+  3.5357254548000717`*^9, 3.53572548488908*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"p", "=", 
+      RowBox[{"{", 
+       RowBox[{"p1", ",", "p2", ",", "p3"}], "}"}]}], ",", 
+     RowBox[{"u", "=", 
+      RowBox[{"{", 
+       RowBox[{"u1", ",", "u2", ",", "u3"}], "}"}]}], ",", 
+     RowBox[{"v", "=", 
+      RowBox[{"{", 
+       RowBox[{"v1", ",", "v2", ",", "v3"}], "}"}]}]}], "}"}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"p", "-", "u"}], ")"}], ".", 
+    RowBox[{"(", 
+     RowBox[{"v", "-", "u"}], ")"}]}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.5357254871023016`*^9, 3.5357255352531166`*^9}, 
+   3.535725766105199*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"p1", "-", "u1"}], ")"}], " ", 
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"-", "u1"}], "+", "v1"}], ")"}]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"p2", "-", "u2"}], ")"}], " ", 
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"-", "u2"}], "+", "v2"}], ")"}]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"p3", "-", "u3"}], ")"}], " ", 
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"-", "u3"}], "+", "v3"}], ")"}]}]}]], "Output",
+ CellChangeTimes->{3.5357255362382145`*^9, 3.5357257681154003`*^9, 
+  3.542370903865365*^9}]
+}, Open  ]],
+
+Cell["\<\
+A Euclidean inner product like this is an essential part of vector classes in \
+C# (not sure if our VETS library has this. Exercise: check and put it in \
+otherwise.\
+\>", "Text",
+ CellChangeTimes->{{3.53572554938853*^9, 3.535725617127303*^9}}],
+
+Cell["In Euclidean space, ", "Text",
+ CellChangeTimes->{{3.5357258416837564`*^9, 3.5357258467552633`*^9}}],
+
+Cell[TextData[Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"p", "-", "u"}], ")"}], "\[CenterDot]", 
+    RowBox[{"(", 
+     RowBox[{"v", "-", "u"}], ")"}]}], "=", 
+   RowBox[{"||", 
+    RowBox[{"p", "-", "u"}], "||", 
+    RowBox[{"\[Times]", 
+     RowBox[{"||", 
+      RowBox[{"v", "-", "u"}], "||", 
+      RowBox[{"cos", "(", 
+       RowBox[{"\[Theta]", "=", 
+        RowBox[{"def", "=", 
+         RowBox[{"angle", " ", "between", " ", 
+          RowBox[{"(", 
+           RowBox[{"p", "-", "u"}], ")"}], " ", "and", " ", 
+          RowBox[{"(", 
+           RowBox[{"v", "-", "u"}], ")"}]}]}]}], ")"}]}]}]}]}], 
+  TraditionalForm]],
+ FormatType->"TraditionalForm"]], "Text",
+ CellChangeTimes->{{3.535726407326315*^9, 3.5357264713267145`*^9}, {
+  3.535726677889368*^9, 3.5357266809696765`*^9}}],
+
+Cell[TextData[{
+ "that is, the orthogonal projection of ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"p", "-", "u"}], TraditionalForm]]],
+ " on ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"v", "-", "u"}], TraditionalForm]]],
+ " times the lengths of the two vectors. But the value of the parameter ",
+ Cell[BoxData[
+  FormBox["t", TraditionalForm]]],
+ " that we want is the length of that orthogonal project as a fraction of the \
+length of ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"v", "-", "u"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ". In other words, we want"
+}], "Text",
+ CellChangeTimes->{{3.535726510797661*^9, 3.53572664150173*^9}}],
+
+Cell[TextData[Cell[BoxData[
+ FormBox[
+  RowBox[{"t", "=", 
+   RowBox[{
+    FractionBox[
+     RowBox[{"||", 
+      RowBox[{"p", "-", "u"}], "||"}], 
+     RowBox[{"||", 
+      RowBox[{"v", "-", "u"}], "||"}]], 
+    RowBox[{"cos", "(", "\[Theta]", ")"}]}]}], TraditionalForm]],
+ FormatType->"TraditionalForm"]], "Text",
+ CellChangeTimes->{{3.5357266521857986`*^9, 3.53572669110569*^9}, {
+  3.535726836658244*^9, 3.53572683792137*^9}}],
+
+Cell["we immediately write", "Text",
+ CellChangeTimes->{{3.535726510797661*^9, 3.5357266333629165`*^9}, {
+  3.5357267600895877`*^9, 3.5357267698415627`*^9}}],
+
+Cell[TextData[Cell[BoxData[
+ FormBox[
+  RowBox[{"t", "=", 
+   RowBox[{
+    RowBox[{
+     FractionBox[
+      RowBox[{"||", 
+       RowBox[{"p", "-", "u"}], "||"}], 
+      RowBox[{"||", 
+       RowBox[{"v", "-", "u"}], "||"}]], 
+     RowBox[{"cos", "(", "\[Theta]", ")"}]}], "=", 
+    RowBox[{
+     RowBox[{
+      FractionBox[
+       RowBox[{"||", 
+        RowBox[{"p", "-", "u"}], "||", 
+        RowBox[{"\[Times]", 
+         RowBox[{"||", 
+          RowBox[{"v", "-", "u"}], "||"}]}]}], 
+       RowBox[{"||", 
+        RowBox[{"v", "-", "u"}], "||", 
+        RowBox[{"\[Times]", 
+         RowBox[{"||", 
+          RowBox[{"v", "-", "u"}], "||"}]}]}]], 
+      RowBox[{"cos", "(", "\[Theta]", ")"}], " ", "when"}], " ", "||", 
+     RowBox[{"v", "-", "u"}], "||", 
+     RowBox[{"\[NotEqual]", " ", "0"}]}]}]}], TraditionalForm]],
+ FormatType->"TraditionalForm"]], "Text",
+ CellChangeTimes->{{3.535726510797661*^9, 3.5357266333629165`*^9}, {
+  3.5357267600895877`*^9, 3.535726886447222*^9}}],
+
+Cell[TextData[{
+ "Noting that ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"||", 
+     RowBox[{"v", "-", "u"}], "||", 
+     RowBox[{"\[Times]", 
+      RowBox[{"||", 
+       RowBox[{"v", "-", "u"}], "||"}]}]}], "=", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"v", "-", "u"}], ")"}], "\[CenterDot]", 
+     RowBox[{"(", 
+      RowBox[{"v", "-", "u"}], ")"}]}]}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ", another application of inner product, and that ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"||", 
+    RowBox[{"v", "-", "u"}], "||", 
+    RowBox[{"\[NotEqual]", 
+     RowBox[{"0", " ", "iff", " ", "v"}], "\[NotEqual]", "u"}]}], 
+   TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ", we conclude that"
+}], "Text",
+ CellChangeTimes->{{3.535726510797661*^9, 3.5357266333629165`*^9}, {
+  3.5357267600895877`*^9, 3.535726933419919*^9}, {3.535726991925769*^9, 
+  3.5357270258791637`*^9}}],
+
+Cell[TextData[Cell[BoxData[
+ FormBox[
+  RowBox[{"t", "=", 
+   RowBox[{
+    RowBox[{
+     FractionBox[
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"p", "-", "u"}], ")"}], "\[CenterDot]", 
+       RowBox[{"(", 
+        RowBox[{"v", "-", "u"}], ")"}]}], 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"v", "-", "u"}], ")"}], "\[CenterDot]", 
+       RowBox[{"(", 
+        RowBox[{"v", "-", "u"}], ")"}]}]], "when", " ", "v"}], "\[NotEqual]", 
+    "u"}]}], TraditionalForm]],
+ FormatType->"TraditionalForm"]], "Text",
+ CellChangeTimes->{{3.5357269449130683`*^9, 3.535726985321109*^9}}],
+
+Cell[TextData[{
+ "To find ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"q", Cell[""]}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ", we note that the rooted vector ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"q", "-", "u"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " is colinear with the rooted vector ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"v", "-", "u"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " and that its length is exactly ",
+ Cell[BoxData[
+  FormBox["t", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " times the length of ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"v", "-", "u"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ". This is standard LERP (",
+ "http://en.wikipedia.org/wiki/Linear_interpolation)"
+}], "Text",
+ CellChangeTimes->{{3.535727478372114*^9, 3.535727515037546*^9}, {
+  3.5357278317949467`*^9, 3.535727864816079*^9}, {3.535727900350422*^9, 
+  3.5357279032311673`*^9}}],
+
+Cell[TextData[Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"q", "-", "u"}], "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"t", "\[Times]", 
+      RowBox[{"(", 
+       RowBox[{"v", "-", "u"}], ")"}]}], "\[DoubleLeftRightArrow]", "q"}], 
+    "=", 
+    RowBox[{"u", "+", 
+     RowBox[{"t", "(", 
+      RowBox[{"v", "-", "u"}], ")"}]}]}]}], TraditionalForm]],
+ FormatType->"TraditionalForm"]], "Text",
+ CellChangeTimes->{{3.535727907792032*^9, 3.535727968373404*^9}}],
+
+Cell[TextData[{
+ "In the degenerate case when ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"v", "=", "u"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ", let\[CloseCurlyQuote]s define the answers to be ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"q", "=", "u"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"t", "=", "0"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " so they smoothly connect to the non-degenerate cases. "
+}], "Text",
+ CellChangeTimes->{{3.5357271503666115`*^9, 3.535727157413316*^9}, {
+   3.535727275810887*^9, 3.535727345069435*^9}, 3.535727471412569*^9}],
+
+Cell["\<\
+In two dimensions, then, we may write\
+\>", "Text",
+ CellChangeTimes->{{3.5357271503666115`*^9, 3.535727157413316*^9}, {
+   3.535727275810887*^9, 3.535727345069435*^9}, 3.535727471412569*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"colinearPointAndParameter", "[", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"u", ":", 
+     RowBox[{"{", 
+      RowBox[{"u1_", ",", "u2_"}], "}"}]}], ",", "\[IndentingNewLine]", 
+    RowBox[{"v", ":", 
+     RowBox[{"{", 
+      RowBox[{"v1_", ",", "v2_"}], "}"}]}], ",", "\[IndentingNewLine]", 
+    RowBox[{"p", ":", 
+     RowBox[{"{", 
+      RowBox[{"p1_", ",", "p2_"}], "}"}]}]}], "]"}], ":=", 
+  "\[IndentingNewLine]", 
+  RowBox[{"If", "[", 
+   RowBox[{
+    RowBox[{"v", "\[NotEqual]", "u"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"With", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"t", "=", 
+        FractionBox[
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{"p", "-", "u"}], ")"}], ".", 
+          RowBox[{"(", 
+           RowBox[{"v", "-", "u"}], ")"}]}], 
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{"v", "-", "u"}], ")"}], ".", 
+          RowBox[{"(", 
+           RowBox[{"v", "-", "u"}], ")"}]}]]}], "}"}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"u", "+", 
+         RowBox[{"t", 
+          RowBox[{"(", 
+           RowBox[{"v", "-", "u"}], ")"}]}]}], ",", "t"}], "}"}]}], "]"}], 
+    ",", "\[IndentingNewLine]", 
+    RowBox[{"(*", "else", "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{"u", ",", "0"}], "}"}]}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.533415563780443*^9, 3.533415588843443*^9}, {
+   3.535720343656701*^9, 3.535720393861253*^9}, {3.5357270478283587`*^9, 
+   3.5357271188254576`*^9}, 3.5357272968015876`*^9}],
+
+Cell["\<\
+and the translations to C# and Javascript should be obvious. Next, we produce \
+an interactive visualization that enables us to check this code:\
+\>", "Text",
+ CellChangeTimes->{{3.535727350933399*^9, 3.535727389810532*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["Visualize Colinear Point and Parameter", "Section",
+ CellChangeTimes->{{3.533419728421443*^9, 3.5334197395504427`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Module", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"lowLim", "=", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"-", "1.8"}], ",", 
+        RowBox[{"-", "1.8"}]}], "}"}]}], ",", 
+     RowBox[{"hiLim", "=", 
+      RowBox[{"{", 
+       RowBox[{"1.8", ",", "1.8"}], "}"}]}], ",", "q", ",", "t"}], "}"}], ",",
+    "\[IndentingNewLine]", 
+   RowBox[{"Manipulate", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"q", ",", "t"}], "}"}], "=", 
+       RowBox[{"colinearPointAndParameter", "[", 
+        RowBox[{"u", ",", "v", ",", "p"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Show", "[", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"ListLinePlot", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"u", "-", 
+             RowBox[{"10", 
+              RowBox[{"(", 
+               RowBox[{"v", "-", "u"}], ")"}]}]}], ",", 
+            RowBox[{"v", "+", 
+             RowBox[{"10", 
+              RowBox[{"(", 
+               RowBox[{"v", "-", "u"}], ")"}]}]}]}], "}"}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"PlotRange", "\[Rule]", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"-", "2"}], ",", "2"}], "}"}], ",", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"-", "2"}], ",", "2"}], "}"}]}], "}"}]}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"AspectRatio", "\[Rule]", "1"}]}], "]"}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"ListLinePlot", "[", 
+         RowBox[{"{", 
+          RowBox[{"q", ",", "p"}], "}"}], "]"}], ",", "\[IndentingNewLine]", 
+        RowBox[{"Graphics", "[", 
+         RowBox[{"{", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{"Arrow", "[", 
+            RowBox[{"{", 
+             RowBox[{"u", ",", "v"}], "}"}], "]"}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Text", "[", 
+            RowBox[{"\"\<u\>\"", ",", 
+             RowBox[{"u", "+", 
+              RowBox[{"{", 
+               RowBox[{"0", ",", "0.15"}], "}"}]}]}], "]"}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Text", "[", 
+            RowBox[{"\"\<p\>\"", ",", 
+             RowBox[{"p", "+", 
+              RowBox[{"{", 
+               RowBox[{"0", ",", "0.15"}], "}"}]}]}], "]"}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Text", "[", 
+            RowBox[{"\"\<v\>\"", ",", 
+             RowBox[{"v", "+", 
+              RowBox[{"{", 
+               RowBox[{"0", ",", "0.15"}], "}"}]}]}], "]"}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Text", "[", 
+            RowBox[{"\"\<q\>\"", ",", 
+             RowBox[{"q", "+", 
+              RowBox[{"{", 
+               RowBox[{"0", ",", "0.15"}], "}"}]}]}], "]"}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Text", "[", 
+            RowBox[{
+             RowBox[{"\"\<vu slope: \>\"", "<>", 
+              RowBox[{"If", "[", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{
+                  RowBox[{
+                  "v", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}],
+                   "-", 
+                  RowBox[{
+                  "u", "\[LeftDoubleBracket]", "1", 
+                   "\[RightDoubleBracket]"}]}], "\[Equal]", "0"}], ",", 
+                "\[IndentingNewLine]", "\"\<Infinity\>\"", ",", 
+                "\[IndentingNewLine]", 
+                RowBox[{"ToString", "@", 
+                 FractionBox[
+                  RowBox[{
+                   RowBox[{
+                   "v", "\[LeftDoubleBracket]", "2", 
+                    "\[RightDoubleBracket]"}], "-", 
+                   RowBox[{
+                   "u", "\[LeftDoubleBracket]", "2", 
+                    "\[RightDoubleBracket]"}]}], 
+                  RowBox[{
+                   RowBox[{
+                   "v", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}], "-", 
+                   RowBox[{
+                   "u", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}]}]]}]}], "]"}]}], ",", 
+             "\[IndentingNewLine]", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"-", "1.25"}], ",", "1.9"}], "}"}]}], "]"}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Text", "[", 
+            RowBox[{
+             RowBox[{"\"\<qu slope: \>\"", "<>", 
+              RowBox[{"If", "[", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{
+                  RowBox[{
+                  "q", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}],
+                   "-", 
+                  RowBox[{
+                  "u", "\[LeftDoubleBracket]", "1", 
+                   "\[RightDoubleBracket]"}]}], "\[Equal]", "0"}], ",", 
+                "\[IndentingNewLine]", "\"\<Infinity\>\"", ",", 
+                "\[IndentingNewLine]", 
+                RowBox[{"ToString", "@", 
+                 FractionBox[
+                  RowBox[{
+                   RowBox[{
+                   "q", "\[LeftDoubleBracket]", "2", 
+                    "\[RightDoubleBracket]"}], "-", 
+                   RowBox[{
+                   "u", "\[LeftDoubleBracket]", "2", 
+                    "\[RightDoubleBracket]"}]}], 
+                  RowBox[{
+                   RowBox[{
+                   "q", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}], "-", 
+                   RowBox[{
+                   "u", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}]}]]}]}], "]"}]}], ",", 
+             "\[IndentingNewLine]", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"-", "1.25"}], ",", "1.8"}], "}"}]}], "]"}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{"Text", "[", 
+            RowBox[{
+             RowBox[{"\"\<t: \>\"", "<>", 
+              RowBox[{"ToString", "@", "t"}]}], ",", "\[IndentingNewLine]", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"-", "1.25"}], ",", "1.7"}], "}"}]}], "]"}], ",", 
+           "\[IndentingNewLine]", "Red", ",", "\[IndentingNewLine]", 
+           RowBox[{"Disk", "[", 
+            RowBox[{"q", ",", "0.06"}], "]"}], ",", "\[IndentingNewLine]", 
+           RowBox[{"Arrow", "[", 
+            RowBox[{"{", 
+             RowBox[{"u", ",", "q"}], "}"}], "]"}], ",", 
+           "\[IndentingNewLine]", "Blue", ",", "\[IndentingNewLine]", 
+           RowBox[{"Arrow", "[", 
+            RowBox[{"{", 
+             RowBox[{"u", ",", "p"}], "}"}], "]"}]}], "\[IndentingNewLine]", 
+          "}"}], "]"}]}], "]"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"u", ",", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"-", "1"}], ",", 
+           RowBox[{"-", "0.5"}]}], "}"}]}], "}"}], ",", "lowLim", ",", 
+       "hiLim", ",", "Locator"}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"v", ",", 
+         RowBox[{"{", 
+          RowBox[{"1", ",", "0.75"}], "}"}]}], "}"}], ",", "lowLim", ",", 
+       "hiLim", ",", "Locator"}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"p", ",", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"-", "0.75"}], ",", "0.6"}], "}"}]}], "}"}], ",", "lowLim",
+        ",", "hiLim", ",", "Locator"}], "}"}]}], "\[IndentingNewLine]", 
+    "]"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.533415647146443*^9, 3.533415673545443*^9}, 
+   3.533415767720443*^9, {3.5357207143144016`*^9, 3.5357207266909018`*^9}, {
+   3.5357222305046587`*^9, 3.5357222681661596`*^9}, {3.5357232609341936`*^9, 
+   3.535723276696947*^9}, 3.5357274310028667`*^9}],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`p$$ = {-0.75, 
+    0.6}, $CellContext`u$$ = {-1, -0.5}, $CellContext`v$$ = {1, 0.75}, 
+    Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
+    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
+    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`u$$], {-1, -0.5}}, {-1.8, -1.8}, {1.8, 1.8}}, {{
+       Hold[$CellContext`v$$], {1, 0.75}}, {-1.8, -1.8}, {1.8, 1.8}}, {{
+       Hold[$CellContext`p$$], {-0.75, 0.6}}, {-1.8, -1.8}, {1.8, 1.8}}}, 
+    Typeset`size$$ = {540., {268., 277.}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    True, $CellContext`u$33523$$ = {0, 0}, $CellContext`v$33524$$ = {0, 
+    0}, $CellContext`p$33525$$ = {0, 0}}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`p$$ = {-0.75, 
+         0.6}, $CellContext`u$$ = {-1, -0.5}, $CellContext`v$$ = {1, 0.75}}, 
+      "ControllerVariables" :> {
+        Hold[$CellContext`u$$, $CellContext`u$33523$$, {0, 0}], 
+        Hold[$CellContext`v$$, $CellContext`v$33524$$, {0, 0}], 
+        Hold[$CellContext`p$$, $CellContext`p$33525$$, {0, 0}]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, 
+      "Body" :> ({$CellContext`q$33522, $CellContext`t$33522} = 
+        ParametricGeometry`colinearPointAndParameter[$CellContext`u$$, \
+$CellContext`v$$, $CellContext`p$$]; Show[
+         ListLinePlot[{$CellContext`u$$ - 
+           10 ($CellContext`v$$ - $CellContext`u$$), $CellContext`v$$ + 
+           10 ($CellContext`v$$ - $CellContext`u$$)}, 
+          PlotRange -> {{-2, 2}, {-2, 2}}, AspectRatio -> 1], 
+         ListLinePlot[{$CellContext`q$33522, $CellContext`p$$}], 
+         Graphics[{
+           Arrow[{$CellContext`u$$, $CellContext`v$$}], 
+           Text["u", $CellContext`u$$ + {0, 0.15}], 
+           Text["p", $CellContext`p$$ + {0, 0.15}], 
+           Text["v", $CellContext`v$$ + {0, 0.15}], 
+           Text["q", $CellContext`q$33522 + {0, 0.15}], 
+           Text[
+            StringJoin["vu slope: ", 
+             If[
+             Part[$CellContext`v$$, 1] - Part[$CellContext`u$$, 1] == 0, 
+              "Infinity", 
+              
+              ToString[(Part[$CellContext`v$$, 2] - 
+                Part[$CellContext`u$$, 2])/(Part[$CellContext`v$$, 1] - 
+               Part[$CellContext`u$$, 1])]]], {-1.25, 1.9}], 
+           Text[
+            StringJoin["qu slope: ", 
+             If[
+             Part[$CellContext`q$33522, 1] - Part[$CellContext`u$$, 1] == 0, 
+              "Infinity", 
+              
+              ToString[(Part[$CellContext`q$33522, 2] - 
+                Part[$CellContext`u$$, 2])/(Part[$CellContext`q$33522, 1] - 
+               Part[$CellContext`u$$, 1])]]], {-1.25, 1.8}], 
+           Text[
+            StringJoin["t: ", 
+             ToString[$CellContext`t$33522]], {-1.25, 1.7}], Red, 
+           Disk[$CellContext`q$33522, 0.06], 
+           Arrow[{$CellContext`u$$, $CellContext`q$33522}], Blue, 
+           Arrow[{$CellContext`u$$, $CellContext`p$$}]}]]), 
+      "Specifications" :> {{{$CellContext`u$$, {-1, -0.5}}, {-1.8, -1.8}, {
+         1.8, 1.8}, ControlType -> 
+         Locator}, {{$CellContext`v$$, {1, 0.75}}, {-1.8, -1.8}, {1.8, 1.8}, 
+         ControlType -> 
+         Locator}, {{$CellContext`p$$, {-0.75, 0.6}}, {-1.8, -1.8}, {1.8, 
+         1.8}, ControlType -> Locator}}, "Options" :> {}, 
+      "DefaultOptions" :> {}],
+     ImageSizeCache->{620., {317., 324.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{
+  3.533415674816443*^9, 3.533415722060443*^9, 3.533415780380443*^9, 
+   3.5334161126864433`*^9, 3.533418696656443*^9, 3.533419145604443*^9, 
+   3.533419401953443*^9, 3.533419796631443*^9, 3.5334213811830754`*^9, 
+   3.5357203076378245`*^9, 3.5357207341905375`*^9, {3.5357222517863584`*^9, 
+   3.5357222740101247`*^9}, 3.535722992702225*^9, {3.5357232775680203`*^9, 
+   3.5357232900445232`*^9}, 3.53572712814939*^9, 3.542370903927769*^9}]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{942, 935},
+WindowMargins->{{0, Automatic}, {-5, Automatic}},
+FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 115, 1, 123, "Title"],
+Cell[697, 25, 117, 4, 66, "Text"],
+Cell[817, 31, 979, 16, 164, "Text"],
+Cell[1799, 49, 148, 2, 41, "Text"],
+Cell[1950, 53, 923, 31, 66, "Text"],
+Cell[2876, 86, 1182, 32, 117, "Text"],
+Cell[CellGroupData[{
+Cell[4083, 122, 5200, 138, 703, "Input"],
+Cell[9286, 262, 3314, 65, 665, "Output"]
+}, Open  ]],
+Cell[12615, 330, 1044, 22, 115, "Text"],
+Cell[13662, 354, 3262, 116, 164, "Text"],
+Cell[16927, 472, 818, 23, 90, "Text"],
+Cell[17748, 497, 1859, 58, 139, "Text"],
+Cell[19610, 557, 542, 15, 41, "Text"],
+Cell[20155, 574, 503, 11, 41, "Text"],
+Cell[20661, 587, 255, 5, 66, "Text"],
+Cell[20919, 594, 1025, 35, 66, "Text"],
+Cell[21947, 631, 251, 5, 41, "Text"],
+Cell[CellGroupData[{
+Cell[22223, 640, 670, 21, 71, "Input"],
+Cell[22896, 663, 591, 21, 42, "Output"]
+}, Open  ]],
+Cell[23502, 687, 254, 5, 66, "Text"],
+Cell[23759, 694, 106, 1, 41, "Text"],
+Cell[23868, 697, 825, 24, 41, "Text"],
+Cell[24696, 723, 646, 20, 90, "Text"],
+Cell[25345, 745, 431, 12, 56, "Text"],
+Cell[25779, 759, 157, 2, 41, "Text"],
+Cell[25939, 763, 986, 29, 56, "Text"],
+Cell[26928, 794, 913, 29, 66, "Text"],
+Cell[27844, 825, 593, 18, 57, "Text"],
+Cell[28440, 845, 945, 30, 66, "Text"],
+Cell[29388, 877, 462, 14, 41, "Text"],
+Cell[29853, 893, 645, 19, 66, "Text"],
+Cell[30501, 914, 201, 4, 41, "Text"],
+Cell[30705, 920, 1584, 45, 323, "Input"],
+Cell[32292, 967, 234, 4, 66, "Text"],
+Cell[CellGroupData[{
+Cell[32551, 975, 125, 1, 105, "Section"],
+Cell[CellGroupData[{
+Cell[32701, 980, 7913, 202, 1108, "Input"],
+Cell[40617, 1184, 4533, 89, 665, "Output"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

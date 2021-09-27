@@ -1,0 +1,640 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     25800,        631]
+NotebookOptionsPosition[     24235,        573]
+NotebookOutlinePosition[     24652,        589]
+CellTagsIndexPosition[     24609,        586]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{"Get", "[", "\"\<XmlProcessing/XmlProcessing.m\>\"", "]"}]], "Input",
+ CellChangeTimes->{{3.5330713162626853`*^9, 3.53307135471353*^9}, {
+  3.5330714019322515`*^9, 3.533071434980556*^9}, {3.5332370760838757`*^9, 
+  3.5332370786741347`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"(", 
+  RowBox[{"x", "=", 
+   RowBox[{"Import", "[", 
+    RowBox[{
+    "\"\<http://www.lipsum.com/feed/xml?amount=1\>\"", ",", "\"\<XML\>\""}], 
+    "]"}]}], ")"}]], "Input",
+ CellChangeTimes->{{3.5323553740574884`*^9, 3.5323553750464883`*^9}, {
+   3.5323556707014885`*^9, 3.532355734850488*^9}, 3.532356986085016*^9, {
+   3.5323570226036673`*^9, 3.532357024337841*^9}, {3.533222782989769*^9, 
+   3.5332227853545327`*^9}, {3.533223095833664*^9, 3.5332231003106637`*^9}, {
+   3.5332233488206635`*^9, 3.5332233511216636`*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"XMLObject", "[", "\<\"Document\"\>", "]"}], "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"XMLObject", "[", "\<\"Declaration\"\>", "]"}], "[", 
+      RowBox[{
+       RowBox[{"\<\"Version\"\>", "\[Rule]", "\<\"1.0\"\>"}], ",", 
+       RowBox[{"\<\"Encoding\"\>", "\[Rule]", "\<\"iso-8859-1\"\>"}]}], "]"}],
+      "}"}], ",", 
+    RowBox[{"XMLElement", "[", 
+     RowBox[{"\<\"feed\"\>", ",", 
+      RowBox[{"{", "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"XMLElement", "[", 
+         RowBox[{"\<\"lipsum\"\>", ",", 
+          RowBox[{"{", "}"}], ",", 
+          RowBox[{
+          "{", "\<\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. \
+Aliquam vehicula nunc quis lorem feugiat facilisis. Etiam viverra, sapien nec \
+vestibulum semper, velit enim eleifend tortor, elementum varius arcu mauris \
+interdum nisi. Pellentesque ante ipsum, aliquam ut congue nec, aliquam nec \
+lectus. Nullam accumsan nunc et nulla suscipit vel vehicula odio placerat. \
+Maecenas pellentesque tincidunt facilisis. Maecenas ac lacus eget nunc \
+eleifend imperdiet at pellentesque urna. Phasellus porttitor mi in risus \
+rutrum imperdiet. Fusce nisl risus, blandit porta interdum in, volutpat at \
+turpis. Ut faucibus malesuada mauris ac mattis. Vestibulum pharetra elit quis \
+mauris aliquam congue. Nullam vel quam lacus, in placerat nunc. Nulla in \
+ligula sapien. Fusce eget pulvinar orci. Etiam non nunc auctor purus \
+adipiscing mattis quis sit amet massa. Praesent euismod, erat quis porta \
+commodo, lectus lorem tempor libero, id tincidunt odio quam eget nisl.\"\>", 
+           "}"}]}], "]"}], ",", 
+        RowBox[{"XMLElement", "[", 
+         RowBox[{"\<\"generated\"\>", ",", 
+          RowBox[{"{", "}"}], ",", 
+          RowBox[{
+          "{", "\<\"Generated 1 paragraph, 137 words, 943 bytes of Lorem \
+Ipsum\"\>", "}"}]}], "]"}], ",", 
+        RowBox[{"XMLElement", "[", 
+         RowBox[{"\<\"donatelink\"\>", ",", 
+          RowBox[{"{", "}"}], ",", 
+          RowBox[{"{", "\<\"http://www.lipsum.com/donate\"\>", "}"}]}], "]"}],
+         ",", 
+        RowBox[{"XMLElement", "[", 
+         RowBox[{"\<\"creditlink\"\>", ",", 
+          RowBox[{"{", "}"}], ",", 
+          RowBox[{"{", "\<\"http://www.lipsum.com/\"\>", "}"}]}], "]"}], ",", 
+        RowBox[{"XMLElement", "[", 
+         RowBox[{"\<\"creditname\"\>", ",", 
+          RowBox[{"{", "}"}], ",", 
+          RowBox[{"{", "\<\"James Wilson\"\>", "}"}]}], "]"}]}], "}"}]}], 
+     "]"}], ",", 
+    RowBox[{"{", "}"}]}], "]"}], TraditionalForm]], "Output",
+ CellChangeTimes->{3.533071456170675*^9, 3.533072943502393*^9, 
+  3.5332215315243263`*^9, 3.533222786864382*^9, 3.5332231015016637`*^9, 
+  3.5332233522216635`*^9, 3.5332353215862474`*^9, 3.533236929911892*^9, 
+  3.5332370913934064`*^9, 3.5334137599886436`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"(", 
+  RowBox[{"y", "=", 
+   RowBox[{"Import", "[", 
+    RowBox[{
+    "\"\<http://scooterlabs.com/yql/lorem.ipsum.xml\>\"", ",", 
+     "\"\<XML\>\""}], "]"}]}], ")"}]], "Input",
+ CellChangeTimes->{{3.532370398861807*^9, 3.53237041439336*^9}, {
+  3.5332229384666634`*^9, 3.5332229405626636`*^9}, {3.5332231071436634`*^9, 
+  3.5332231105496635`*^9}, {3.5332233410746636`*^9, 3.5332233424626637`*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"XMLObject", "[", "\<\"Document\"\>", "]"}], "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"XMLObject", "[", "\<\"Declaration\"\>", "]"}], "[", 
+      RowBox[{
+       RowBox[{"\<\"Version\"\>", "\[Rule]", "\<\"1.0\"\>"}], ",", 
+       RowBox[{"\<\"Encoding\"\>", "\[Rule]", "\<\"UTF-8\"\>"}]}], "]"}], 
+     "}"}], ",", 
+    RowBox[{"XMLElement", "[", 
+     RowBox[{"\<\"table\"\>", ",", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"{", 
+          
+          RowBox[{"\<\"http://www.w3.org/2000/xmlns/\"\>", 
+           ",", "\<\"xmlns\"\>"}], "}"}], 
+         "\[Rule]", \
+"\<\"http://query.yahooapis.com/v1/schema/table.xsd\"\>"}], ",", 
+        RowBox[{"\<\"https\"\>", "\[Rule]", "\<\"false\"\>"}]}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"XMLElement", "[", 
+         RowBox[{"\<\"meta\"\>", ",", 
+          RowBox[{"{", "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"XMLElement", "[", 
+             RowBox[{"\<\"author\"\>", ",", 
+              RowBox[{"{", "}"}], ",", 
+              RowBox[{"{", "\<\"Brian Cantoni\"\>", "}"}]}], "]"}], ",", 
+            RowBox[{"XMLElement", "[", 
+             RowBox[{"\<\"description\"\>", ",", 
+              RowBox[{"{", "}"}], ",", 
+              RowBox[{
+              "{", "\<\"Generate random Lorem Ipsum text from lipsum.com. \
+Parameters: amount=number of things to fetch; what: paras, words, bytes, or \
+lists; start: set to \\\"no\\\" to not start all strings with Lorem \
+Ipsum.\"\>", "}"}]}], "]"}], ",", 
+            RowBox[{"XMLElement", "[", 
+             RowBox[{"\<\"documentationURL\"\>", ",", 
+              RowBox[{"{", "}"}], ",", 
+              RowBox[{"{", "\<\"http://www.lipsum.com/\"\>", "}"}]}], "]"}], 
+            ",", 
+            RowBox[{"XMLElement", "[", 
+             RowBox[{"\<\"sampleQuery\"\>", ",", 
+              RowBox[{"{", "}"}], ",", 
+              RowBox[{
+              "{", "\<\"select * from {table} where amount='5' and \
+what='paras';\"\>", "}"}]}], "]"}]}], "}"}]}], "]"}], ",", 
+        RowBox[{"XMLElement", "[", 
+         RowBox[{"\<\"bindings\"\>", ",", 
+          RowBox[{"{", "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"XMLElement", "[", 
+            RowBox[{"\<\"select\"\>", ",", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"\<\"itemPath\"\>", "\[Rule]", "\<\"\"\>"}], ",", 
+               RowBox[{"\<\"produces\"\>", "\[Rule]", "\<\"XML\"\>"}]}], 
+              "}"}], ",", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"XMLElement", "[", 
+                RowBox[{"\<\"urls\"\>", ",", 
+                 RowBox[{"{", "}"}], ",", 
+                 RowBox[{"{", 
+                  RowBox[{"XMLElement", "[", 
+                   RowBox[{"\<\"url\"\>", ",", 
+                    RowBox[{"{", "}"}], ",", 
+                    RowBox[{"{", "}"}]}], "]"}], "}"}]}], "]"}], ",", 
+               RowBox[{"XMLElement", "[", 
+                RowBox[{"\<\"inputs\"\>", ",", 
+                 RowBox[{"{", "}"}], ",", 
+                 RowBox[{"{", 
+                  RowBox[{
+                   RowBox[{"XMLElement", "[", 
+                    RowBox[{"\<\"key\"\>", ",", 
+                    RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{"\<\"id\"\>", "\[Rule]", "\<\"amount\"\>"}], ",", 
+                    RowBox[{"\<\"type\"\>", "\[Rule]", "\<\"xs:string\"\>"}], 
+                    ",", 
+                    
+                    RowBox[{"\<\"paramType\"\>", 
+                    "\[Rule]", "\<\"query\"\>"}]}], "}"}], ",", 
+                    RowBox[{"{", "}"}]}], "]"}], ",", 
+                   RowBox[{"XMLElement", "[", 
+                    RowBox[{"\<\"key\"\>", ",", 
+                    RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{"\<\"id\"\>", "\[Rule]", "\<\"what\"\>"}], ",", 
+                    RowBox[{"\<\"type\"\>", "\[Rule]", "\<\"xs:string\"\>"}], 
+                    ",", 
+                    
+                    RowBox[{"\<\"paramType\"\>", 
+                    "\[Rule]", "\<\"query\"\>"}]}], "}"}], ",", 
+                    RowBox[{"{", "}"}]}], "]"}], ",", 
+                   RowBox[{"XMLElement", "[", 
+                    RowBox[{"\<\"key\"\>", ",", 
+                    RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{"\<\"id\"\>", "\[Rule]", "\<\"start\"\>"}], ",", 
+                    RowBox[{"\<\"type\"\>", "\[Rule]", "\<\"xs:string\"\>"}], 
+                    ",", 
+                    RowBox[{"\<\"paramType\"\>", "\[Rule]", "\<\"query\"\>"}],
+                     ",", 
+                    RowBox[{"\<\"default\"\>", "\[Rule]", "\<\"yes\"\>"}]}], 
+                    "}"}], ",", 
+                    RowBox[{"{", "}"}]}], "]"}]}], "}"}]}], "]"}], ",", 
+               RowBox[{"XMLElement", "[", 
+                RowBox[{"\<\"execute\"\>", ",", 
+                 RowBox[{"{", "}"}], ",", 
+                 RowBox[{
+                 "{", "\<\"var q = y.query('select * from html where \
+url=\\\"http://www.lipsum.com/feed/http?amount=' + amount + '&what=' + what + \
+'&start=' + start + '\\\" and xpath=\\\\'//div[@id=\\\"lipsum\\\"]//p\\\\''); \
+if (q.results) { response.object = q.results; }\"\>", "}"}]}], "]"}]}], 
+              "}"}]}], "]"}], "}"}]}], "]"}]}], "}"}]}], "]"}], ",", 
+    RowBox[{"{", "}"}]}], "]"}], TraditionalForm]], "Output",
+ CellChangeTimes->{3.5330714680608635`*^9, 3.533072944159459*^9, 
+  3.5332215357082014`*^9, 3.5332229417986636`*^9, 3.5332231148126636`*^9, 
+  3.533223344217664*^9, 3.533235326450106*^9, 3.5332369302838917`*^9, 
+  3.533237095669834*^9, 3.5334137605236435`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"getEltALists", "[", 
+   RowBox[{"\"\<creditlink\>\"", ",", 
+    RowBox[{"getDocRootEltAList", "[", "x", "]"}]}], "]"}], "//", 
+  "InputForm"}]], "Input",
+ CellChangeTimes->CompressedData["
+1:eJxTTMoPSmViYGAQA2IQfaV4OVdJ4CtHBZN8XhD96Wi+LIiW4tomD6JXBl9w
+ANGrNQTdQXSHsc5WEB28Qm43iJ6gkxBaCqS9Du0A0wEzT3aD6Bmty/tBtHtS
+yCIQHcXrvxREH2lU+QSiD572+wWiBZLy/oNol51zwLSRsEdcGZB+zLgkAUS3
+PLiTD6LZL+oXgegJZn2VIPpci10ViN5kaTkBROsv6AHT6e8vrwXRVRl3wbT+
+EgXmcpC9z2+zg+hatl4eEL1L4AiYVl6UKgeiG2PywfS/N6/VKoB0vcchdRDN
+fmiBqljwK8cnfe/BdM76m5tB9Lt8li0gWsOlpUMcSC9bdwNMxzytzJUF0kal
+Z/JANAC9nqge
+  "]],
+
+Cell["\<\
+{{{\"tag\", \"creditlink\"}, {\"content\", 
+   {\"http://www.lipsum.com/\"}}, 
+  {\"attrs\", {}}}}\
+\>", "Output",
+ CellChangeTimes->{
+  3.5323659330692725`*^9, {3.5323660194089055`*^9, 3.532366101415105*^9}, 
+   3.532366144838447*^9, {3.5323661767016335`*^9, 3.5323661933823013`*^9}, 
+   3.5323662497059326`*^9, {3.5323663435223136`*^9, 3.5323663932152824`*^9}, {
+   3.532366478050765*^9, 3.5323665176107206`*^9}, 3.5323666431722755`*^9, 
+   3.5323667293008876`*^9, 3.5323667903999968`*^9, 3.5323668396949263`*^9, 
+   3.5323668944414*^9, {3.532367277327685*^9, 3.5323673218661385`*^9}, {
+   3.532367925265472*^9, 3.5323679407110167`*^9}, 3.532368514392379*^9, {
+   3.532368549167856*^9, 3.532368558725812*^9}, 3.532368753564294*^9, {
+   3.532368974288364*^9, 3.532369021806115*^9}, {3.532369093793313*^9, 
+   3.532369128796813*^9}, {3.532369172918225*^9, 3.532369195353468*^9}, {
+   3.532369774742401*^9, 3.5323698756764936`*^9}, {3.532369917563682*^9, 
+   3.532369932912217*^9}, {3.532370635504469*^9, 3.5323706764845667`*^9}, 
+   3.5323707703259497`*^9, 3.532370834674384*^9, 3.532370898503766*^9, 
+   3.5323710633082447`*^9, 3.5323712163685493`*^9, 3.532371250447957*^9, 
+   3.5323713117180834`*^9, 3.5323716284331045`*^9, 3.532371662728876*^9, {
+   3.532371916543492*^9, 3.5323719319969463`*^9}, {3.532371996436042*^9, 
+   3.532372033899042*^9}, 3.532372070757042*^9, 3.532372109098042*^9, {
+   3.532372399672042*^9, 3.532372408488042*^9}, {3.532372776420042*^9, 
+   3.532372788250042*^9}, 3.532372821351042*^9, 3.532372861099042*^9, {
+   3.5323729416990423`*^9, 3.532372967601042*^9}, 3.5323741258385286`*^9, {
+   3.5323742993648796`*^9, 3.5323743382837706`*^9}, 3.532374558258766*^9, {
+   3.5323746146664066`*^9, 3.532374642875227*^9}, 3.5323898935374613`*^9, 
+   3.532438154144413*^9, 3.5326238732440224`*^9, 3.5326564640735626`*^9, 
+   3.5326665838777533`*^9, 3.5326666621245766`*^9, 3.532667288768235*^9, 
+   3.532789387545418*^9, 3.5327899288223767`*^9, 3.532877098310726*^9, 
+   3.5328771312366095`*^9, 3.5330472509270496`*^9, {3.5330656913884144`*^9, 
+   3.533065704961502*^9}, 3.5330695268612385`*^9, 3.533071506217679*^9, 
+   3.5330729444484873`*^9, 3.53322219224804*^9, 3.5332231190466633`*^9, 
+   3.533223329215664*^9, 3.5332250322573195`*^9, 3.5332258404903*^9, 
+   3.533235329114768*^9, 3.5332369303278923`*^9, {3.533237102147482*^9, 
+   3.533237111119379*^9}, 3.5334137605726433`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"getEltALists", "[", 
+   RowBox[{"\"\<foo\>\"", ",", 
+    RowBox[{"getDocRootEltAList", "[", "x", "]"}]}], "]"}], "//", 
+  "InputForm"}]], "Input",
+ CellChangeTimes->{{3.5332372431875844`*^9, 3.533237243475613*^9}}],
+
+Cell["{}", "Output",
+ CellChangeTimes->{3.533237245821848*^9, 3.533413760642644*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"getEltALists", "[", 
+   RowBox[{"\"\<foo\>\"", ",", 
+    RowBox[{"XMLElement", "[", 
+     RowBox[{"\"\<foo\>\"", ",", 
+      RowBox[{"{", "}"}], ",", " ", 
+      RowBox[{"{", "}"}]}], "]"}]}], "]"}], "//", "InputForm"}]], "Input",
+ CellChangeTimes->{{3.53322504367332*^9, 3.5332250861813197`*^9}, {
+  3.533237116380905*^9, 3.533237117869054*^9}}],
+
+Cell["\<\
+{{{\"tag\", \"foo\"}, {\"content\", {}}, 
+  {\"attrs\", {}}}}\
+\>", "Output",
+ CellChangeTimes->{{3.5332250726903195`*^9, 3.53322508690432*^9}, 
+   3.533235334378026*^9, 3.533236930350892*^9, 3.5332371184581127`*^9, 
+   3.5334137606666436`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"lookup", "[", 
+    RowBox[{
+     RowBox[{"matchDoc", "[", "x", "]"}], ",", "\"\<decl\>\""}], "]"}], 
+   "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], "//", 
+  "matchDecl"}]], "Input",
+ CellChangeTimes->{{3.532355512065488*^9, 3.5323555141454883`*^9}, {
+  3.532358263682246*^9, 3.5323582644242463`*^9}, {3.5323605741980896`*^9, 
+  3.5323605827170897`*^9}, {3.5323610369520893`*^9, 3.5323610385960894`*^9}, {
+  3.5323618126938524`*^9, 3.5323618284374266`*^9}, {3.532361996337083*^9, 
+  3.532362004613083*^9}, {3.5323636702968225`*^9, 3.5323636723680296`*^9}, {
+  3.5332230724386635`*^9, 3.5332230876616635`*^9}, {3.533223126189664*^9, 
+  3.5332231280916634`*^9}, {3.5332233326906633`*^9, 3.5332233336106634`*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"\<\"version\"\>", 
+      RowBox[{"\<\"Version\"\>", "\[Rule]", "\<\"1.0\"\>"}]},
+     {"\<\"encoding\"\>", 
+      RowBox[{"\<\"Encoding\"\>", "\[Rule]", "\<\"iso-8859-1\"\>"}]}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}], 
+  TraditionalForm]], "Output",
+ CellChangeTimes->{
+  3.532361413919979*^9, 3.5323617095685406`*^9, 3.5323618234169245`*^9, {
+   3.532361993017883*^9, 3.532362005422083*^9}, 3.532362351114083*^9, 
+   3.5323636730791006`*^9, 3.532366922178173*^9, 3.532367942496195*^9, 
+   3.5323741305479994`*^9, 3.5323746170876484`*^9, 3.532389893605465*^9, 
+   3.532438154196413*^9, 3.532623877536268*^9, 3.5326564642705736`*^9, 
+   3.532666583955761*^9, 3.532666662175582*^9, 3.5326672888122396`*^9, 
+   3.532789387631422*^9, 3.5327899288563786`*^9, 3.532877098364729*^9, 
+   3.5328771312836123`*^9, 3.533047251063063*^9, 3.533065706731617*^9, 
+   3.533069528811239*^9, 3.533071507410798*^9, 3.533072944540497*^9, 
+   3.533076500537778*^9, {3.5332230754856634`*^9, 3.5332230884356637`*^9}, {
+   3.5332231225556636`*^9, 3.5332231289826636`*^9}, 3.5332233346976633`*^9, 
+   3.533235346095732*^9, 3.533236930373892*^9, 3.5332371210493717`*^9, 
+   3.5334137606926436`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"getEltALists", "[", 
+   RowBox[{"\"\<key\>\"", ",", 
+    RowBox[{"getDocRootEltAList", "@", "y"}]}], "]"}], "//", 
+  "InputForm"}]], "Input",
+ CellChangeTimes->{{3.532374144623407*^9, 3.5323741816011043`*^9}, {
+  3.5323742246394076`*^9, 3.5323742430102444`*^9}, {3.5332231610106635`*^9, 
+  3.5332231641946635`*^9}, {3.5332233138756638`*^9, 3.5332233147946634`*^9}, {
+  3.53322511092832*^9, 3.5332251129033194`*^9}, {3.533237124773744*^9, 
+  3.533237132501517*^9}}],
+
+Cell["\<\
+{{{\"tag\", \"key\"}, {\"content\", {}}, 
+  {\"attrs\", {\"id\" -> \"amount\", 
+    \"type\" -> \"xs:string\", \"paramType\" -> 
+     \"query\"}}}, {{\"tag\", \"key\"}, 
+  {\"content\", {}}, {\"attrs\", 
+   {\"id\" -> \"what\", \"type\" -> \"xs:string\", 
+    \"paramType\" -> \"query\"}}}, 
+ {{\"tag\", \"key\"}, {\"content\", {}}, 
+  {\"attrs\", {\"id\" -> \"start\", 
+    \"type\" -> \"xs:string\", \"paramType\" -> 
+     \"query\", \"default\" -> \"yes\"}}}}\
+\>", "Output",
+ CellChangeTimes->{{3.532374165866531*^9, 3.532374183024246*^9}, {
+   3.532374234529396*^9, 3.5323742437283163`*^9}, 3.5323745636353035`*^9, {
+   3.5323746182147613`*^9, 3.5323746462935686`*^9}, 3.5323898936824694`*^9, 
+   3.5324381542464128`*^9, 3.5326238798874025`*^9, 3.5326564643035755`*^9, 
+   3.5326665840267677`*^9, 3.5326666622025847`*^9, 3.5326672888732457`*^9, 
+   3.5327893876634245`*^9, 3.53278992888338*^9, 3.532877098393731*^9, 
+   3.5328771314106193`*^9, 3.533047251205077*^9, 3.53306575358218*^9, 
+   3.5330695314502387`*^9, 3.533071508638921*^9, 3.5330729446305056`*^9, 
+   3.5332231649926634`*^9, 3.5332233156926637`*^9, 3.5332251134333196`*^9, 
+   3.533235347768403*^9, 3.533236930397892*^9, 3.533237133373604*^9, 
+   3.5334137607186437`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{"z", "=", 
+    RowBox[{
+     RowBox[{"XMLObject", "[", "\"\<Document\>\"", "]"}], "[", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"XMLObject", "[", "\"\<Declaration\>\"", "]"}], "[", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"\"\<Version\>\"", "\[Rule]", "\"\<1.0\>\""}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"\"\<Encoding\>\"", "\[Rule]", "\"\<utf-8\>\""}]}], "]"}], 
+       "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{"XMLElement", "[", 
+       RowBox[{"\"\<feed\>\"", ",", 
+        RowBox[{"{", "}"}], ",", 
+        RowBox[{"{", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"XMLElement", "[", 
+           RowBox[{"\"\<sub\>\"", ",", 
+            RowBox[{"{", "}"}], ",", 
+            RowBox[{"{", "\[IndentingNewLine]", 
+             RowBox[{
+              RowBox[{"XMLElement", "[", 
+               RowBox[{"\"\<sub\>\"", ",", 
+                RowBox[{"{", "}"}], ",", 
+                RowBox[{
+                "{", "\[IndentingNewLine]", "\"\<L2 contents\>\"", "}"}]}], 
+               "]"}], ",", "\[IndentingNewLine]", "\"\<L1 contents\>\""}], 
+             "}"}]}], "]"}], ",", "\"\<feed contents\>\""}], 
+         "\[IndentingNewLine]", "}"}]}], "]"}], ",", "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"XMLObject", "[", "\"\<Comment\>\"", "]"}], "[", 
+         "\"\<foo comment\>\"", "]"}], ",", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"XMLObject", "[", "\"\<Comment\>\"", "]"}], "[", 
+         "\"\<bar comment\>\"", "]"}], ",", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"XMLObject", "[", "\"\<ProcessingInstruction\>\"", "]"}], 
+         "[", "\"\<qux Processing Instruction\>\"", "]"}]}], "}"}]}], "]"}]}],
+    ")"}], "//", "InputForm"}]], "Input",
+ CellChangeTimes->{{3.5332233747826633`*^9, 3.5332233845726633`*^9}, {
+  3.533223430052664*^9, 3.5332234312826633`*^9}, {3.533223513340664*^9, 
+  3.5332235786256638`*^9}, {3.533223611750029*^9, 3.5332236326370635`*^9}, {
+  3.533223745134899*^9, 3.533223782052147*^9}, {3.533223871977928*^9, 
+  3.533223874482931*^9}, {3.533223940001418*^9, 3.5332240450549183`*^9}, {
+  3.5332246431261077`*^9, 3.533224670421647*^9}, {3.533224795238679*^9, 
+  3.5332248203156624`*^9}}],
+
+Cell["\<\
+XMLObject[\"Document\"][
+ {XMLObject[\"Declaration\"][\"Version\" -> 
+    \"1.0\", \"Encoding\" -> \"utf-8\"]}, 
+ XMLElement[\"feed\", {}, 
+  {XMLElement[\"sub\", {}, 
+    {XMLElement[\"sub\", {}, {\"L2 contents\"}], 
+     \"L1 contents\"}], \"feed contents\"}], 
+ {XMLObject[\"Comment\"][\"foo comment\"], 
+  XMLObject[\"Comment\"][\"bar comment\"], 
+  XMLObject[\"ProcessingInstruction\"][
+   \"qux Processing Instruction\"]}]\
+\>", "Output",
+ CellChangeTimes->{{3.533223961922373*^9, 3.533223997793299*^9}, {
+   3.533224028341566*^9, 3.533224046042412*^9}, {3.5332246318063717`*^9, 
+   3.5332246716464024`*^9}, {3.533224796850356*^9, 3.5332248233540545`*^9}, 
+   3.5332330997519035`*^9, 3.533234368203455*^9, 3.5332347688533707`*^9, 
+   3.533235354323952*^9, 3.533236930422892*^9, 3.5332371362588925`*^9, 
+   3.5334137607446437`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"getEltALists", "[", 
+   RowBox[{"\"\<sub\>\"", ",", 
+    RowBox[{"getDocRootEltAList", "[", "z", "]"}]}], "]"}], "//", 
+  "InputForm"}]], "Input",
+ CellChangeTimes->{{3.53322483322508*^9, 3.533224845753574*^9}, {
+  3.533236942887892*^9, 3.533236944623892*^9}, {3.5332371401092777`*^9, 
+  3.5332371481490817`*^9}}],
+
+Cell["\<\
+{{{\"tag\", \"sub\"}, {\"content\", 
+   {XMLElement[\"sub\", {}, {\"L2 contents\"}], 
+    \"L1 contents\"}}, {\"attrs\", {}}}, 
+ {{\"tag\", \"sub\"}, {\"content\", 
+   {\"L2 contents\"}}, {\"attrs\", {}}}}\
+\>", "Output",
+ CellChangeTimes->{
+  3.533224846569411*^9, 3.533234374010787*^9, 3.5332347715525255`*^9, 
+   3.53323535653416*^9, {3.533236930446892*^9, 3.5332369455858917`*^9}, 
+   3.533237149716238*^9, 3.5334137607686434`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ExportString", "[", 
+   RowBox[{"z", ",", "\"\<XML\>\""}], "]"}], "//", "InputForm"}]], "Input",
+ CellChangeTimes->{{3.533223583243664*^9, 3.5332235933309526`*^9}, {
+  3.533223831718675*^9, 3.5332238334317284`*^9}}],
+
+Cell["\<\
+\"<?xml version='1.0' \\
+encoding='utf-8'?>\\r\\n<feed><sub><sub>L2 \\
+contents</sub>L1 contents</sub>feed \\
+contents</feed>\\r\\n<!--foo \\
+comment-->\\r\\n<!--bar comment-->\\r\\n<?qux \\
+Processing Instruction?>\\r\\n\"\
+\>", "Output",
+ CellChangeTimes->{{3.533223593865594*^9, 3.53322362011906*^9}, {
+   3.533223731311331*^9, 3.533223788171481*^9}, 3.533223834169613*^9, {
+   3.5332238793327436`*^9, 3.533223999213009*^9}, {3.5332240299823856`*^9, 
+   3.533224047094938*^9}, {3.533224633595014*^9, 3.53322467285716*^9}, 
+   3.533224798938939*^9, 3.5332347833482*^9, 3.533235365099717*^9, 
+   3.533236930475892*^9, 3.5332371521694837`*^9, 3.5334137608296432`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"getDocRootEltAList", "[", 
+  RowBox[{"{", "}"}], "]"}]], "Input",
+ CellChangeTimes->{{3.533237160442311*^9, 3.53323717314058*^9}}],
+
+Cell[BoxData[
+ FormBox["False", TraditionalForm]], "Output",
+ CellChangeTimes->{{3.533237170057272*^9, 3.533237174628729*^9}, 
+   3.5334137608536434`*^9}]
+}, Open  ]]
+},
+WindowSize->{942, 987},
+WindowMargins->{{Automatic, 0}, {0, Automatic}},
+FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
+StyleDefinitions->FrontEnd`FileName[{"Creative"}, "PastelColor.nb", 
+  CharacterEncoding -> "WindowsANSI"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[557, 20, 263, 4, 58, "Input"],
+Cell[CellGroupData[{
+Cell[845, 28, 547, 11, 58, "Input"],
+Cell[1395, 41, 2868, 59, 708, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4300, 105, 422, 9, 58, "Input"],
+Cell[4725, 116, 5742, 127, 508, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10504, 248, 610, 14, 58, "Input"],
+Cell[11117, 264, 2414, 36, 119, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13568, 305, 249, 6, 58, "Input"],
+Cell[13820, 313, 84, 1, 76, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13941, 319, 381, 9, 58, "Input"],
+Cell[14325, 330, 254, 6, 98, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14616, 341, 768, 14, 58, "Input"],
+Cell[15387, 357, 1628, 32, 80, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17052, 394, 499, 10, 58, "Input"],
+Cell[17554, 406, 1250, 23, 291, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18841, 434, 2381, 53, 410, "Input"],
+Cell[21225, 489, 846, 18, 291, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22108, 512, 348, 8, 58, "Input"],
+Cell[22459, 522, 445, 10, 162, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22941, 537, 250, 5, 58, "Input"],
+Cell[23194, 544, 677, 13, 184, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[23908, 562, 154, 3, 58, "Input"],
+Cell[24065, 567, 154, 3, 57, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

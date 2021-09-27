@@ -1,0 +1,588 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 6.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     21603,        578]
+NotebookOptionsPosition[     20533,        538]
+NotebookOutlinePosition[     21148,        562]
+CellTagsIndexPosition[     21105,        559]
+WindowFrame->Normal
+ContainsDynamic->True *)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Bead on a Rotating Wire", "Section",
+ CellFrameColor->RGBColor[
+  0.6449835965514611, 0.758632791638056, 0.2516823071641108],
+ FontColor->RGBColor[
+  0.6449835965514611, 0.758632791638056, 0.2516823071641108]],
+
+Cell[BoxData[
+ RowBox[{"Manipulate", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"t", "=", "a"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"Show", "[", 
+     RowBox[{
+      RowBox[{"MapAt", "[", 
+       RowBox[{
+        RowBox[{"RotationTransform", "[", " ", 
+         RowBox[{
+          RowBox[{"Om", " ", "a"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"0", ",", "0", ",", "1"}], "}"}]}], "]"}], ",", "g1", ",", 
+        
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"1", ",", "1"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", "3", ",", "2"}], "}"}]}], "}"}]}], "]"}], ",", 
+      RowBox[{"Graphics3D", "[", 
+       RowBox[{"{", 
+        RowBox[{"Gray", ",", "Thick", ",", 
+         RowBox[{"Line", "[", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{"0", ",", "0", ",", "1"}], "}"}], ",", 
+              RowBox[{"{", 
+               RowBox[{"0", ",", "0", ",", "1.2"}], "}"}]}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"-", "1.1"}], ",", "0", ",", "1.2"}], "}"}], ",", 
+              RowBox[{"{", 
+               RowBox[{"1.1", ",", "0", ",", "1.2"}], "}"}]}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{"0", ",", "0", ",", 
+                RowBox[{"-", "1"}]}], "}"}], ",", 
+              RowBox[{"{", 
+               RowBox[{"0", ",", "0", ",", 
+                RowBox[{"-", "1.2"}]}], "}"}]}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"-", "1.1"}], ",", "0", ",", 
+                RowBox[{"-", "1.2"}]}], "}"}], ",", 
+              RowBox[{"{", 
+               RowBox[{"1.1", ",", "0", ",", 
+                RowBox[{"-", "1.2"}]}], "}"}]}], "}"}]}], "}"}], "]"}]}], 
+        "}"}], "]"}], ",", 
+      RowBox[{"Graphics3D", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"RGBColor", "[", 
+          RowBox[{".33", ",", ".26", ",", ".78"}], "]"}], ",", 
+         RowBox[{"Specularity", "[", 
+          RowBox[{"White", ",", "20"}], "]"}], ",", 
+         RowBox[{"Sphere", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Sin", "[", 
+               RowBox[{
+                RowBox[{"\[Theta]", "[", "t", "]"}], "/.", 
+                RowBox[{"sol", "[", "Om", "]"}]}], "]"}], 
+              RowBox[{"Cos", "[", 
+               RowBox[{"Om", " ", "t"}], "]"}]}], ",", 
+             RowBox[{
+              RowBox[{"Sin", "[", 
+               RowBox[{
+                RowBox[{"\[Theta]", "[", "t", "]"}], "/.", 
+                RowBox[{"sol", "[", "Om", "]"}]}], "]"}], 
+              RowBox[{"Sin", "[", 
+               RowBox[{"Om", " ", "t"}], "]"}]}], ",", 
+             RowBox[{"-", 
+              RowBox[{"Cos", "[", 
+               RowBox[{
+                RowBox[{"\[Theta]", "[", "t", "]"}], "/.", 
+                RowBox[{"sol", "[", "Om", "]"}]}], "]"}]}]}], "}"}], ",", 
+           ".12"}], "]"}]}], "}"}], "]"}], ",", 
+      RowBox[{"ViewPoint", "\[Rule]", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", "\[Infinity]", ",", "0"}], "}"}]}], ",", 
+      RowBox[{"PlotRange", "\[Rule]", "1.2"}], ",", 
+      RowBox[{"ImageSize", "\[Rule]", 
+       RowBox[{"{", 
+        RowBox[{"400", ",", "400"}], "}"}]}]}], "]"}]}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"a", ",", "0", ",", "\"\<animate\>\""}], "}"}], ",", "0", ",", 
+     RowBox[{"4", " ", "\[Pi]"}], ",", 
+     RowBox[{".005", 
+      RowBox[{"(", 
+       RowBox[{"4", " ", "\[Pi]"}], ")"}]}], ",", 
+     RowBox[{"ControlType", "\[Rule]", "Animator"}], ",", 
+     RowBox[{"DisplayAllSteps", "\[Rule]", "True"}], ",", 
+     RowBox[{"AppearanceElements", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{
+       "\"\<PlayPauseButton\>\"", ",", "\"\<FasterSlowerButtons\>\""}], 
+       "}"}]}], ",", 
+     RowBox[{"AnimationRunning", "\[Rule]", "False"}], ",", 
+     RowBox[{"AnimationRate", "\[Rule]", "14"}]}], "}"}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"a", ",", "0", ",", "\"\<manual control\>\""}], "}"}], ",", "0",
+      ",", 
+     RowBox[{"4", " ", "\[Pi]"}], ",", 
+     RowBox[{".005", 
+      RowBox[{"(", 
+       RowBox[{"4", " ", "\[Pi]"}], ")"}]}]}], "}"}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"Om", ",", ".8", ",", "\"\<rotation frequency\>\""}], "}"}], 
+     ",", "0.", ",", "9.6", ",", ".8"}], "}"}], ",", 
+   RowBox[{"Initialization", "\[RuleDelayed]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"m", "=", "1"}], ";", 
+      RowBox[{"R", "=", "1"}], ";", 
+      RowBox[{"g", "=", "9.8"}], ";", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Table", "[", 
+         RowBox[{
+          RowBox[{"sol", "[", "i", "]"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"i", ",", "0", ",", "9.6", ",", ".8"}], "}"}]}], "]"}], "//",
+         "Evaluate"}], "=", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"NDSolve", "[", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{
+               RowBox[{
+                RowBox[{
+                 RowBox[{"g", " ", "m", " ", "R", " ", 
+                  RowBox[{"Sin", "[", 
+                   RowBox[{"\[Theta]", "[", "t", "]"}], "]"}]}], "-", 
+                 RowBox[{"m", " ", 
+                  SuperscriptBox["R", "2"], " ", 
+                  SuperscriptBox["\[CapitalOmega]", "2"], " ", 
+                  RowBox[{"Cos", "[", 
+                   RowBox[{"\[Theta]", "[", "t", "]"}], "]"}], " ", 
+                  RowBox[{"Sin", "[", 
+                   RowBox[{"\[Theta]", "[", "t", "]"}], "]"}]}], "+", 
+                 RowBox[{"m", " ", 
+                  SuperscriptBox["R", "2"], " ", 
+                  RowBox[{
+                   SuperscriptBox["\[Theta]", "\[Prime]\[Prime]",
+                    MultilineFunction->None], "[", "t", "]"}]}]}], "\[Equal]",
+                 "0"}], "/.", 
+               RowBox[{"\[CapitalOmega]", "\[RuleDelayed]", "#"}]}], ",", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"\[Theta]", "'"}], "[", "0", "]"}], "\[Equal]", "0"}],
+               ",", 
+              RowBox[{
+               RowBox[{"\[Theta]", "[", "0", "]"}], "\[Equal]", 
+               RowBox[{".95", 
+                RowBox[{"\[Pi]", "/", "2"}]}]}]}], "}"}], ",", 
+            RowBox[{"\[Theta]", "[", "t", "]"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"t", ",", "0", ",", "20"}], "}"}], ",", 
+            RowBox[{"MaxSteps", "\[Rule]", "20000"}]}], "]"}], "&"}], " ", "/@",
+          " ", 
+         RowBox[{"Table", "[", 
+          RowBox[{"i", ",", 
+           RowBox[{"{", 
+            RowBox[{"i", ",", "0", ",", "9.6", ",", ".8"}], "}"}]}], "]"}]}], 
+        "//", "Flatten"}]}], ";", 
+      RowBox[{
+       RowBox[{"torus", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"R_", ",", " ", "r_"}], "}"}], ",", " ", 
+         RowBox[{"{", 
+          RowBox[{"x_", ",", "y_", ",", "z_"}], "}"}]}], "]"}], " ", ":=", 
+       RowBox[{
+        SuperscriptBox[
+         RowBox[{"(", 
+          RowBox[{
+           SuperscriptBox["x", "2"], "+", 
+           SuperscriptBox["y", "2"], "+", 
+           SuperscriptBox["z", "2"], "+", 
+           SuperscriptBox["R", "2"], "-", 
+           SuperscriptBox["r", "2"]}], ")"}], "2"], "==", 
+        RowBox[{"4", 
+         SuperscriptBox["R", "2"], 
+         RowBox[{"(", 
+          RowBox[{
+           SuperscriptBox["x", "2"], "+", 
+           SuperscriptBox["z", "2"]}], ")"}]}]}]}], ";", 
+      RowBox[{"g1", "=", 
+       RowBox[{"ContourPlot3D", "[", " ", 
+        RowBox[{
+         RowBox[{"Evaluate", "[", 
+          RowBox[{"torus", "[", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{"1", ",", ".03"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"x", ",", "y", ",", "z"}], "}"}]}], "]"}], "]"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"x", ",", 
+           RowBox[{"-", "1.2"}], ",", "1.2"}], "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"y", ",", 
+           RowBox[{"-", "1.2"}], ",", "1.2"}], "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"z", ",", 
+           RowBox[{"-", "1.2"}], ",", "1.2"}], "}"}], ",", 
+         RowBox[{"Mesh", "\[Rule]", "None"}], ",", 
+         RowBox[{"ContourStyle", "\[Rule]", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"RGBColor", "[", 
+             RowBox[{"1", ",", ".71", ",", "0"}], "]"}], ",", 
+            RowBox[{"Specularity", "[", 
+             RowBox[{"White", ",", "10"}], "]"}]}], "}"}]}], ",", 
+         RowBox[{"PlotPoints", "\[Rule]", "100"}], ",", 
+         RowBox[{"Boxed", "\[Rule]", "False"}], ",", 
+         RowBox[{"Axes", "\[Rule]", "None"}]}], "]"}]}]}], "}"}]}], ",", 
+   RowBox[{"AutorunSequencing", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "30"}], "}"}], "}"}]}], ",", 
+   RowBox[{"TrackedSymbols", "\[Rule]", "Manipulate"}]}], "]"}]], "Input",
+ CellChangeTimes->{
+  3.35696210375764*^9, 3.4046564147524433`*^9, {3.405694971634548*^9, 
+   3.4056950440862827`*^9}, {3.4056950973665094`*^9, 
+   3.4056950996945896`*^9}, {3.405695152599824*^9, 3.4056951745837765`*^9}, {
+   3.4056952480979905`*^9, 3.405695249097971*^9}, {3.4056952841285486`*^9, 
+   3.405695291690903*^9}, {3.4056953272550488`*^9, 3.4056953578044653`*^9}, {
+   3.405695400167364*^9, 3.4056954051365275`*^9}, 3.4057957401402426`*^9, {
+   3.405796238278309*^9, 3.405796239215863*^9}, 3.4058008980623217`*^9, {
+   3.4101106300888033`*^9, 3.4101106355575533`*^9}, {3.4101106656044283`*^9, 
+   3.4101106908388033`*^9}, {3.4101107349794283`*^9, 
+   3.4101108112919283`*^9}, {3.4101108860731783`*^9, 3.4101108861669283`*^9}}]
+}, Open  ]],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`a$$ = 0, $CellContext`Om$$ = 0.8, 
+    Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
+    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
+    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`a$$], 0, "animate"}, 0, 4 Pi, 
+      0.06283185307179587}, {{
+       Hold[$CellContext`a$$], 0, "manual control"}, 0, 4 Pi, 
+      0.06283185307179587}, {{
+       Hold[$CellContext`Om$$], 0.8, "rotation frequency"}, 0., 9.6, 0.8}}, 
+    Typeset`size$$ = {400., {198., 202.}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    False, $CellContext`a$217470$$ = 0, $CellContext`Om$217471$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`a$$ = 0, $CellContext`Om$$ = 0.8}, 
+      "ControllerVariables" :> {
+        Hold[$CellContext`a$$, $CellContext`a$217470$$, 0], 
+        Hold[$CellContext`Om$$, $CellContext`Om$217471$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, 
+      "Body" :> ($CellContext`t = $CellContext`a$$; Show[
+         MapAt[
+          
+          RotationTransform[$CellContext`Om$$ $CellContext`a$$, {0, 0, 
+           1}], $CellContext`g1, {{1, 1}, {1, 3, 2}}], 
+         Graphics3D[{Gray, Thick, 
+           
+           Line[{{{0, 0, 1}, {0, 0, 1.2}}, {{-1.1, 0, 1.2}, {1.1, 0, 1.2}}, {{
+              0, 0, -1}, {0, 0, -1.2}}, {{-1.1, 0, -1.2}, {1.1, 0, -1.2}}}]}],
+          
+         Graphics3D[{
+           RGBColor[0.33, 0.26, 0.78], 
+           Specularity[White, 20], 
+           Sphere[{Sin[
+               ReplaceAll[
+                $CellContext`\[Theta][$CellContext`t], 
+                $CellContext`sol[$CellContext`Om$$]]] 
+             Cos[$CellContext`Om$$ $CellContext`t], Sin[
+               ReplaceAll[
+                $CellContext`\[Theta][$CellContext`t], 
+                $CellContext`sol[$CellContext`Om$$]]] 
+             Sin[$CellContext`Om$$ $CellContext`t], -Cos[
+               ReplaceAll[
+                $CellContext`\[Theta][$CellContext`t], 
+                $CellContext`sol[$CellContext`Om$$]]]}, 0.12]}], 
+         ViewPoint -> {0, Infinity, 0}, PlotRange -> 1.2, 
+         ImageSize -> {400, 400}]), 
+      "Specifications" :> {{{$CellContext`a$$, 0, "animate"}, 0, 4 Pi, 
+         0.06283185307179587, ControlType -> Animator, DisplayAllSteps -> 
+         True, AppearanceElements -> {
+          "PlayPauseButton", "FasterSlowerButtons"}, AnimationRunning -> 
+         False, AnimationRate -> 
+         14}, {{$CellContext`a$$, 0, "manual control"}, 0, 4 Pi, 
+         0.06283185307179587}, {{$CellContext`Om$$, 0.8, 
+          "rotation frequency"}, 0., 9.6, 0.8}}, 
+      "Options" :> {
+       AutorunSequencing -> {{2, 30}}, TrackedSymbols -> Manipulate}, 
+      "DefaultOptions" :> {ControllerLinking -> True}],
+     ImageSizeCache->{444., {268., 273.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    Initialization:>({$CellContext`m = 1; $CellContext`R = 1; $CellContext`g = 
+        9.8; Evaluate[
+          Table[
+           $CellContext`sol[$CellContext`i], {$CellContext`i, 0, 9.6, 0.8}]] = 
+        Flatten[
+          Map[NDSolve[{
+             ReplaceAll[$CellContext`g $CellContext`m $CellContext`R Sin[
+                  $CellContext`\[Theta][$CellContext`t]] - $CellContext`m \
+$CellContext`R^2 $CellContext`\[CapitalOmega]^2 Cos[
+                 $CellContext`\[Theta][$CellContext`t]] Sin[
+                 $CellContext`\[Theta][$CellContext`t]] + $CellContext`m \
+$CellContext`R^2 Derivative[2][$CellContext`\[Theta]][$CellContext`t] == 
+              0, $CellContext`\[CapitalOmega] :> #], 
+             Derivative[1][$CellContext`\[Theta]][0] == 
+             0, $CellContext`\[Theta][0] == 0.95 (Pi/2)}, 
+            $CellContext`\[Theta][$CellContext`t], {$CellContext`t, 0, 20}, 
+            MaxSteps -> 20000]& , 
+           
+           Table[$CellContext`i, {$CellContext`i, 0, 9.6, 
+             0.8}]]]; $CellContext`torus[{
+           Pattern[$CellContext`R, 
+            Blank[]], 
+           Pattern[$CellContext`r, 
+            Blank[]]}, {
+           Pattern[$CellContext`x, 
+            Blank[]], 
+           Pattern[$CellContext`y, 
+            Blank[]], 
+           Pattern[$CellContext`z, 
+            
+            Blank[]]}] := ($CellContext`x^2 + $CellContext`y^2 + \
+$CellContext`z^2 + $CellContext`R^2 - $CellContext`r^2)^2 == 
+         4 $CellContext`R^2 ($CellContext`x^2 + $CellContext`z^2); \
+$CellContext`g1 = ContourPlot3D[
+          Evaluate[
+           $CellContext`torus[{
+            1, 0.03}, {$CellContext`x, $CellContext`y, $CellContext`z}]], \
+{$CellContext`x, -1.2, 1.2}, {$CellContext`y, -1.2, 
+           1.2}, {$CellContext`z, -1.2, 1.2}, Mesh -> None, ContourStyle -> {
+            RGBColor[1, 0.71, 0], 
+            Specularity[White, 10]}, PlotPoints -> 100, Boxed -> False, Axes -> 
+          None]}; Typeset`initDone$$ = True),
+    SynchronousInitialization->True,
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellID->153745296],
+
+Cell[CellGroupData[{
+
+Cell["THIS NOTEBOOK IS THE SOURCE CODE FROM", "Text",
+ CellFrame->{{0, 0}, {0, 1}},
+ CellMargins->{{48, 10}, {4, 28}},
+ CellGroupingRules->{"SectionGrouping", 25},
+ CellFrameMargins->{{48, 48}, {6, 5}},
+ CellFrameColor->RGBColor[0.691905, 0.790311, 0.300252],
+ FontFamily->"Helvetica",
+ FontSize->10,
+ FontWeight->"Bold",
+ FontColor->RGBColor[0.691905, 0.790311, 0.300252]],
+
+Cell[TextData[{
+ "\"",
+ ButtonBox["Bead on a Rotating Wire",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/BeadOnARotatingWire/"], None},
+  ButtonNote->"http://demonstrations.wolfram.com/BeadOnARotatingWire/"],
+ "\"",
+ " from ",
+ ButtonBox["The Wolfram Demonstrations Project",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/"], None},
+  ButtonNote->"http://demonstrations.wolfram.com/"],
+ "\[ParagraphSeparator]\[NonBreakingSpace]",
+ ButtonBox["http://demonstrations.wolfram.com/BeadOnARotatingWire/",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/BeadOnARotatingWire/"], None},
+  ButtonNote->"http://demonstrations.wolfram.com/BeadOnARotatingWire/"]
+}], "Text",
+ CellMargins->{{48, Inherited}, {0, Inherited}},
+ FontFamily->"Verdana",
+ FontSize->10,
+ FontColor->GrayLevel[0.5]],
+
+Cell[" ", "Text",
+ CellFrame->{{0, 0}, {0, 1}},
+ CellMargins->{{48, 10}, {4, 28}},
+ CellGroupingRules->{"SectionGrouping", 25},
+ CellFrameMargins->{{48, 48}, {6, 5}},
+ CellFrameColor->RGBColor[0.691905, 0.790311, 0.300252],
+ FontFamily->"Helvetica",
+ FontSize->10,
+ FontWeight->"Bold",
+ FontColor->RGBColor[0.691905, 0.790311, 0.300252]],
+
+Cell[TextData[{
+ "Contributed by: ",
+ ButtonBox["Ryan K. Smith",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/author.html?author=Ryan+K.+Smith"],
+     None},
+  ButtonNote->
+   "http://demonstrations.wolfram.com/author.html?author=Ryan+K.+Smith"],
+ " (Wolfram Research)"
+}], "Text",
+ CellDingbat->"\[FilledSmallSquare]",
+ CellMargins->{{66, 48}, {2, 4}},
+ FontFamily->"Verdana",
+ FontSize->10,
+ FontColor->GrayLevel[0.6],
+ CellID->353313650],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "A full-function Wolfram ",
+ StyleBox["Mathematica",
+  FontSlant->"Italic"],
+ " 6 system is required to edit this notebook.\n",
+ StyleBox[ButtonBox["GET WOLFRAM MATHEMATICA 6 \[RightGuillemet]",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://www.wolfram.com/products/mathematica/"], None},
+  ButtonNote->"http://www.wolfram.com/products/mathematica/"],
+  FontFamily->"Helvetica",
+  FontWeight->"Bold",
+  FontSlant->"Italic",
+  FontColor->RGBColor[1, 0.42, 0]]
+}], "Text",
+ CellFrame->True,
+ CellMargins->{{48, 68}, {8, 28}},
+ CellFrameMargins->12,
+ CellFrameColor->RGBColor[0.865507, 0.90634, 0.680751],
+ CellChangeTimes->{3.3750111182355957`*^9},
+ ParagraphSpacing->{1., 1.},
+ FontFamily->"Verdana",
+ FontSize->10,
+ FontColor->GrayLevel[0.411765],
+ Background->RGBColor[0.986023, 0.991363, 0.969818]],
+
+Cell[TextData[{
+ "\[Copyright] ",
+ StyleBox[ButtonBox["The Wolfram Demonstrations Project & Contributors",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/"], None},
+  ButtonNote->"http://demonstrations.wolfram.com/"],
+  FontColor->GrayLevel[0.6]],
+ "\[ThickSpace]\[ThickSpace]\[ThickSpace]|\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+ StyleBox[ButtonBox["Terms of Use",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/termsofuse.html"], None},
+  ButtonNote->"http://demonstrations.wolfram.com/termsofuse.html"],
+  FontColor->GrayLevel[0.6]],
+ "\[ThickSpace]\[ThickSpace]\[ThickSpace]|\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+ StyleBox[ButtonBox["Make a new version of this Demonstration \
+\[RightGuillemet]",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/participate/upload.jsp?id=\
+BeadOnARotatingWire"], None},
+  ButtonNote->None],
+  FontColor->GrayLevel[0.6]]
+}], "Text",
+ CellFrame->{{0, 0}, {0, 0.5}},
+ CellMargins->{{48, 10}, {20, 50}},
+ CellFrameMargins->{{6, 0}, {6, 6}},
+ CellFrameColor->GrayLevel[0.6],
+ FontFamily->"Verdana",
+ FontSize->9,
+ FontColor->GrayLevel[0.6]]
+}, Open  ]]
+}, Open  ]]
+},
+Editable->True,
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{710, 650},
+WindowMargins->{{Inherited, Inherited}, {Inherited, 0}},
+WindowElements->{
+ "StatusArea", "MemoryMonitor", "MagnificationPopUp", "VerticalScrollBar", 
+  "MenuBar"},
+WindowTitle->"Bead on a Rotating Wire - Source",
+DockedCells->{},
+CellContext->Notebook,
+FrontEndVersion->"6.0 for Microsoft Windows (32-bit) (February 7, 2008)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[590, 23, 215, 4, 70, "Section"],
+Cell[808, 29, 10019, 255, 70, "Input"]
+}, Open  ]],
+Cell[10842, 287, 5492, 116, 70, "Output",
+ CellID->153745296],
+Cell[CellGroupData[{
+Cell[16359, 407, 373, 9, 70, "Text",
+ CellGroupingRules->{"SectionGrouping", 25}],
+Cell[16735, 418, 895, 24, 70, "Text"],
+Cell[17633, 444, 337, 9, 70, "Text",
+ CellGroupingRules->{"SectionGrouping", 25}],
+Cell[17973, 455, 480, 16, 70, "Text",
+ CellID->353313650],
+Cell[CellGroupData[{
+Cell[18478, 475, 829, 24, 70, "Text"],
+Cell[19310, 501, 1195, 33, 70, "Text"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+(* NotebookSignature 6SN4R2aX5ko1QBDxu828aZze *)

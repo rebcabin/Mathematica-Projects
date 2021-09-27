@@ -1,0 +1,1128 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     32598,       1119]
+NotebookOptionsPosition[     28255,        983]
+NotebookOutlinePosition[     28742,       1002]
+CellTagsIndexPosition[     28699,        999]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Remotable Recursion from Scratch", "Title"],
+
+Cell["\<\
+Brian Beckman
+23 Dec 2013\
+\>", "Subtitle"],
+
+Cell[CellGroupData[{
+
+Cell["Introduction", "Section"],
+
+Cell["\<\
+We would like to send recursive function calls into an evaluator that may not \
+accept definitions. For example, we would like to send an expression that \
+computes the factorial of a number via the standard recursive definition of \
+the factorial function to a certain remote evaluator, but there is a catch -- \
+that evaluator is a one-shot evaluator. It will evaluate self-contained \
+expressions that may refer to a fixed list of built-in symbols, but it won't \
+let us define new symbols. We can't send it a recursive definition of \
+factorial and then later evaluate expressions against that definition. The \
+evaluator won't let us extend its internal symbol table, using its memory \
+resources, with new definitions. That would be an opportunity for a \
+denial-of-service attack. \
+\>", "Text"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Recursion as Self-Application", "Section"],
+
+Cell["\<\
+It turns out we can evaluate recursive functions rather easily in one shot. \
+\>", "Text"],
+
+Cell["\<\
+Consider the following definition of factorial using self-application for \
+recursion. \
+\>", "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{
+     StyleBox["f",
+      Background->RGBColor[1, 1, 0]], "\[Function]", 
+     RowBox[{"n", "\[Function]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"n", "\[Equal]", "0"}], ",", "1", ",", 
+        RowBox[{"n", " ", 
+         RowBox[{
+          StyleBox[
+           RowBox[{"f", "[", "f", "]"}],
+           Background->RGBColor[1, 1, 0]], "[", 
+          RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}], ")"}], "[", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    StyleBox["f",
+     Background->RGBColor[1, 1, 0]], "\[Function]", 
+    RowBox[{"n", "\[Function]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"n", "\[Equal]", "0"}], ",", "1", ",", 
+       RowBox[{"n", " ", 
+        RowBox[{
+         StyleBox[
+          RowBox[{"f", "[", "f", "]"}],
+          Background->RGBColor[1, 1, 0]], "[", 
+         RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}], "]"}], "@", 
+  "6"}]], "Input"],
+
+Cell[BoxData["720"], "Output"]
+}, Open  ]],
+
+Cell[TextData[{
+ "This has the form of a function applied to a copy of itself, and then a \
+similar self-application applied to a numerical argument. This is adequate; \
+stop here if all you care about is a programming pattern for remotable \
+recursive functions: just replace the body of the function, namely the ",
+ StyleBox["If[...]", "Input"],
+ " part, in both places where it occurs, with the body of your desired \
+recursive function, and call your function recursively via the \
+self-application syntax ",
+ StyleBox["f[f]", "Input"],
+ ". "
+}], "Text"],
+
+Cell[TextData[{
+ "But there are worthwhile improvements. We can write a general function that \
+will convert ",
+ StyleBox["any",
+  FontSlant->"Italic"],
+ " function into a function that takes a recursive self application as its \
+first argument. "
+}], "Text"],
+
+Cell[TextData[{
+ "First let's calculate how the overall technique works. Consider the \
+following definition of ",
+ StyleBox["F", "Input"],
+ ":"
+}], "Text"],
+
+Cell[BoxData[
+ StyleBox[
+  RowBox[{"F", " ", "=", " ", 
+   RowBox[{"f", "\[Function]", 
+    RowBox[{"n", "\[Function]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"n", "\[Equal]", "0"}], ",", "1", ",", 
+       RowBox[{"n", " ", 
+        RowBox[{
+         RowBox[{"f", "[", "f", "]"}], "[", 
+         RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}]}], 
+  "Input"]], "DisplayFormulaNumbered"],
+
+Cell[TextData[{
+ "This is a ",
+ StyleBox["Curried function",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ ": one that takes its arguments one at a time, producing a function that \
+takes the next argument. "
+}], "Text"],
+
+Cell["The whole expression ", "Text"],
+
+Cell[BoxData[
+ StyleBox[
+  RowBox[{
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"f", "\[Function]", 
+      RowBox[{"n", "\[Function]", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"n", "\[Equal]", "0"}], ",", "1", ",", 
+         RowBox[{"n", " ", 
+          RowBox[{
+           RowBox[{"f", "[", "f", "]"}], "[", 
+           RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}], ")"}], "[", "\n", 
+    RowBox[{"f", "\[Function]", 
+     RowBox[{"n", "\[Function]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"n", "\[Equal]", "0"}], ",", "1", ",", 
+        RowBox[{"n", " ", 
+         RowBox[{
+          RowBox[{"f", "[", "f", "]"}], "[", 
+          RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}], "]"}], "@", "6"}], 
+  "Input"]], "DisplayFormula"],
+
+Cell[TextData[{
+ "looks like ",
+ StyleBox["F[F]@6", "Input"],
+ ", which means ",
+ StyleBox["F", "Input"],
+ " applied to ",
+ StyleBox["F", "Input"],
+ " and the result applied to ",
+ StyleBox["6", "Input"],
+ ". Note as a point of syntax that we cannot write ",
+ StyleBox["F@F@6", "Input"],
+ " because that's ",
+ StyleBox["F[F[6]]", "Input"],
+ ". "
+}], "Text"],
+
+Cell[TextData[{
+ "Applying ",
+ StyleBox["F", "Input"],
+ " to ",
+ StyleBox["F", "Input"],
+ " means substituting ",
+ StyleBox["F", "Input"],
+ " for ",
+ StyleBox["f", "Input"],
+ " in the body of ",
+ StyleBox["F", "Input"],
+ ". In one step we get"
+}], "Text"],
+
+Cell[BoxData[
+ StyleBox[
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"n", "\[Function]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"n", "==", "0"}], ",", "1", ",", 
+       RowBox[{"n", " ", 
+        RowBox[{
+         RowBox[{"F", "[", "F", "]"}], "[", 
+         RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}], ")"}], "@", "6"}], 
+  "Input"]], "DisplayFormula"],
+
+Cell[TextData[{
+ "which reduces in the next step (substitution of ",
+ StyleBox["6", "Input"],
+ " for ",
+ StyleBox["n", "Input"],
+ ") to ",
+ StyleBox["If[6==0,1,6 F[F][5]]", "Input"],
+ ", then to ",
+ StyleBox["6\[NonBreakingSpace]F[F][5]", "Input"],
+ " or ",
+ StyleBox["6\[NonBreakingSpace]F[F]@5", "Input"],
+ ", leaving us with a multiplication, one term of which, namely ",
+ StyleBox["F[F]@5", "Input"],
+ ", is back where we started, just with a new numerical argument, ",
+ StyleBox["5", "Input"],
+ " this time instead of ",
+ StyleBox["6", "Input"],
+ " as last time. "
+}], "Text"],
+
+Cell[TextData[{
+ "This process repeats, building the multiplication expression, until \
+eventually ",
+ StyleBox["n==0", "Input"],
+ " evaluates to ",
+ StyleBox["True", "Input"],
+ " and we get a ",
+ StyleBox["1", "Input"],
+ " instead of another ",
+ StyleBox["F[F]", "Input"],
+ " out of the inner ",
+ StyleBox["If", "Input"],
+ ". At that time, the multiplications rattles back out and yields 720."
+}], "Text"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Four Improvements: Two Abstractions, One Model, and Packaging\
+\>", "Section"],
+
+Cell[TextData[{
+ "The main idea is that of a function, ",
+ StyleBox["F", "Input"],
+ ", of one paramter, ",
+ StyleBox["f", "Input"],
+ ", that receives a copy of ",
+ StyleBox["F", "Input"],
+ " as its actual argument and produces another function of the ",
+ StyleBox["subject parameters",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " -- the parameters of the ",
+ StyleBox["subject code",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ ", the code that does the real work we want, namely computing factorial in \
+this example. All the rest is just plumbing. We see that "
+}], "Text"],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox["f", "Input"], " ", "becomes", " ", 
+  StyleBox["F", "Input"], " ", "in", " ", "the", " ", "body", " ", "of", " ", 
+  StyleBox["F", "Input"], " "}]], "DisplayFormulaNumbered"],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"f", "[", "f", "]"}], "Input"], " ", "evaluates", " ", "to", " ", 
+  RowBox[{
+   StyleBox[
+    RowBox[{"F", "[", "F", "]"}], "Input"], ".", 
+   " "}]}]], "DisplayFormulaNumbered"],
+
+Cell[TextData[{
+ "This idea converts recursion-by-name-of-the-function into self-application, \
+substitution, and argument passing, none of which requires naming anything \
+other than function parameters or any storage other than ",
+ StyleBox["ephemeral storage",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " such as stack frames -- storage that goes away when the evaluation is \
+done. Our one-shot evaluator will be very happy with the expression above."
+}], "Text"],
+
+Cell[TextData[{
+ "Let's make a combinator (a function of a function) that can convert ",
+ StyleBox["any",
+  FontSlant->"Italic"],
+ " function into a new function that receives a self-application as its first \
+curried argument so that it can use this self-application internally. We want \
+to write ",
+ StyleBox["(...)[k\[Function]n\[Function]...]@6", "Input"],
+ " in our example, with ",
+ StyleBox["k", "Input"],
+ " as the self-application, namely ",
+ StyleBox["f[f]", "Input"],
+ ", and ",
+ StyleBox["n", "Input"],
+ " as the subject parameter. We must solve for ",
+ StyleBox["(...)", "Input"],
+ ": what is this function that can convert any function into a function that \
+receives a self-applied version of itself as its first parameter?"
+}], "Text"],
+
+Cell[TextData[{
+ "Do this in two steps: first, abstract the self-application ",
+ StyleBox["f[f]", "Input"],
+ " inside the subject code into a parameter ",
+ StyleBox["k", "Input"],
+ ". Apply the new abstraction to the actual argument ",
+ StyleBox["f[f]", "Input"],
+ " so that we may refer to ",
+ StyleBox["f[f]", "Input"],
+ " as ",
+ StyleBox["k", "Input"],
+ " inside the subject code. That's what abstraction means: replacing an \
+expression with a new function of a parameter and then applying the new \
+function to the original expression as an actual argument. "
+}], "Text"],
+
+Cell["\<\
+In the second step, abstract the subject code itself into a parameter of the \
+desired, general combinator so that we only write the subject code once. \
+\>", "Text"],
+
+Cell[CellGroupData[{
+
+Cell["Abstract the Internal Self-Application", "Subsection"],
+
+Cell[TextData[{
+ "Looking at the body of ",
+ StyleBox["F", "Input"],
+ ", namely "
+}], "Text"],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"f", "\[Function]", 
+    RowBox[{"n", "\[Function]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"n", "\[Equal]", "0"}], ",", "1", ",", 
+       RowBox[{"n", " ", 
+        RowBox[{
+         RowBox[{"f", "[", "f", "]"}], "[", 
+         RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}], "Input"], ",", 
+  " "}]], "DisplayFormula"],
+
+Cell[TextData[{
+ "our first task is to abstract the internal self-application, namely ",
+ StyleBox["f[f]", "Input"],
+ ", into a parameter ",
+ StyleBox["k", "Input"],
+ " then apply the new abstraction to ",
+ StyleBox["f[f]", "Input"],
+ " or ",
+ StyleBox["f@f", "Input"],
+ ". However, when we apply this new abstraction to ",
+ StyleBox["f[f]", "Input"],
+ ", the result fails to terminate:"
+}], "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"f", "\[Function]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"k", "\[Function]", 
+        RowBox[{"n", "\[Function]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"n", "\[Equal]", "0"}], ",", "1", ",", 
+           RowBox[{"n", " ", 
+            RowBox[{"k", "[", 
+             RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}], ")"}], "[", 
+      RowBox[{"f", "@", "f"}], "]"}]}], ")"}], "@", 
+   RowBox[{"(", 
+    RowBox[{"f", "\[Function]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"k", "\[Function]", 
+        RowBox[{"n", "\[Function]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"n", "\[Equal]", "0"}], ",", "1", ",", 
+           RowBox[{"n", " ", 
+            RowBox[{"k", "[", 
+             RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}], ")"}], "[", 
+      RowBox[{"f", "@", "f"}], "]"}]}], ")"}]}], ";"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"$RecursionLimit", "::", "reclim"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Recursion depth of \[NoBreak]\\!\\(1024\\)\[NoBreak] \
+exceeded. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/$RecursionLimit/reclim\\\", ButtonNote -> \
+\\\"$RecursionLimit::reclim\\\"]\\)\"\>"}]], "Message", "MSG"],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"$RecursionLimit", "::", "reclim"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Recursion depth of \[NoBreak]\\!\\(1024\\)\[NoBreak] \
+exceeded. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/$RecursionLimit/reclim\\\", ButtonNote -> \
+\\\"$RecursionLimit::reclim\\\"]\\)\"\>"}]], "Message", "MSG"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Why? As before, let's calculate. ",
+ StyleBox["F", "Input"],
+ " now stands for a function of ",
+ StyleBox["f", "Input"],
+ " that produces this function of ",
+ StyleBox["k", "Input"],
+ " applied to ",
+ StyleBox["f@f", "Input"],
+ ":"
+}], "Text"],
+
+Cell[BoxData[{
+ StyleBox[
+  RowBox[{"F", " ", "=", " ", 
+   RowBox[{"f", "\[Function]", "\n", "   ", 
+    RowBox[{"(", 
+     RowBox[{"k", "\[Function]", 
+      RowBox[{"n", "\[Function]", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"n", "\[Equal]", "0"}], ",", "1", ",", 
+         RowBox[{"n", "*", 
+          RowBox[{"k", "[", 
+           RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}], ")"}]}]}], 
+  "Input"], "\n", 
+ StyleBox[
+  RowBox[{"      ", 
+   RowBox[{"[", 
+    RowBox[{"f", "@", "f"}], "]"}]}], "Input"]}], "DisplayFormula"],
+
+Cell[TextData[{
+ "Applying ",
+ StyleBox["F", "Input"],
+ " -- this function of ",
+ StyleBox["f", "Input"],
+ " -- to a copy of itself, ",
+ StyleBox["f", "Input"],
+ " becomes ",
+ StyleBox["F@F", "Input"],
+ ", and we get "
+}], "Text"],
+
+Cell[BoxData[
+ StyleBox[
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"k", "\[Function]", 
+     RowBox[{"n", "\[Function]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"n", "==", "0"}], ",", "1", ",", 
+        RowBox[{"n", "*", 
+         RowBox[{"k", "[", 
+          RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}], ")"}], "[", 
+   RowBox[{"F", "@", "F"}], "]"}], "Input"]], "DisplayFormula"],
+
+Cell[TextData[{
+ "In the next step, evaluate ",
+ StyleBox["F@F", "Input"],
+ " in preparation for substituting its value for ",
+ StyleBox["k", "Input"],
+ ", but that's too early. This will never complete. We need to do the test \
+inside the ",
+ StyleBox["If", "Input"],
+ " ",
+ StyleBox["before",
+  FontSlant->"Italic"],
+ " we evaluate the self-application ",
+ StyleBox["F@F", "Input"],
+ ". "
+}], "Text"],
+
+Cell[TextData[{
+ "Every recursive function has some kind of test and bottom case wherein it \
+does not recurse, so this ",
+ StyleBox["need-to-test-before-self-application",
+  FontSlant->"Italic"],
+ " is general."
+}], "Text"],
+
+Cell[TextData[{
+ "We can delay evaluation of the self application ",
+ StyleBox["F@F", "Input"],
+ " by defining ",
+ StyleBox["F", "Input"],
+ " to apply our function-of-",
+ StyleBox["k", "Input"],
+ " to"
+}], "Text"],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox["m", "Input"], 
+  StyleBox["\[Function]", "Input"], 
+  RowBox[{
+   StyleBox[
+    RowBox[{"f", "[", "f", "]"}], "Input"], 
+   StyleBox["@", "Input"], 
+   StyleBox["m", "Input"], " "}]}]], "DisplayFormula"],
+
+Cell["instead of to", "Text"],
+
+Cell[BoxData[
+ StyleBox[
+  RowBox[{"f", "@", "f"}], "Input"]], "DisplayFormula"],
+
+Cell[TextData[{
+ "These two expressions always have the same value when applied to any \
+argument, they just evaluate the self application ",
+ StyleBox["f@f", "Input"],
+ " at different times. In the first case, ",
+ StyleBox["f@f", "Input"],
+ " is evaluated when ",
+ StyleBox["m\[Function]f[f]@m", "Input"],
+ " is evaluated, after substitution of an actual argument for the parameter ",
+ StyleBox["m", "Input"],
+ ", so it's safe to substitute ",
+ StyleBox["m\[Function]f[f]@m", "Input"],
+ " for ",
+ StyleBox["k", "Input"],
+ ". In the second case, ",
+ StyleBox["f@f", "Input"],
+ " is evaluated immediately before substituting it for ",
+ StyleBox["k", "Input"],
+ "."
+}], "Text"],
+
+Cell["\<\
+We note in passing that in lazy languages like Haskell, this step is \
+automatic because evaluation of all expressions is always delayed.\
+\>", "Text"],
+
+Cell[TextData[{
+ "Let's back off and write our very first original self-application with \n",
+ StyleBox["m\[Function]f[f][m]", "Input"],
+ " in place of ",
+ StyleBox["f@f", "Input"],
+ "."
+}], "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"f", "\[Function]", 
+     RowBox[{"n", "\[Function]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"n", "\[Equal]", "0"}], ",", "1", ",", 
+        RowBox[{"n", 
+         RowBox[{
+          RowBox[{"(", 
+           StyleBox[
+            RowBox[{"m", "\[Function]", 
+             RowBox[{
+              RowBox[{"f", "[", "f", "]"}], "@", "m"}]}],
+            Background->RGBColor[1, 1, 0]], ")"}], "[", 
+          RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}], ")"}], "[", 
+   "\[IndentingNewLine]", 
+   RowBox[{"f", "\[Function]", 
+    RowBox[{"n", "\[Function]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"n", "\[Equal]", "0"}], ",", "1", ",", 
+       RowBox[{"n", 
+        RowBox[{
+         RowBox[{"(", 
+          StyleBox[
+           RowBox[{"m", "\[Function]", 
+            RowBox[{
+             RowBox[{"f", "[", "f", "]"}], "@", "m"}]}],
+           Background->RGBColor[1, 1, 0]], ")"}], "[", 
+         RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}], "]"}], "@", 
+  "6"}]], "Input"],
+
+Cell[BoxData["720"], "Output"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Now, as before, abstract ",
+ StyleBox["m\[Function]f[f]@m", "Input"],
+ " into a parameter ",
+ StyleBox["k", "Input"],
+ " of a new lambda:"
+}], "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"f", "\[Function]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        StyleBox["k",
+         Background->RGBColor[1, 1, 0]], "\[Function]", 
+        RowBox[{"n", "\[Function]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"n", "\[Equal]", "0"}], ",", "1", ",", 
+           RowBox[{"n", " ", 
+            RowBox[{
+             StyleBox["k",
+              Background->RGBColor[1, 1, 0]], "[", 
+             RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}], ")"}], "[", 
+      StyleBox[
+       RowBox[{"m", "\[Function]", 
+        RowBox[{
+         RowBox[{"f", "[", "f", "]"}], "@", "m"}]}],
+       Background->RGBColor[1, 1, 0]], "]"}]}], ")"}], "[", 
+   "\[IndentingNewLine]", 
+   RowBox[{"f", "\[Function]", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       StyleBox["k",
+        Background->RGBColor[1, 1, 0]], "\[Function]", 
+       RowBox[{"n", "\[Function]", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"n", "\[Equal]", "0"}], ",", "1", ",", 
+          RowBox[{"n", " ", 
+           RowBox[{
+            StyleBox["k",
+             Background->RGBColor[1, 1, 0]], "[", 
+            RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}], ")"}], "[", 
+     StyleBox[
+      RowBox[{"m", "\[Function]", 
+       RowBox[{
+        RowBox[{"f", "[", "f", "]"}], "@", "m"}]}],
+      Background->RGBColor[1, 1, 0]], "]"}]}], "]"}], " ", "@", 
+  "6"}]], "Input"],
+
+Cell[BoxData["720"], "Output"]
+}, Open  ]],
+
+Cell[TextData[{
+ "the result does not spin because evaluation of ",
+ StyleBox["f[f]", "Input"],
+ " is delayed until it is needed to apply to a numerical argument."
+}], "Text"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Abstract the Subject Code", "Subsection"],
+
+Cell[TextData[{
+ "The abstraction on ",
+ StyleBox["k", "Input"],
+ " now completely and minimally encloses the subject code ",
+ StyleBox["k\[Function]n\[Function]If[n\[Equal]0,1,n k[n-1]]", "Input"],
+ ". Abstract that: "
+}], "Text"],
+
+Cell[BoxData[
+ RowBox[{"write", " ", "a", " ", "new", " ", "function", " ", "of", " ", "a", 
+  " ", "parameter", " ", 
+  StyleBox["s", "Input"], " "}]], "DisplayFormulaNumbered"],
+
+Cell[BoxData[
+ RowBox[{"with", " ", "a", " ", "body", " ", "that", " ", "replaces", " ", 
+  "the", " ", "old", " ", "function", " ", "of", " ", 
+  StyleBox["k", "Input"], " ", "with", " ", "an", " ", "application", " ", 
+  "of", " ", 
+  StyleBox["s", "Input"]}]], "DisplayFormulaNumbered"],
+
+Cell[BoxData[
+ RowBox[{"apply", " ", "that", " ", "new", " ", "function", " ", "of", " ", 
+  StyleBox["s", "Input"], " ", "to", " ", "the", " ", "old", " ", "function", 
+  " ", "of", " ", 
+  StyleBox["k", "Input"]}]], "DisplayFormulaNumbered"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{
+     StyleBox["s",
+      Background->RGBColor[1, 1, 0]], "\[Function]", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"f", "\[Function]", 
+        RowBox[{
+         StyleBox["s",
+          Background->RGBColor[1, 1, 0]], "[", 
+         RowBox[{"m", "\[Function]", 
+          RowBox[{
+           RowBox[{"f", "[", "f", "]"}], "@", "m"}]}], "]"}]}], ")"}], "[", 
+      "\[IndentingNewLine]", 
+      RowBox[{"f", "\[Function]", 
+       RowBox[{
+        StyleBox["s",
+         Background->RGBColor[1, 1, 0]], "[", 
+        RowBox[{"m", "\[Function]", 
+         RowBox[{
+          RowBox[{"f", "[", "f", "]"}], "@", "m"}]}], "]"}]}], "]"}]}], ")"}],
+    "[", "\[IndentingNewLine]", 
+   StyleBox[
+    RowBox[{"k", "\[Function]", 
+     RowBox[{"n", "\[Function]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"n", "\[Equal]", "0"}], ",", "1", ",", 
+        RowBox[{"n", " ", 
+         RowBox[{
+          StyleBox["k",
+           Background->RGBColor[1, 1, 0]], "[", 
+          RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}],
+    Background->RGBColor[1, 1, 0]], "]"}], "@", "6"}]], "Input"],
+
+Cell[BoxData["720"], "Output"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Model the Self-Application", "Subsection"],
+
+Cell[TextData[{
+ "This is a convenience step that eliminates the final repetition. Write a \
+function ",
+ StyleBox["g\[Function]g@g", "Input"],
+ " that just self-applies any other function. Replace our self-application "
+}], "Text"],
+
+Cell[BoxData[
+ StyleBox[
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"f", "\[Function]", 
+     RowBox[{"s", "[", 
+      RowBox[{"m", "\[Function]", 
+       RowBox[{
+        RowBox[{"f", "[", "f", "]"}], "[", "m", "]"}]}], "]"}]}], ")"}], "[", 
+   "\[IndentingNewLine]", 
+   RowBox[{"f", "\[Function]", 
+    RowBox[{"s", "[", 
+     RowBox[{"m", "\[Function]", 
+      RowBox[{
+       RowBox[{"f", "[", "f", "]"}], "[", "m", "]"}]}], "]"}]}], "]"}], 
+  "Input"]], "DisplayFormula"],
+
+Cell[TextData[{
+ "with an application of ",
+ StyleBox["g\[Function]g@g", "Input"],
+ " to ",
+ StyleBox["f\[Function]s[n\[Function]f[f][n]]", "Input"],
+ ":"
+}], "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"s", "\[Function]", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"(", 
+       StyleBox[
+        RowBox[{"g", "\[Function]", 
+         RowBox[{"g", "@", "g"}]}],
+        Background->RGBColor[1, 1, 0]], ")"}], "[", "\[IndentingNewLine]", 
+      RowBox[{"f", "\[Function]", 
+       RowBox[{"s", "[", 
+        RowBox[{"m", "\[Function]", 
+         RowBox[{
+          RowBox[{"f", "[", "f", "]"}], "@", "m"}]}], "]"}]}], "]"}]}], ")"}],
+    "[", "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{
+     "the", " ", "following", " ", "is", " ", "substituted", " ", "for", " ", 
+      "s"}], ",", " ", 
+     RowBox[{"the", " ", "subject", " ", "code"}]}], " ", "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"k", "\[Function]", 
+    RowBox[{"n", "\[Function]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"n", "\[Equal]", "0"}], ",", "1", ",", 
+       RowBox[{"n", " ", 
+        RowBox[{
+         StyleBox["k",
+          Background->RGBColor[1, 1, 0]], "[", 
+         RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}], "]"}], "@", 
+  "6"}]], "Input"],
+
+Cell[BoxData["720"], "Output"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Demonstrate the Generality", "Subsection"],
+
+Cell["\<\
+We can now apply the outer combinator -- which always stays the same -- to a \
+different famous recursive function -- which we only have to write once -- as \
+subject code:\
+\>", "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", 
+    StyleBox[
+     RowBox[{"s", "\[Function]", 
+      RowBox[{
+       RowBox[{"(", 
+        StyleBox[
+         RowBox[{"g", "\[Function]", 
+          RowBox[{"g", "@", "g"}]}],
+         Background->RGBColor[1, 1, 0]], ")"}], "[", 
+       RowBox[{"f", "\[Function]", 
+        RowBox[{"s", "[", 
+         RowBox[{"m", "\[Function]", 
+          RowBox[{
+           RowBox[{"f", "[", "f", "]"}], "@", "m"}]}], "]"}]}], "]"}]}],
+     Background->RGBColor[1, 1, 0]], ")"}], "[", "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+     RowBox[{
+     "the", " ", "following", " ", "is", " ", "substituted", " ", "for", " ", 
+      "s"}], ",", " ", 
+     RowBox[{"the", " ", "subject", " ", "code"}]}], " ", "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"k", "\[Function]", 
+    RowBox[{"n", "\[Function]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"n", "<", "2"}], ",", "1", ",", 
+       RowBox[{
+        RowBox[{"k", "[", 
+         RowBox[{"n", "-", "2"}], "]"}], "+", 
+        RowBox[{
+         StyleBox["k",
+          Background->RGBColor[1, 1, 0]], "[", 
+         RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}], "]"}], "@", 
+  "6"}]], "Input"],
+
+Cell[BoxData["13"], "Output"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Packaging as a Combinator", "Subsection"],
+
+Cell["Package the outer combinator:", "Text"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Y", "=", 
+   StyleBox[
+    RowBox[{"s", "\[Function]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"g", "\[Function]", 
+        RowBox[{"g", "@", "g"}]}], ")"}], "[", 
+      RowBox[{"f", "\[Function]", 
+       RowBox[{"s", "[", 
+        RowBox[{"m", "\[Function]", 
+         RowBox[{
+          RowBox[{"f", "[", "f", "]"}], "@", "m"}]}], "]"}]}], "]"}]}],
+    Background->RGBColor[1, 1, 0]]}], 
+  StyleBox[";",
+   Background->RGBColor[1, 1, 0]]}]], "Input"],
+
+Cell["and test on our two examples", "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Y", "[", 
+   RowBox[{"k", "\[Function]", 
+    RowBox[{"n", "\[Function]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"n", "\[Equal]", "0"}], ",", "1", ",", 
+       RowBox[{"n", " ", 
+        RowBox[{
+         StyleBox["k",
+          Background->RGBColor[1, 1, 0]], "[", 
+         RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}], "]"}], "@", 
+  "6"}]], "Input"],
+
+Cell[BoxData["720"], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Y", "[", 
+   RowBox[{"k", "\[Function]", 
+    RowBox[{"n", "\[Function]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"n", "<", "2"}], ",", "1", ",", 
+       RowBox[{
+        RowBox[{"k", "[", 
+         RowBox[{"n", "-", "2"}], "]"}], "+", 
+        RowBox[{
+         StyleBox["k",
+          Background->RGBColor[1, 1, 0]], "[", 
+         RowBox[{"n", "-", "1"}], "]"}]}]}], "]"}]}]}], "]"}], "@", 
+  "6"}]], "Input"],
+
+Cell[BoxData["13"], "Output"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Memoizing", "Section"],
+
+Cell["\<\
+A downside of recursive functions is that they can be expensive. The \
+\"different famous recursive function\" mentioned above is Fibonacci, a \
+notorious case of accidental exponential complexity. This is easily resolved \
+if we can name the recursive function and keep previously computed results in \
+an external table, but the whole point of this exercise is to avoid external \
+names. \
+\>", "Text"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{843, 808},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+PrintingCopies->1,
+PrintingPageRange->{Automatic, Automatic},
+FrontEndVersion->"9.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (January 25, \
+2013)",
+StyleDefinitions->FrontEnd`FileName[{"Report"}, "StandardReport.nb", 
+  CharacterEncoding -> "UTF-8"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 49, 0, 181, "Title"],
+Cell[631, 24, 53, 3, 74, "Subtitle"],
+Cell[CellGroupData[{
+Cell[709, 31, 31, 0, 103, "Section"],
+Cell[743, 33, 812, 12, 227, "Text"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1592, 50, 48, 0, 103, "Section"],
+Cell[1643, 52, 100, 2, 37, "Text"],
+Cell[1746, 56, 111, 3, 37, "Text"],
+Cell[CellGroupData[{
+Cell[1882, 63, 970, 31, 69, "Input"],
+Cell[2855, 96, 30, 0, 47, "Output"]
+}, Open  ]],
+Cell[2900, 99, 558, 11, 156, "Text"],
+Cell[3461, 112, 259, 7, 61, "Text"],
+Cell[3723, 121, 156, 5, 37, "Text"],
+Cell[3882, 128, 401, 12, 28, "DisplayFormulaNumbered"],
+Cell[4286, 142, 221, 7, 61, "Text"],
+Cell[4510, 151, 37, 0, 37, "Text"],
+Cell[4550, 153, 770, 23, 49, "DisplayFormula"],
+Cell[5323, 178, 357, 14, 61, "Text"],
+Cell[5683, 194, 255, 12, 37, "Text"],
+Cell[5941, 208, 367, 12, 27, "DisplayFormula"],
+Cell[6311, 222, 581, 18, 109, "Text"],
+Cell[6895, 242, 406, 13, 85, "Text"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7338, 260, 88, 2, 148, "Section"],
+Cell[7429, 264, 583, 17, 109, "Text"],
+Cell[8015, 283, 210, 4, 29, "DisplayFormulaNumbered"],
+Cell[8228, 289, 226, 7, 29, "DisplayFormulaNumbered"],
+Cell[8457, 298, 472, 9, 132, "Text"],
+Cell[8932, 309, 752, 18, 156, "Text"],
+Cell[9687, 329, 576, 14, 132, "Text"],
+Cell[10266, 345, 176, 3, 61, "Text"],
+Cell[CellGroupData[{
+Cell[10467, 352, 60, 0, 39, "Subsection"],
+Cell[10530, 354, 93, 4, 37, "Text"],
+Cell[10626, 360, 383, 12, 29, "DisplayFormula"],
+Cell[11012, 374, 399, 12, 85, "Text"],
+Cell[CellGroupData[{
+Cell[11436, 390, 949, 28, 69, "Input"],
+Cell[12388, 420, 432, 9, 29, "Message"],
+Cell[12823, 431, 432, 9, 29, "Message"]
+}, Open  ]],
+Cell[13270, 443, 261, 10, 61, "Text"],
+Cell[13534, 455, 552, 17, 74, "DisplayFormula"],
+Cell[14089, 474, 230, 10, 37, "Text"],
+Cell[14322, 486, 400, 12, 27, "DisplayFormula"],
+Cell[14725, 500, 402, 14, 85, "Text"],
+Cell[15130, 516, 224, 6, 61, "Text"],
+Cell[15357, 524, 213, 8, 61, "Text"],
+Cell[15573, 534, 239, 8, 29, "DisplayFormula"],
+Cell[15815, 544, 29, 0, 37, "Text"],
+Cell[15847, 546, 80, 2, 27, "DisplayFormula"],
+Cell[15930, 550, 675, 19, 132, "Text"],
+Cell[16608, 571, 161, 3, 61, "Text"],
+Cell[16772, 576, 198, 6, 61, "Text"],
+Cell[CellGroupData[{
+Cell[16995, 586, 1079, 33, 69, "Input"],
+Cell[18077, 621, 30, 0, 47, "Output"]
+}, Open  ]],
+Cell[18122, 624, 168, 6, 37, "Text"],
+Cell[CellGroupData[{
+Cell[18315, 634, 1466, 45, 69, "Input"],
+Cell[19784, 681, 30, 0, 47, "Output"]
+}, Open  ]],
+Cell[19829, 684, 175, 4, 61, "Text"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20041, 693, 47, 0, 39, "Subsection"],
+Cell[20091, 695, 231, 6, 61, "Text"],
+Cell[20325, 703, 178, 3, 29, "DisplayFormulaNumbered"],
+Cell[20506, 708, 289, 5, 29, "DisplayFormulaNumbered"],
+Cell[20798, 715, 243, 4, 29, "DisplayFormulaNumbered"],
+Cell[CellGroupData[{
+Cell[21066, 723, 1187, 36, 111, "Input"],
+Cell[22256, 761, 30, 0, 47, "Output"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22335, 767, 48, 0, 39, "Subsection"],
+Cell[22386, 769, 232, 5, 61, "Text"],
+Cell[22621, 776, 474, 15, 49, "DisplayFormula"],
+Cell[23098, 793, 166, 6, 37, "Text"],
+Cell[CellGroupData[{
+Cell[23289, 803, 1144, 34, 132, "Input"],
+Cell[24436, 839, 30, 0, 47, "Output"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[24515, 845, 48, 0, 39, "Subsection"],
+Cell[24566, 847, 196, 4, 85, "Text"],
+Cell[CellGroupData[{
+Cell[24787, 855, 1214, 37, 111, "Input"],
+Cell[26004, 894, 29, 0, 47, "Output"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[26082, 900, 47, 0, 39, "Subsection"],
+Cell[26132, 902, 45, 0, 37, "Text"],
+Cell[26180, 904, 498, 16, 48, "Input"],
+Cell[26681, 922, 44, 0, 37, "Text"],
+Cell[CellGroupData[{
+Cell[26750, 926, 406, 13, 47, "Input"],
+Cell[27159, 941, 30, 0, 47, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[27226, 946, 463, 15, 47, "Input"],
+Cell[27692, 963, 29, 0, 47, "Output"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[27782, 970, 28, 0, 103, "Section"],
+Cell[27813, 972, 414, 7, 156, "Text"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

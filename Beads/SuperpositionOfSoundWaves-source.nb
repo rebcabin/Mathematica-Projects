@@ -1,0 +1,502 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 6.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     18869,        492]
+NotebookOptionsPosition[     17808,        452]
+NotebookOutlinePosition[     18419,        476]
+CellTagsIndexPosition[     18376,        473]
+WindowTitle->Superposition of Sound Waves - Source
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Superposition of Sound Waves", "Section",
+ CellFrameColor->RGBColor[
+  0.6449835965514611, 0.758632791638056, 0.2516823071641108],
+ FontColor->RGBColor[
+  0.6449835965514611, 0.758632791638056, 0.2516823071641108]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Manipulate", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"Column", "[", 
+    RowBox[{
+     RowBox[{"{", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"Show", "[", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"Plot", "[", 
+          RowBox[{
+           RowBox[{"Sin", "[", 
+            RowBox[{"f1", "*", "2", "Pi", "*", "t"}], "]"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"t", ",", "0", ",", "0.02"}], "}"}], ",", 
+           RowBox[{"PlotStyle", "\[Rule]", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"RGBColor", "[", 
+               RowBox[{".33", ",", ".6", ",", ".7"}], "]"}], ",", 
+              RowBox[{"Thickness", "[", "0.0075", "]"}]}], "}"}]}]}], "]"}], 
+         ",", "\[IndentingNewLine]", 
+         RowBox[{"Plot", "[", 
+          RowBox[{
+           RowBox[{"Sin", "[", 
+            RowBox[{
+             RowBox[{"f2", "*", "2", "Pi", "*", "t"}], "+", "offset"}], "]"}],
+            ",", 
+           RowBox[{"{", 
+            RowBox[{"t", ",", "0", ",", "0.02"}], "}"}], ",", 
+           RowBox[{"PlotStyle", "\[Rule]", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"RGBColor", "[", 
+               RowBox[{".48", ",", ".11", ",", ".56"}], "]"}], ",", 
+              RowBox[{"Thickness", "[", "0.0075", "]"}]}], "}"}]}]}], "]"}], 
+         ",", "\[IndentingNewLine]", 
+         RowBox[{"Plot", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"Sin", "[", 
+             RowBox[{"f1", "*", "2", "Pi", "*", "t"}], "]"}], "+", 
+            RowBox[{"Sin", "[", 
+             RowBox[{
+              RowBox[{"f2", "*", "2", "Pi", "*", "t"}], "+", "offset"}], 
+             "]"}]}], ",", 
+           RowBox[{"{", 
+            RowBox[{"t", ",", "0", ",", "0.02"}], "}"}], ",", 
+           RowBox[{"PlotStyle", "\[Rule]", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"RGBColor", "[", 
+               RowBox[{".6", ",", ".73", ",", ".36"}], "]"}], ",", 
+              RowBox[{"Thickness", "[", "0.01", "]"}]}], "}"}]}]}], "]"}], 
+         ",", "\[IndentingNewLine]", 
+         RowBox[{"PlotRange", "\[Rule]", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{"0", ",", "0.02"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"-", "2"}], ",", "2"}], "}"}]}], "}"}]}], ",", 
+         RowBox[{"Ticks", "\[Rule]", "None"}], ",", 
+         RowBox[{"ImageSize", "\[Rule]", "400"}]}], "]"}], ",", 
+       "\[IndentingNewLine]", "\"\<\>\"", ",", "\[IndentingNewLine]", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"f1", "\[NotEqual]", "oldf1"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"EmitSound", "[", 
+          RowBox[{"{", "\[IndentingNewLine]", 
+           RowBox[{"Sound", "[", 
+            RowBox[{
+             RowBox[{"Play", "[", 
+              RowBox[{
+               RowBox[{"Sin", "[", 
+                RowBox[{"f1", "*", "2", "Pi", "*", "t"}], "]"}], ",", 
+               RowBox[{"{", 
+                RowBox[{"t", ",", "0", ",", "1"}], "}"}]}], "]"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"0", ",", "0.1"}], "}"}]}], "]"}], 
+           "\[IndentingNewLine]", "}"}], "]"}]}], "]"}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"f2", "\[NotEqual]", "oldf2"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"EmitSound", "[", 
+          RowBox[{"{", "\[IndentingNewLine]", 
+           RowBox[{"Sound", "[", 
+            RowBox[{
+             RowBox[{"Play", "[", 
+              RowBox[{
+               RowBox[{"Sin", "[", 
+                RowBox[{
+                 RowBox[{"f2", "*", "2", "Pi", "*", "t"}], "+", "offset"}], 
+                "]"}], ",", 
+               RowBox[{"{", 
+                RowBox[{"t", ",", "0", ",", "1"}], "}"}]}], "]"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"0", ",", "0.1"}], "}"}]}], "]"}], 
+           "\[IndentingNewLine]", "}"}], "]"}]}], "]"}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Button", "[", 
+        RowBox[{"\"\<play result\>\"", ",", 
+         RowBox[{"EmitSound", "[", 
+          RowBox[{"{", "\[IndentingNewLine]", 
+           RowBox[{"Sound", "[", 
+            RowBox[{
+             RowBox[{"Play", "[", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"Sin", "[", 
+                 RowBox[{"f1", "*", "2", "Pi", "*", "t"}], "]"}], "+", 
+                RowBox[{"Sin", "[", 
+                 RowBox[{
+                  RowBox[{"f2", "*", "2", "Pi", "*", "t"}], "+", "offset"}], 
+                 "]"}]}], ",", 
+               RowBox[{"{", 
+                RowBox[{"t", ",", "0", ",", "1"}], "}"}], ",", 
+               RowBox[{"PlayRange", "\[Rule]", 
+                RowBox[{"{", 
+                 RowBox[{
+                  RowBox[{"-", "1"}], ",", "1"}], "}"}]}]}], "]"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"0", ",", "2"}], "}"}]}], "]"}], "\[IndentingNewLine]", 
+           "}"}], "]"}]}], "]"}], ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"oldf1", "=", "f1"}], ";", 
+        RowBox[{"oldf2", "=", "f2"}], ";"}]}], "\[IndentingNewLine]", "}"}], 
+     ",", 
+     RowBox[{"Alignment", "\[Rule]", "Center"}]}], "]"}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"f1", ",", "200", ",", "\"\<blue wave\>\""}], "}"}], ",", "200",
+      ",", "500", ",", "25"}], "}"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"f2", ",", "200", ",", "\"\<purple wave\>\""}], "}"}], ",", 
+     "200", ",", "500", ",", "25"}], "}"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"offset", ",", "0", ",", "\"\<offset\>\""}], "}"}], ",", "0", 
+     ",", 
+     RowBox[{"2", "Pi"}], ",", 
+     RowBox[{"Pi", "/", "16"}]}], "}"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"oldf1", ",", "200"}], "}"}], ",", 
+     RowBox[{"ControlType", "\[Rule]", "None"}]}], "}"}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"oldf2", ",", "200"}], "}"}], ",", 
+     RowBox[{"ControlType", "\[Rule]", "None"}]}], "}"}], ",", 
+   RowBox[{"AutorunSequencing", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "2", ",", "3"}], "}"}]}]}], "\[IndentingNewLine]", 
+  "]"}]], "Input",
+ CellChangeTimes->{
+  3.35696210375764*^9, 3.3880408599245253`*^9, {3.38809355971875*^9, 
+   3.388093591578125*^9}, {3.388093666640625*^9, 3.38809370184375*^9}, {
+   3.38815144875001*^9, 3.3881514508906345`*^9}, {3.3882337403698*^9, 
+   3.3882337440729012`*^9}, {3.3882691751744223`*^9, 3.388269234217186*^9}, {
+   3.3882692713665867`*^9, 3.388269297975689*^9}, {3.3882693926745033`*^9, 
+   3.388269394607625*^9}, {3.3882694454244137`*^9, 3.3882694568925343`*^9}, {
+   3.388269489631571*^9, 3.388269512432417*^9}, {3.388269661143173*^9, 
+   3.388269684364599*^9}, {3.388269879230542*^9, 3.38826991888437*^9}, 
+   3.3882700098763657`*^9, {3.388270052469618*^9, 3.388270085495042*^9}, {
+   3.388270234912266*^9, 3.388270287657125*^9}, {3.388270326529517*^9, 
+   3.388270335431246*^9}, 3.388270379558235*^9, {3.388270415430615*^9, 
+   3.38827046767307*^9}, {3.3882705170265703`*^9, 3.388270560297297*^9}, {
+   3.388270591693824*^9, 3.388270593776366*^9}, {3.388270648023672*^9, 
+   3.388270702571981*^9}, {3.3882707809084873`*^9, 3.38827092511474*^9}, {
+   3.3882709597300386`*^9, 3.388271014389387*^9}, {3.388271057404477*^9, 
+   3.3882712230046473`*^9}, {3.388312081159659*^9, 3.3883121435709476`*^9}, {
+   3.388312188278754*^9, 3.388312208686873*^9}, {3.3883122477847023`*^9, 
+   3.388312274220769*^9}, {3.38831233631575*^9, 3.3883123548475323`*^9}, 
+   3.4204718076988173`*^9, {3.4204732662237945`*^9, 3.420473325854757*^9}, {
+   3.4204733616323347`*^9, 3.4204733910132723`*^9}, {3.459882333078496*^9, 
+   3.459882365158956*^9}, 3.459882408860014*^9}],
+
+Cell[BoxData[
+ FormBox[
+  TagBox[
+   FormBox[
+    StyleBox[
+     DynamicModuleBox[{$CellContext`f1$$ = 200, $CellContext`f2$$ = 
+      200, $CellContext`offset$$ = 0, $CellContext`oldf1$$ = 
+      200, $CellContext`oldf2$$ = 200, Typeset`show$$ = True, 
+      Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+      Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+      "\"untitled\"", Typeset`specs$$ = {{{
+         Hold[$CellContext`f1$$], 200, "blue wave"}, 200, 500, 25}, {{
+         Hold[$CellContext`f2$$], 200, "purple wave"}, 200, 500, 25}, {{
+         Hold[$CellContext`offset$$], 0, "offset"}, 0, 2 Pi, Rational[1, 16] 
+        Pi}, {{
+         Hold[$CellContext`oldf1$$], 200}}, {{
+         Hold[$CellContext`oldf2$$], 200}}}, Typeset`size$$ = {
+      600., {249.40625, 258.59375}}, Typeset`update$$ = 0, Typeset`initDone$$,
+       Typeset`skipInitDone$$ = True, $CellContext`f1$121917$$ = 
+      0, $CellContext`f2$121918$$ = 0, $CellContext`offset$121919$$ = 0}, 
+      DynamicBox[Manipulate`ManipulateBoxes[
+       1, TraditionalForm, 
+        "Variables" :> {$CellContext`f1$$ = 200, $CellContext`f2$$ = 
+          200, $CellContext`offset$$ = 0, $CellContext`oldf1$$ = 
+          200, $CellContext`oldf2$$ = 200}, "ControllerVariables" :> {
+          Hold[$CellContext`f1$$, $CellContext`f1$121917$$, 0], 
+          Hold[$CellContext`f2$$, $CellContext`f2$121918$$, 0], 
+          Hold[$CellContext`offset$$, $CellContext`offset$121919$$, 0]}, 
+        "OtherVariables" :> {
+         Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+          Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+          Typeset`specs$$, Typeset`size$$, Typeset`update$$, 
+          Typeset`initDone$$, Typeset`skipInitDone$$}, "Body" :> Column[{
+           Show[
+            Plot[
+             
+             Sin[$CellContext`f1$$ 2 Pi $CellContext`t], {$CellContext`t, 0, 
+              0.02}, PlotStyle -> {
+               RGBColor[0.33, 0.6, 0.7], 
+               Thickness[0.0075]}], 
+            Plot[
+             
+             Sin[$CellContext`f2$$ 2 
+               Pi $CellContext`t + $CellContext`offset$$], {$CellContext`t, 0,
+               0.02}, PlotStyle -> {
+               RGBColor[0.48, 0.11, 0.56], 
+               Thickness[0.0075]}], 
+            Plot[
+            Sin[$CellContext`f1$$ 2 Pi $CellContext`t] + 
+             Sin[$CellContext`f2$$ 2 
+                Pi $CellContext`t + $CellContext`offset$$], {$CellContext`t, 
+              0, 0.02}, PlotStyle -> {
+               RGBColor[0.6, 0.73, 0.36], 
+               Thickness[0.01]}], PlotRange -> {{0, 0.02}, {-2, 2}}, Ticks -> 
+            None, ImageSize -> 400], "", 
+           If[$CellContext`f1$$ != $CellContext`oldf1$$, 
+            EmitSound[{
+              Sound[
+               Play[
+                
+                Sin[$CellContext`f1$$ 2 Pi $CellContext`t], {$CellContext`t, 
+                 0, 1}], {0, 0.1}]}]], 
+           If[$CellContext`f2$$ != $CellContext`oldf2$$, 
+            EmitSound[{
+              Sound[
+               Play[
+                
+                Sin[$CellContext`f2$$ 2 
+                  Pi $CellContext`t + $CellContext`offset$$], {$CellContext`t,
+                  0, 1}], {0, 0.1}]}]], 
+           Button["play result", 
+            EmitSound[{
+              Sound[
+               Play[
+               Sin[$CellContext`f1$$ 2 Pi $CellContext`t] + 
+                Sin[$CellContext`f2$$ 2 
+                   Pi $CellContext`t + $CellContext`offset$$], \
+{$CellContext`t, 0, 1}, PlayRange -> {-1, 1}], {0, 
+               2}]}]], $CellContext`oldf1$$ = $CellContext`f1$$; \
+$CellContext`oldf2$$ = $CellContext`f2$$; Null}, Alignment -> Center], 
+        "Specifications" :> {{{$CellContext`f1$$, 200, "blue wave"}, 200, 500,
+            25}, {{$CellContext`f2$$, 200, "purple wave"}, 200, 500, 
+           25}, {{$CellContext`offset$$, 0, "offset"}, 0, 2 Pi, 
+           Rational[1, 16] Pi}, {{$CellContext`oldf1$$, 200}, ControlType -> 
+           None}, {{$CellContext`oldf2$$, 200}, ControlType -> None}}, 
+        "Options" :> {AutorunSequencing -> {1, 2, 3}}, "DefaultOptions" :> {}],
+       ImageSizeCache->{662., {354.90625, 364.09375}},
+       SingleEvaluation->True],
+      Deinitialization:>None,
+      DynamicModuleValues:>{},
+      SynchronousInitialization->True,
+      UnsavedVariables:>{Typeset`initDone$$},
+      UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+     Deployed->True,
+     StripOnInput->False],
+    TraditionalForm],
+   Manipulate`InterpretManipulate[1]], TraditionalForm]], "Output",
+ CellChangeTimes->{
+  3.459882298863092*^9, {3.459882336591874*^9, 3.459882366599299*^9}, 
+   3.459882409892528*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["THIS NOTEBOOK IS THE SOURCE CODE FROM", "Text",
+ CellFrame->{{0, 0}, {0, 1}},
+ CellMargins->{{48, 10}, {4, 28}},
+ CellGroupingRules->{"SectionGrouping", 25},
+ CellFrameMargins->{{48, 48}, {6, 5}},
+ CellFrameColor->RGBColor[0.691905, 0.790311, 0.300252],
+ FontFamily->"Helvetica",
+ FontSize->10,
+ FontWeight->"Bold",
+ FontColor->RGBColor[0.691905, 0.790311, 0.300252]],
+
+Cell[TextData[{
+ "\"",
+ ButtonBox["Superposition of Sound Waves",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/SuperpositionOfSoundWaves/"], None},
+  ButtonNote->"http://demonstrations.wolfram.com/SuperpositionOfSoundWaves/"],
+ "\"",
+ " from ",
+ ButtonBox["The Wolfram Demonstrations Project",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/"], None},
+  ButtonNote->"http://demonstrations.wolfram.com/"],
+ "\[ParagraphSeparator]\[NonBreakingSpace]",
+ ButtonBox["http://demonstrations.wolfram.com/SuperpositionOfSoundWaves/",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/SuperpositionOfSoundWaves/"], None},
+  ButtonNote->"http://demonstrations.wolfram.com/SuperpositionOfSoundWaves/"]
+}], "Text",
+ CellMargins->{{48, Inherited}, {0, Inherited}},
+ FontFamily->"Verdana",
+ FontSize->10,
+ FontColor->GrayLevel[0.5]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[" ", "Text",
+ CellFrame->{{0, 0}, {0, 1}},
+ CellMargins->{{48, 10}, {4, 28}},
+ CellGroupingRules->{"SectionGrouping", 25},
+ CellFrameMargins->{{48, 48}, {6, 5}},
+ CellFrameColor->RGBColor[0.691905, 0.790311, 0.300252],
+ FontFamily->"Helvetica",
+ FontSize->10,
+ FontWeight->"Bold",
+ FontColor->RGBColor[0.691905, 0.790311, 0.300252]],
+
+Cell[TextData[{
+ "Contributed by: ",
+ ButtonBox["Alan Joyce",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/author.html?author=Alan+Joyce"], 
+    None},
+  ButtonNote->
+   "http://demonstrations.wolfram.com/author.html?author=Alan+Joyce"]
+}], "Text",
+ CellDingbat->"\[FilledSmallSquare]",
+ CellMargins->{{66, 48}, {2, 4}},
+ FontFamily->"Verdana",
+ FontSize->10,
+ FontColor->GrayLevel[0.6]],
+
+Cell[TextData[{
+ "A full-function Wolfram ",
+ StyleBox["Mathematica",
+  FontSlant->"Italic"],
+ " 6 system is required to edit this notebook.\n",
+ StyleBox[ButtonBox["GET WOLFRAM MATHEMATICA 6 \[RightGuillemet]",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://www.wolfram.com/products/mathematica/"], None},
+  ButtonNote->"http://www.wolfram.com/products/mathematica/"],
+  FontFamily->"Helvetica",
+  FontWeight->"Bold",
+  FontSlant->"Italic",
+  FontColor->RGBColor[1, 0.42, 0]]
+}], "Text",
+ CellFrame->True,
+ CellMargins->{{48, 68}, {8, 28}},
+ CellFrameMargins->12,
+ CellFrameColor->RGBColor[0.865507, 0.90634, 0.680751],
+ CellChangeTimes->{3.3750111182355957`*^9},
+ ParagraphSpacing->{1., 1.},
+ FontFamily->"Verdana",
+ FontSize->10,
+ FontColor->GrayLevel[0.411765],
+ Background->RGBColor[0.986023, 0.991363, 0.969818]],
+
+Cell[TextData[{
+ "\[Copyright] ",
+ StyleBox[ButtonBox["The Wolfram Demonstrations Project & Contributors",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/"], None},
+  ButtonNote->"http://demonstrations.wolfram.com/"],
+  FontColor->GrayLevel[0.6]],
+ "\[ThickSpace]\[ThickSpace]\[ThickSpace]|\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+ StyleBox[ButtonBox["Terms of Use",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/termsofuse.html"], None},
+  ButtonNote->"http://demonstrations.wolfram.com/termsofuse.html"],
+  FontColor->GrayLevel[0.6]],
+ "\[ThickSpace]\[ThickSpace]\[ThickSpace]|\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+ StyleBox[ButtonBox["Make a new version of this Demonstration \
+\[RightGuillemet]",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://demonstrations.wolfram.com/participate/upload.jsp?id=\
+SuperpositionOfSoundWaves"], None},
+  ButtonNote->None],
+  FontColor->GrayLevel[0.6]]
+}], "Text",
+ CellFrame->{{0, 0}, {0, 0.5}},
+ CellMargins->{{48, 10}, {20, 50}},
+ CellFrameMargins->{{6, 0}, {6, 6}},
+ CellFrameColor->GrayLevel[0.6],
+ FontFamily->"Verdana",
+ FontSize->9,
+ FontColor->GrayLevel[0.6]]
+}, Open  ]]
+},
+Editable->True,
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{1283, 1092},
+WindowMargins->{{Automatic, 32}, {Automatic, 0}},
+WindowElements->{
+ "StatusArea", "MemoryMonitor", "MagnificationPopUp", "VerticalScrollBar", 
+  "MenuBar"},
+WindowTitle->"Superposition of Sound Waves - Source",
+DockedCells->{},
+CellContext->Notebook,
+FrontEndVersion->"7.0 for Mac OS X x86 (32-bit) (February 18, 2009)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[618, 23, 220, 4, 100, "Section"],
+Cell[CellGroupData[{
+Cell[863, 31, 8025, 185, 662, "Input"],
+Cell[8891, 218, 4706, 99, 744, "Output"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13646, 323, 373, 9, 72, "Text",
+ CellGroupingRules->{"SectionGrouping", 25}],
+Cell[14022, 334, 930, 24, 51, "Text"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14989, 363, 337, 9, 72, "Text",
+ CellGroupingRules->{"SectionGrouping", 25}],
+Cell[15329, 374, 427, 14, 27, "Text"],
+Cell[15759, 390, 829, 24, 144, "Text"],
+Cell[16591, 416, 1201, 33, 130, "Text"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+(* NotebookSignature uQ4cB1FO#l0jFDTj8aTjldIM *)

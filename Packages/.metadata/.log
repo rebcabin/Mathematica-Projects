@@ -1,0 +1,38 @@
+!SESSION 2011-12-16 16:27:18.576 -----------------------------------------------
+eclipse.buildId=M20060629-1905
+java.version=1.5.0_10
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=en_US
+Command-line arguments:  -data C:\Users\bbeckman\Documents\MMA\Packages -os win32 -ws win32 -arch x86
+
+!ENTRY com.wolfram.eclipse.MEET 1 0 2011-12-16 16:29:06.710
+!MESSAGE No metadata cache found; it will be regenerated from source.
+!STACK 0
+java.io.FileNotFoundException: C:\Users\bbeckman\Documents\MMA\Packages\.metadata\.plugins\com.wolfram.eclipse.MEET\StaticSourceMetadataCache\source_to_cache_map.props (The system cannot find the path specified)
+	at java.io.FileInputStream.open(Native Method)
+	at java.io.FileInputStream.<init>(FileInputStream.java:106)
+	at com.wolfram.eclipse.MEET.projectmodel.InstallationMetadataExtractor.loadFromCache(InstallationMetadataExtractor.java:107)
+	at com.wolfram.eclipse.MEET.projectmodel.DefaultMathematicaProjectModel.ensureMetadataInitialization(DefaultMathematicaProjectModel.java:314)
+	at com.wolfram.eclipse.MEET.projectmodel.DefaultMathematicaProjectModel.ensureMetadataInitializationAndWait(DefaultMathematicaProjectModel.java:266)
+	at com.wolfram.eclipse.MEET.projectmodel.DefaultMathematicaProjectModel.getFunctionTemplateManager(DefaultMathematicaProjectModel.java:225)
+	at com.wolfram.eclipse.source.problemdetectors.SemanticVisitor.<init>(SemanticVisitor.java:36)
+	at com.wolfram.eclipse.source.problemdetectors.FunctionTemplateProblemDetector.checkSemantics(FunctionTemplateProblemDetector.java:34)
+	at com.wolfram.eclipse.source.problemdetectors.FunctionTemplateProblemDetector.detect(FunctionTemplateProblemDetector.java:26)
+	at com.wolfram.eclipse.MEET.builders.markerupdaters.ProblemDetectorMarkerUpdater.updateImpl(ProblemDetectorMarkerUpdater.java:106)
+	at com.wolfram.eclipse.MEET.builders.markerupdaters.ProblemDetectorMarkerUpdater$1.run(ProblemDetectorMarkerUpdater.java:45)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:1737)
+	at com.wolfram.eclipse.MEET.builders.markerupdaters.ProblemDetectorMarkerUpdater.update(ProblemDetectorMarkerUpdater.java:51)
+	at com.wolfram.eclipse.MEET.builders.ProjectModelBuilder.buildImpl(ProjectModelBuilder.java:138)
+	at com.wolfram.eclipse.MEET.builders.ProjectModelBuilder.build(ProjectModelBuilder.java:61)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:603)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:167)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:201)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:230)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:233)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:252)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:285)
+	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:145)
+	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:208)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:58)
